@@ -30,4 +30,6 @@ py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/m
 - Read "py-kms_Guide.pdf" for more informations about activation with py-kms.
 - File "py-kms_ClientKeys.pdf" contains GVLK keys.
 
+# License
+   [![License](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://unlicense.org)
 
