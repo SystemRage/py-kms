@@ -22,20 +22,20 @@
  - *Added Office 2016 CountKMSID*
 	
 ### py-kms_2015-07-29
- - * Added Windows 10 UUID*
+ - *Added Windows 10 UUID*
 		
 ### py-kms_2014-10-13 build 3:
- - * Added Client Activation Examples: "client-activation.txt"*
- - * Added Volume Keys: "client-keys.txt"*
+ - *Added Client Activation Examples: "client-activation.txt"*
+ - *Added Volume Keys: "client-keys.txt"*
 
 ### py-kms_2014-10-13 build 2:
- - * Added missing skuIds in file "kmsbase.py". Thanks (user_hidden)*
+ - *Added missing skuIds in file "kmsbase.py". Thanks (user_hidden)*
 	
 ### py-kms_2014-10-13 build 1:
- - * The server now outputs the hwid in use.*
- - * The server hwid can be random by using parameter: "-w random". Example: "python server.py -w random"*
- - * Included file "randomHWID.py" to generate random hwid on demand.*
- - * Included file "randomPID.py" to generate random epid and hwid on demand.*
+ - *The server now outputs the hwid in use.*
+ - *The server hwid can be random by using parameter: "-w random". Example: "python server.py -w random"*
+ - *Included file "randomHWID.py" to generate random hwid on demand.*
+ - *Included file "randomPID.py" to generate random epid and hwid on demand.*
 
 ### py-kms_2014-03-21T232943Z:
 - *The server HWID can now be specified on the command line.*
