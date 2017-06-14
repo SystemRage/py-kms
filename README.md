@@ -1,7 +1,7 @@
 # History
 py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMSEmulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
-PyKMS Author: [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword)
-Maintainer: [ColdZero](http://forums.mydigitallife.info/members/108094-ColdZero)
+ - PyKMS Author: [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword)
+ - Maintainer: [ColdZero](http://forums.mydigitallife.info/members/108094-ColdZero)
 
 # Features
 - Responds to V4, V5, and V6 KMS requests.
@@ -27,7 +27,7 @@ Maintainer: [ColdZero](http://forums.mydigitallife.info/members/108094-ColdZero)
 - To generate random EPID type: "python randomPID.py"
 
 # Other Important Stuff
-- Read "py-kms_Guide.txt" for more informations about activation with py-kms.
-- File "py-kms_ClientKeys.txt" contains GVLK keys.
+- Read "py-kms_Guide.pdf" for more informations about activation with py-kms.
+- File "py-kms_ClientKeys.pdf" contains GVLK keys.
 
 
