@@ -2,8 +2,8 @@
 ### py-kms_2017-06-01
  - *Added option verbose logging in a file*
  - *Updated "kmsBase.py" with new SKUIDs*
- - *Added a brief guide "py-kms-Guide.txt" ( replaced "client-activation.txt" )*
- - *Added a well formatted and more complete list of volume keys "py-kms-ClientKeys.txt" ( replaced "client-keys.txt" )*
+ - *Added a brief guide "py-kms-Guide.pdf" ( replaced "client-activation.txt" )*
+ - *Added a well formatted and more complete list of volume keys "py-kms-ClientKeys.pdf" ( replaced "client-keys.txt" )*
 
 ### py-kms_2016-12-30
  - *Updated kmsBase.py (Matches LicenseManager 4.6.0 by Hotbird64 HGM)*
