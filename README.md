@@ -1,12 +1,25 @@
 # History
-py-kms is a port of node-kms by [markedsword](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMSEmulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
- - PyKMS Author: [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword)
- - Maintainer: [ColdZero](http://forums.mydigitallife.info/members/108094-ColdZero)
-
+py-kms is a port of node-kms created by [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMS Emulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
+ 
 # Features
 - Responds to V4, V5, and V6 KMS requests.
-- Supports activating Windows Vista / 7 / 8 / 8.1 / 10 / Server 2008 / Server 2008 R2 / Server 2012 / Server 2012 R2 / Server 2016 / Office 2010 / Office 2013 / Office 2016.
-- It's written in Python ( tested with Python 2.7.8 and Python 3.5.2 ).
+- Supports activating:
+	- Windows Vista 
+	- Windows 7 
+	- Windows 8
+	- Windows 8.1
+	- Windows 10 ( 1511 / 1607 / 1703 / 1709 )
+	- Windows Server 2008
+	- Windows Server 2008 R2
+	- Windows Server 2012
+	- Windows Server 2012 R2
+	- Windows Server 2016
+	- Microsoft Office 2010 ( Volume License )
+	- Microsoft Office 2013 ( Volume License )
+	- Microsoft Office 2016 ( Volume License )
+- It's written in Python:
+	- py2-kms tested with Python 2.7.12 
+	- py3-kms tested with Python 3.5.2
 
 # Dependencies
 - Python 3.x or Python 2.7.x or "Python 2.6.x with the 'argparse' module installed."
