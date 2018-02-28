@@ -1,4 +1,8 @@
-
+### py-kms_2018-03-01
+ - *py-kms NOW is for Python3 too ( py3-kms ), the previous one ( written with Python2 ) is renamed py2-kms*
+ - *Repaired logging messages*
+ - *Added pretty processing messages*
+ 
 ### py-kms_2017-06-01
  - *Added option verbose logging in a file*
  - *Updated "kmsBase.py" with new SKUIDs*
