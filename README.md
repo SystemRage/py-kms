@@ -42,7 +42,7 @@ Argument _IPADDRESS_ is always required, while the default _PORT_ is "1688", so 
 - To generate a random EPID type: ```python randomPID.py```
 
 # Other Important Stuff
-- Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more informations about activation with _py-kms_ and to get GVLK keys.
+Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more informations about activation with _py-kms_ and to get GVLK keys.
 
 # License
    [![License](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
