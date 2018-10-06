@@ -89,6 +89,13 @@ class kmsBase:
 
 	skuIds = {
                 #########################
+                ## Windows Server 2019 ##
+                #########################
+                uuid.UUID("34e1ae55-27f8-4950-8877-7a03be5fb181") : "Windows Server 2019 Datacenter",
+                uuid.UUID("de32eafd-aaee-4662-9444-c1befb41bde2") : "Windows Server 2019 Standard",
+                uuid.UUID("034d3cbb-5d4b-4245-b3f8-f84571314078") : "Windows Server 2019 Essentials",
+                uuid.UUID("a99cc1f0-7719-4306-9645-294102fbff95") : "Windows Server 2019 Azure Core",
+                #########################
                 ## Windows Server 2016 ##
                 #########################
                 uuid.UUID("21c56779-b449-4d20-adfc-eece0e1ad74b") : "Windows Server 2016 Datacenter",
