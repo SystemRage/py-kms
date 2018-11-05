@@ -218,6 +218,25 @@ class kmsBase:
                 uuid.UUID("cfd8ff08-c0d7-452b-9f60-ef5c70c32094") : "Windows Vista Enterprise",
                 uuid.UUID("d4f54950-26f2-4fb4-ba21-ffab16afcade") : "Windows Vista Enterprise N",
                 #################
+                ## Office 2019 ##
+                #################
+                uuid.UUID("0bc88885-718c-491d-921f-6f214349e79c") : "Office Professional Plus 2019 [Click-to-Run]",
+                uuid.UUID("fc7c4d0c-2e85-4bb9-afd4-01ed1476b5e9") : "Office Project Professional 2019 [Click-to-Run]",
+                uuid.UUID("500f6619-ef93-4b75-bcb4-82819998a3ca") : "Office Visio Professional 2019 [Click-to-Run]",
+                uuid.UUID("85dd8b5f-eaa4-4af3-a628-cce9e77c9a03") : "Office Professional Plus 2019",
+                uuid.UUID("6912a74b-a5fb-401a-bfdb-2e3ab46f4b02") : "Office Standard 2019",
+                uuid.UUID("2ca2bf3f-949e-446a-82c7-e25a15ec78c4") : "Office Project Professional 2019",
+                uuid.UUID("1777f0e3-7392-4198-97ea-8ae4de6f6381") : "Office Project Standard 2019",
+                uuid.UUID("5b5cf08f-b81a-431d-b080-3450d8620565") : "Office Visio Professional 2019",
+                uuid.UUID("e06d7df3-aad0-419d-8dfb-0ac37e2bdf39") : "Office Visio Standard 2019",
+                uuid.UUID("9e9bceeb-e736-4f26-88de-763f87dcc485") : "Office Access 2019",
+                uuid.UUID("237854e9-79fc-4497-a0c1-a70969691c6b") : "Office Excel 2019",
+                uuid.UUID("c8f8a301-19f5-4132-96ce-2de9d4adbd33") : "Office Outlook 2019",
+                uuid.UUID("3131fd61-5e4f-4308-8d6d-62be1987c92c") : "Office PowerPoint 2019",
+                uuid.UUID("9d3e4cca-e172-46f1-a2f4-1d2107051444") : "Office Publisher 2019",
+                uuid.UUID("734c6c6e-b0ba-4298-a891-671772b2bd1b") : "Office Skype for Business 2019",
+                uuid.UUID("059834fe-a8ea-4bff-b67b-4d006b5447d3") : "Office Word 2019",
+                #################
                 ## Office 2016 ##
                 #################
                 uuid.UUID("d450596f-894d-49e0-966a-fd39ed4c4c64") : "Office Professional Plus 2016",
