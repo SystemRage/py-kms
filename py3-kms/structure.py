@@ -6,9 +6,9 @@
 # of the Apache Software License. See the accompanying LICENSE file
 # for more information.
 #
-""" Version of https://github.com/CoreSecurity/impacket/blob/python3/impacket/structure.py
-    with modifications in the function dump(...).
-    © Copyright 2018 Matteo ℱan <SystemRage@protonmail.com>
+"""
+Stripped down version of: https://github.com/CoreSecurity/impacket/blob/python3/impacket/structure.py
+with modifications in the function dump(...).
 """
 
 from struct import pack, unpack, calcsize
@@ -33,7 +33,6 @@ else:
             return "".join(map(chr,x))
         else:
             return x
-
 
 class Structure:
     """ sublcasses can define commonHdr and/or structure.
@@ -110,18 +109,6 @@ class Structure:
             self.fromString(data)
         else:
             self.data = None
-
-    @classmethod
-    def fromFile(self, file):
-        answer = self()
-        answer.fromString(file.read(len(answer)))
-        return answer
-
-    def setAlignment(self, alignment):
-        self.alignment = alignment
-
-    def setData(self, data):
-        self.data = data
 
     def packField(self, fieldName, format = None):
         if self.debug:
@@ -579,25 +566,7 @@ class Structure:
                 return field[0]
         return None
         
-    def zeroValue(self, format):
-        two = format.split('*')
-        if len(two) == 2:
-            if two[0].isdigit():
-                return (self.zeroValue(two[1]),)*int(two[0])
-                        
-        if not format.find('*') == -1: return ()
-        if 's' in format: return b''
-        if format in ['z',':','u']: return ''
-        if format == 'w': return b'\x00\x00'
-
-        return 0
-
-    def clear(self):
-        for field in self.commonHdr + self.structure:
-            self[field[0]] = self.zeroValue(field[1])
-                   
-    def dump(self, msg = None, indent = 0, print_to_stdout = True):
-               
+    def dump(self, msg = None, indent = 0, print_to_stdout = True):     
         if msg is None:
             msg = self.__class__.__name__
         ind = ' '*indent

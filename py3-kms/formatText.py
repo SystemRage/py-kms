@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
-
 def byterize(obj):
     objdict = obj.__dict__['fields']
 
@@ -70,8 +68,6 @@ class ShellStyle(object):
         return self.style(s, '\033[4m')
 
 
-
-
 def shell_message(nshell):
      
     shelldict = {0: ShellStyle().yellow("Client generating RPC Bind Request..."),
@@ -107,7 +103,4 @@ def shell_message(nshell):
             print(shelldict[n])
     else:
         print(shelldict[nshell])
-
-
-             
-
+        

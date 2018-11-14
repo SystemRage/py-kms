@@ -3,7 +3,8 @@
 # aes.py: implements AES - Advanced Encryption Standard
 # from the SlowAES project, http://code.google.com/p/slowaes/
 #
-# Copyright (c) 2008    Josh Davis ( http://www.josh-davis.org ), Alex Martelli ( http://www.aleax.it )
+# Copyright (c) 2008    Josh Davis ( http://www.josh-davis.org )
+#                       Alex Martelli ( http://www.aleax.it )
 #
 # Ported from C code written by Laurent Haan ( http://www.progressive-coding.com )
 
@@ -12,8 +13,8 @@
 #
 
 """
+Modified for py-kms;
 Ported to Python3 with minimal changements.
-© Copyright 2018 Matteo ℱan <SystemRage@protonmail.com>
 """
 
 import os
@@ -160,7 +161,7 @@ class AES( object ):
 
     def expandKey(self, key, size, expandedKeySize):
         """ Method performing Rijndael's key expansion.
-            Expands an 128, 192, 256 key into an 176, 208, 240 bit key.
+            Expands an 128, 192, 256 key into an 176, 208, 240 bytes key.
         """
         # Current expanded keySize, in bytes.
         currentSize = 0
@@ -238,13 +239,11 @@ class AES( object ):
             state[i] = getter(state[i])
         return state
 
-
     def shiftRows(self, state, isInv):
         """ Method to iterate over the 4 rows and call shiftRow(...) with that row. """
         for i in range(4):
             state = self.shiftRow(state, i * 4, i, isInv)
         return state
-
 
     def shiftRow(self, state, statePointer, nbr, isInv):
         """ Method to shift the row to the left. """
@@ -426,7 +425,7 @@ class AES( object ):
             nbrRounds = 12
         elif size == self.KeySize["SIZE_256"]:
             nbrRounds = 14
-    #*py-kms* The KMS v4 parameters.
+        #*py-kms* The KMS v4 parameters.
         elif size == 20:
             nbrRounds = 11
         else:

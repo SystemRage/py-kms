@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright (c) 2003-2014 CORE Security Technologies
+# Copyright (c) 2003-2016 CORE Security Technologies
 #
 # This software is provided under under a slightly modified version
 # of the Apache Software License. See the accompanying LICENSE file
@@ -20,11 +20,10 @@
 # 
 
 """
-Stripped down version of `https://github.com/CoreSecurity/impacket/blob/master/impacket/dcerpc/v5/rpcrt.py`,
-modified for Python3.
+Stripped down version of: https://github.com/SecureAuthCorp/impacket/blob/python36/impacket/dcerpc/v5/rpcrt.py
 """
 
-from structure import Structure, pack, unpack
+from structure import Structure
 
 # MS/RPC Constants
 MSRPC_REQUEST   = 0x00
@@ -49,8 +48,8 @@ MSRPC_CO_CANCEL = 0x12
 MSRPC_ORPHANED  = 0x13
 
 # MS/RPC Packet Flags
-MSRPC_FIRSTFRAG     = 0x01
-MSRPC_LASTFRAG      = 0x02
+PFC_FIRST_FRAG     = 0x01
+PFC_LAST_FRAG      = 0x02
 
 # For PDU types bind, bind_ack, alter_context, and
 # alter_context_resp, this flag MUST be interpreted as PFC_SUPPORT_HEADER_SIGN
@@ -60,12 +59,11 @@ MSRPC_SUPPORT_SIGN  = 0x04
 #remaining PDU types, this flag MUST be interpreted as PFC_PENDING_CANCEL.
 MSRPC_PENDING_CANCEL= 0x04
 
-MSRPC_NOTAFRAG      = 0x04
-MSRPC_RECRESPOND    = 0x08
-MSRPC_NOMULTIPLEX   = 0x10
-MSRPC_NOTFORIDEMP   = 0x20
-MSRPC_NOTFORBCAST   = 0x40
-MSRPC_NOUUID        = 0x80
+PFC_RESERVED_1      = 0x08
+PFC_CONC_MPX        = 0x10
+PFC_DID_NOT_EXECUTE = 0x20
+PFC_MAYBE           = 0x40
+PFC_OBJECT_UUID     = 0x80
 
 # Auth Types - Security Providers
 RPC_C_AUTHN_NONE          = 0x00
@@ -112,7 +110,6 @@ rpc_cont_def_result = {
 #winerror.h
 #http://www.opengroup.org/onlinepubs/9629399/apdxn.htm
 
-#*2to3* 0x00000005L -> 0x00000005.....
 rpc_status_codes = {
     0x00000005 : 'rpc_s_access_denied',
     0x00000008 : 'Authentication type not recognized',
@@ -537,28 +534,6 @@ rpc_status_codes = {
     0x16c9a171 : "rpc_s_no_context_available",
 }
 
-class Exception(Exception):
-    pass
-
-##class DCERPCException(Exception):
-##    def __init__( self, error_code):
-##        Exception.__init__(self)
-##        self.error_code = error_code
-##       
-##    def get_error_code( self ):
-##        return self.error_code
-## 
-##    def get_packet( self ):
-##        return self.packet
-##
-##    def __str__( self ):
-##        key = self.error_code
-##        if (rpc_status_codes.has_key(key)):
-##            error_msg_short = rpc_status_codes[key]
-##            return 'DCERPC Runtime Error: code: 0x%x - %s ' % (self.error_code, error_msg_short)
-##        else:
-##            return 'DCERPC Runtime Error: unknown error code: 0x%x' % (self.error_code)
-
 # Context Item
 class CtxItem(Structure):
     structure = (
@@ -569,14 +544,12 @@ class CtxItem(Structure):
         ('TransferSyntax','20s=""'),
     )
 
-
 class CtxItemResult(Structure):
     structure = (
         ('Result','<H=0'),
         ('Reason','<H=0'),
         ('TransferSyntax','20s=""'),
     )
-
 
 class SEC_TRAILER(Structure):
     commonHdr = (
@@ -586,7 +559,6 @@ class SEC_TRAILER(Structure):
         ('auth_rsvrd','B=0'),
         ('auth_ctx_id','<L=747920'),
     )
-
 
 class MSRPCHeader(Structure):
     _SIZE = 16
@@ -617,20 +589,20 @@ class MSRPCHeader(Structure):
         if data is None:
             self['ver_major'] = 5
             self['ver_minor'] = 0
-            self['flags'] = MSRPC_FIRSTFRAG | MSRPC_LASTFRAG 
+            self['flags'] = PFC_FIRST_FRAG | PFC_LAST_FRAG
             self['type'] = MSRPC_REQUEST
             self.__frag_len_set = 0
             self['auth_len'] = 0
-            self['pduData'] = ''
-            self['auth_data'] = ''
-            self['sec_trailer'] = ''
-            self['pad'] = ''
+            self['pduData'] = b''
+            self['auth_data'] = b''
+            self['sec_trailer'] = b''
+            self['pad'] = b''
 
     def get_header_size(self):
-        return self._SIZE + (16 if (self["flags"] & MSRPC_NOUUID) > 0 else 0)
+        return self._SIZE + (16 if (self["flags"] & PFC_OBJECT_UUID) > 0 else 0)
 
     def get_packet(self):
-        if self['auth_data'] != '':
+        if self['auth_data'] != b'':
             self['auth_len'] = len(self['auth_data'])
         # The sec_trailer structure MUST be 4-byte aligned with respect to 
         # the beginning of the PDU. Padding octets MUST be used to align the 
@@ -638,7 +610,6 @@ class MSRPCHeader(Structure):
         ##self['pad'] = '\xAA' * (4 - ((self._SIZE + len(self['pduData'])) & 3) & 3)
 
         return self.getData()
-
 
 class MSRPCRequestHeader(MSRPCHeader):
     _SIZE = 24
@@ -655,8 +626,7 @@ class MSRPCRequestHeader(MSRPCHeader):
         if data is None:
            self['type'] = MSRPC_REQUEST
            self['ctx_id'] = 0
-           self['uuid'] = ''
-
+           self['uuid'] = b''
 
 class MSRPCRespHeader(MSRPCHeader):
     _SIZE = 24
@@ -672,7 +642,6 @@ class MSRPCRespHeader(MSRPCHeader):
         if aBuffer is None:
             self['type'] = MSRPC_RESPONSE
             self['ctx_id'] = 0
-
 
 class MSRPCBind(Structure):
     _CTX_ITEM_LEN = len(CtxItem())
@@ -694,7 +663,7 @@ class MSRPCBind(Structure):
             self['max_rfrag'] = 4280
             self['assoc_group'] = 0
             self['ctx_num'] = 1
-            self['ctx_items'] = ''
+            self['ctx_items'] = b''
         self.__ctx_items = []
 
     def addCtxItem(self, item):
@@ -705,7 +674,6 @@ class MSRPCBind(Structure):
         for i in self.__ctx_items:
             self['ctx_items'] += i.getData()
         return Structure.getData(self)
-
 
 class MSRPCBindAck(MSRPCHeader):
     _SIZE = 26 # Up to SecondaryAddr
@@ -732,10 +700,10 @@ class MSRPCBindAck(MSRPCHeader):
         self.__ctx_items = []
         MSRPCHeader.__init__(self,data,alignment)
         if data is None:
-            self['Pad'] = ''
-            self['ctx_items'] = ''
-            self['sec_trailer'] = ''
-            self['auth_data'] = ''
+            self['Pad'] = b''
+            self['ctx_items'] = b''
+            self['sec_trailer'] = b''
+            self['auth_data'] = b''
 
     def getCtxItems(self):
         return self.__ctx_items
@@ -751,7 +719,6 @@ class MSRPCBindAck(MSRPCHeader):
             item = CtxItemResult(data)
             self.__ctx_items.append(item)
             data = data[len(item):]
-
             
 class MSRPCBindNak(Structure):
     structure = ( 
@@ -761,5 +728,4 @@ class MSRPCBindNak(Structure):
     def __init__(self, data = None, alignment = 0):
         Structure.__init__(self,data,alignment)
         if data is None:
-            self['SupportedVersions'] = ''
-
+            self['SupportedVersions'] = b''

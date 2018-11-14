@@ -2,14 +2,12 @@
 
 import logging
 import binascii
-import struct
 import uuid
 
 import rpcBase
 from dcerpc import MSRPCHeader, MSRPCBindAck
 from structure import Structure
 from formatText import shell_message, justify, byterize
-
 
 uuidNDR32 = uuid.UUID('8a885d04-1ceb-11c9-9fe8-08002b104860')
 uuidNDR64 = uuid.UUID('71710533-beba-4937-8319-b5dbef9ccc36')
@@ -28,7 +26,7 @@ class CtxItem(Structure):
         )
 
         def ts(self):
-                return uuid.UUID(bytes_le=self['TransferSyntaxUUID'].encode('latin-1')) #*2to3*
+                return uuid.UUID(bytes_le=self['TransferSyntaxUUID'].encode('latin-1'))
 
 class CtxItemResult(Structure):
         structure = (
@@ -75,7 +73,6 @@ class MSRPCBind(Structure):
 class handler(rpcBase.rpcBase):
         def parseRequest(self):
                 request = MSRPCHeader(self.data)
-                
                 shell_message(nshell = 3)
                 request = byterize(request)
                 logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data).decode('utf-8')))
@@ -84,9 +81,9 @@ class handler(rpcBase.rpcBase):
                 
                 return request
 
-        def generateResponse(self):
+        def generateResponse(self, request):
                 response = MSRPCBindAck()
-                request = self.requestData
+                
                 bind = MSRPCBind(request['pduData'])
                                
                 response['ver_major'] = request['ver_major']
@@ -123,7 +120,7 @@ class handler(rpcBase.rpcBase):
                 shell_message(nshell = 4)
                 response = byterize(response)
                 logging.debug("RPC Bind Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
-                logging.debug("RPC Bind Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8'))) #*2to3*
+                logging.debug("RPC Bind Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8')))
                 
                 return response
 
@@ -151,7 +148,7 @@ class handler(rpcBase.rpcBase):
                 bind['max_rfrag'] = 5840
                 bind['assoc_group'] = 0
                 bind['ctx_num'] = 2
-                bind['ctx_items'] = str(bind.CtxItemArray(str(firstCtxItem) + str(secondCtxItem))) #*2to3*
+                bind['ctx_items'] = str(bind.CtxItemArray(str(firstCtxItem) + str(secondCtxItem)))
                      
                 request = MSRPCHeader()
                 request['ver_major'] = 5
@@ -166,10 +163,9 @@ class handler(rpcBase.rpcBase):
                 request = byterize(request)
                 logging.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
                                                                 justify(MSRPCBind(request['pduData']).dump(print_to_stdout = False))))
-                logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8'))) #*2to3*
+                logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8')))
                                 
                 return request
 
         def parseResponse(self):
                 return response
-
