@@ -1,3 +1,12 @@
+### py-kms_2018-11-15
+ - Implemented some good modifications inspired by [this](https://github.com/ThunderEX/py-kms) other fork.
+ 	- Clean up code ( deleted no longer useful files randomHWID.py, randomEPID.py, timezones.py;
+			erased useless functions and import modules )
+	- Reading parameters directly from a slightly modified KmsDataBase.xml ( created with LicenseManager 5.0 by Hotbird64 HGM ) with kmsDB2Dict.py
+- Added support for Windows Server 2019 and Office 2019.
+- Improved random EPID generation.
+- Corrected [this](https://github.com/SystemRage/py-kms/issues/8) in kmsBase.py
+
 ### py-kms_2018-03-01
  - *py-kms NOW is for Python3 too ( py3-kms ), the previous one ( written with Python2 ) is renamed py2-kms*
  - *Repaired logging messages*
