@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-import struct
-import uuid
-
 class rpcBase:
         packetType = {
                 'request':              0,
@@ -42,21 +39,7 @@ class rpcBase:
                 self.config = config
 
         def populate(self):
-                self.requestData = self.parseRequest()
-                self.responseData = self.generateResponse()
-                return self
-
-        def getConfig(self):
-                return self.config
-
-        def getOptions(self):
-                return self.config
-
-        def getData(self):
-                return self.data
+                return self.generateResponse(self.parseRequest())
 
         def parseRequest(self):
                 return {}
-
-        def getResponse(self):
-                return self.responseData

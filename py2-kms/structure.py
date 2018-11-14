@@ -7,9 +7,9 @@
 # for more information.
 #
 
-""" Version of https://github.com/CoreSecurity/impacket/blob/master/impacket/structure.py
-    with modifications in the function dump(...).
-    Copyright 2018 Matteo Fan <SystemRage@protonmail.com>
+"""
+Stripped down version of: https://github.com/CoreSecurity/impacket/blob/master/impacket/structure.py
+with modifications in the function dump(...).
 """
 
 from struct import pack, unpack, calcsize
@@ -89,18 +89,6 @@ class Structure:
             self.fromString(data)
         else:
             self.data = None
-
-    @classmethod
-    def fromFile(self, file):
-        answer = self()
-        answer.fromString(file.read(len(answer)))
-        return answer
-
-    def setAlignment(self, alignment):
-        self.alignment = alignment
-
-    def setData(self, data):
-        self.data = data
 
     def packField(self, fieldName, format = None):
         if self.debug:
@@ -363,7 +351,7 @@ class Structure:
         return unpack(format, data)[0]
 
     def calcPackSize(self, format, data, field = None):
-#        # print "  calcPackSize  %s:%r" %  (format, data)
+        # print "  calcPackSize  %s:%r" %  (format, data)
         if field:
             addressField = self.findAddressFieldFor(field)
             if addressField is not None:
@@ -544,26 +532,10 @@ class Structure:
             if field[1][-l:] == descriptor:
                 return field[0]
         return None
-        
-    def zeroValue(self, format):
-        two = format.split('*')
-        if len(two) == 2:
-            if two[0].isdigit():
-                return (self.zeroValue(two[1]),)*int(two[0])
-                        
-        if not format.find('*') == -1: return ()
-        if 's' in format: return ''
-        if format in ['z',':','u']: return ''
-        if format == 'w': return '\x00\x00'
-
-        return 0
-
-    def clear(self):
-        for field in self.commonHdr + self.structure:
-            self[field[0]] = self.zeroValue(field[1])
 
     def dump(self, msg = None, indent = 0, print_to_stdout = True):
-        if msg is None: msg = self.__class__.__name__
+        if msg is None:
+            msg = self.__class__.__name__
         ind = ' '*indent
         allstr = "\n%s" % msg
         fixedFields = []

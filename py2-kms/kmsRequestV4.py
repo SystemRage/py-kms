@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import binascii
-import struct
 import time
 import logging
 
@@ -22,7 +21,7 @@ class kmsRequestV4(kmsBase):
 	class RequestV4(Structure):
 		commonHdr = ()
 		structure = (
-			('bodyLength1', '<I'),
+			('bodyLength1', '<I'), 
 			('bodyLength2', '<I'),
 			('request',     ':', kmsBase.kmsRequestStruct),
 			('hash',        '16s'),
@@ -32,9 +31,9 @@ class kmsRequestV4(kmsBase):
 	class ResponseV4(Structure):
 		commonHdr = ()
 		structure = (
-			('bodyLength1', '<I=len(response) + len(hash)'),
+			('bodyLength1', '<I'),
 			('unknown',     '!I=0x00000200'),
-			('bodyLength2', '<I=len(response) + len(hash)'),
+			('bodyLength2', '<I'),
 			('response',    ':', kmsBase.kmsResponseStruct),
 			('hash',        '16s'),
 			('padding',     ':'),
@@ -46,9 +45,11 @@ class kmsRequestV4(kmsBase):
 		response = self.serverLogic(requestData['request'])
 		hash = self.generateHash(bytearray(str(response)))
 
-		self.responseData = self.generateResponse(response, hash)
+		responseData = self.generateResponse(response, hash)
 
 		time.sleep(1) # request sent back too quick for Windows 2008 R2, slow it down.
+
+		return responseData
 
 	def generateHash(self, message):
 		"""
@@ -91,35 +92,35 @@ class kmsRequestV4(kmsBase):
 		return str(hashBuffer)
 
 	def generateResponse(self, responseBuffer, hash):
-		bodyLength = len(responseBuffer) + len(hash)
 		response = self.ResponseV4()
+		bodyLength = len(responseBuffer) + len(hash)
+		response['bodyLength1'] = bodyLength
+		response['bodyLength2'] = bodyLength
 		response['response'] = responseBuffer
 		response['hash'] = hash
-		response['padding'] = self.getResponsePadding(bodyLength)
-		
+		response['padding'] = bytearray(self.getPadding(bodyLength))
+
+		## Debug stuff.
 		shell_message(nshell = 16)                
-                logging.debug("KMS V4 Response: %s" % justify(response.dump(print_to_stdout = False)))
-                logging.debug("KMS V4 Response Bytes: %s" % justify(binascii.b2a_hex(str(response))))
+                logging.debug("KMS V4 Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
+                logging.debug("KMS V4 Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response))))
 			
 		return str(response)
 
-	def getResponse(self):
-		return self.responseData
-
 	def generateRequest(self, requestBase):
 		hash = str(self.generateHash(bytearray(str(requestBase))))
-
+		
+		request = self.RequestV4()
 		bodyLength = len(requestBase) + len(hash)
-
-		request = kmsRequestV4.RequestV4()
 		request['bodyLength1'] = bodyLength
 		request['bodyLength2'] = bodyLength
 		request['request'] = requestBase
 		request['hash'] = hash
-		request['padding'] = self.getResponsePadding(bodyLength)
-		
+		request['padding'] = bytearray(self.getPadding(bodyLength))
+
+		## Debug stuff.
 		shell_message(nshell = 10)                
-                logging.debug("Request V4 Data: %s" % justify(request.dump(print_to_stdout = False)))
-                logging.debug("Request V4: %s" % justify(binascii.b2a_hex(str(request))))
+                logging.debug("Request V4 Data: \n%s\n" % justify(request.dump(print_to_stdout = False)))
+                logging.debug("Request V4: \n%s\n" % justify(binascii.b2a_hex(str(request))))
                         
 		return request

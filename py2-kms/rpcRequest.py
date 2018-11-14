@@ -2,8 +2,6 @@
 
 import binascii
 import logging
-import struct
-import uuid
 
 from dcerpc import MSRPCRequestHeader, MSRPCRespHeader
 import kmsBase
@@ -19,9 +17,7 @@ class handler(rpcBase.rpcBase):
                 
                 return request
 
-        def generateResponse(self):
-                request = self.requestData
-
+        def generateResponse(self, request):
                 responseData = kmsBase.generateKmsResponseData(request['pduData'], self.config)
                 envelopeLength = len(responseData)
 

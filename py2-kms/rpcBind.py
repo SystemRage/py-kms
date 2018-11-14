@@ -2,7 +2,6 @@
 
 import logging
 import binascii
-import struct
 import uuid
 
 import rpcBase
@@ -78,12 +77,12 @@ class handler(rpcBase.rpcBase):
                 logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data)))
                 logging.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
                                                                 justify(MSRPCBind(request['pduData']).dump(print_to_stdout = False))))
-
+                
                 return request
 
-        def generateResponse(self):
+        def generateResponse(self, request):
                 response = MSRPCBindAck()
-                request = self.requestData
+ 
                 bind = MSRPCBind(request['pduData'])
 
                 response['ver_major'] = request['ver_major']
@@ -159,11 +158,10 @@ class handler(rpcBase.rpcBase):
 
                 shell_message(nshell = 0)
                 logging.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
-                                                            justify(MSRPCBind(request['pduData']).dump(print_to_stdout = False))))
+                                                                justify(MSRPCBind(request['pduData']).dump(print_to_stdout = False))))
                 logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request))))
 
                 return request
 
         def parseResponse(self):
                 return response
-

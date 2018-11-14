@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import sys
-
 def justify(astring, indent = 35, break_every = 100):
     str_indent = ('\n' + ' ' * indent)
     splitted = astring.split('\n')
@@ -53,8 +51,6 @@ class ShellStyle(object):
         return self.style(s, '\033[4m')
 
 
-
-
 def shell_message(nshell):
      
     shelldict = {0: ShellStyle().yellow("Client generating RPC Bind Request..."),
@@ -90,7 +86,3 @@ def shell_message(nshell):
             print shelldict[n]
     else:
         print shelldict[nshell]
-
-
-             
-

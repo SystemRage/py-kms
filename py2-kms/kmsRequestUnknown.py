@@ -5,7 +5,7 @@ import struct
 from kmsBase import kmsBase
 
 class kmsRequestUnknown(kmsBase):
-        def getResponse(self):
+        def executeRequestLogic(self):
                 finalResponse = bytearray()
                 finalResponse.extend(bytearray(struct.pack('<I', 0)))
                 finalResponse.extend(bytearray(struct.pack('<I', 0)))

@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-import binascii
 import hashlib
 import hmac
-import random
 import struct
 
 import aes
@@ -37,9 +35,7 @@ class kmsRequestV6(kmsRequestV5):
 
         def encryptResponse(self, request, decrypted, response):
                 randomSalt = self.getRandomSalt()
-                sha256 = hashlib.sha256()
-                sha256.update(str(randomSalt))
-                result = sha256.digest()
+                result = hashlib.sha256(str(randomSalt)).digest()
 
                 SaltC = bytearray(request['message']['salt'])
                 DSaltC = bytearray(decrypted['salt'])
@@ -65,10 +61,10 @@ class kmsRequestV6(kmsRequestV5):
 
                 moo = aes.AESModeOfOperation()
                 moo.aes.v6 = True
-                d = moo.decrypt(SaltS, 16, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], SaltS)
+                decry = moo.decrypt(SaltS, 16, moo.modeOfOperation["CBC"], self.key, moo.aes.keySize["SIZE_128"], SaltS)
 
                 # DSaltS
-                DSaltS = bytearray(d)
+                DSaltS = bytearray(decry)
 
                 # HMacMsg
                 HMacMsg = bytearray(16)
@@ -105,4 +101,3 @@ class kmsRequestV6(kmsRequestV5):
                 digest = sha256.digest()
 
                 return digest[16:]
-

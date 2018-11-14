@@ -4,7 +4,6 @@ import logging
 import binascii
 import hashlib
 import random
-import struct
 
 import aes
 from kmsBase import kmsBase
@@ -17,14 +16,14 @@ class kmsRequestV5(kmsBase):
                         commonHdr = ()
                         structure = (
                                 ('salt',      '16s'),
-                                ('encrypted', '236s'), #kmsBase.kmsRequestStruct
+                                ('encrypted', '240s'), # kmsBase.kmsRequestStruct
                                 ('padding',   ':'),
                         )
 
                 commonHdr = ()
                 structure = (
-                        ('bodyLength1',  '<I'),
-                        ('bodyLength2',  '<I'),
+                        ('bodyLength1',  '<I'),  
+                        ('bodyLength2',  '<I'), 
                         ('versionMinor', '<H'),
                         ('versionMajor', '<H'),
                         ('message',      ':', Message),
@@ -40,13 +39,13 @@ class kmsRequestV5(kmsBase):
         class ResponseV5(Structure):
                 commonHdr = ()
                 structure = (
-                        ('bodyLength1',  '<I=2 + 2 + len(salt) + len(encrypted)'),
+                        ('bodyLength1',  '<I'),
                         ('unknown',      '!I=0x00000200'),
-                        ('bodyLength2',  '<I=2 + 2 + len(salt) + len(encrypted)'),
+                        ('bodyLength2',  '<I'),
                         ('versionMinor', '<H'),
                         ('versionMajor', '<H'),
                         ('salt',         '16s'),
-                        ('encrypted',    ':'), #DecryptedResponse
+                        ('encrypted',    ':'), # DecryptedResponse
                         ('padding',      ':'),
                 )
 
@@ -65,15 +64,17 @@ class kmsRequestV5(kmsBase):
         ver = 5
 
         def executeRequestLogic(self):
-                self.requestData = self.RequestV5(self.data)
+                requestData = self.RequestV5(self.data) 
         
-                decrypted = self.decryptRequest(self.requestData)
+                decrypted = self.decryptRequest(requestData)
 
                 responseBuffer = self.serverLogic(decrypted['request'])
         
-                iv, encrypted = self.encryptResponse(self.requestData, decrypted, responseBuffer)
+                iv, encrypted = self.encryptResponse(requestData, decrypted, responseBuffer)
 
-                self.responseData = self.generateResponse(iv, encrypted)
+                responseData = self.generateResponse(iv, encrypted, requestData)
+                
+                return responseData
         
         def decryptRequest(self, request):
                 encrypted = bytearray(str(request['message']))
@@ -88,10 +89,7 @@ class kmsRequestV5(kmsBase):
 
         def encryptResponse(self, request, decrypted, response):
                 randomSalt = self.getRandomSalt()
-                sha256 = hashlib.sha256()
-                sha256.update(str(randomSalt))
-                result = sha256.digest()
-
+                result = hashlib.sha256(str(randomSalt)).digest()
                 iv = bytearray(request['message']['salt'])
 
                 randomStuff = bytearray(16)
@@ -111,7 +109,8 @@ class kmsRequestV5(kmsBase):
                 return str(iv), str(bytearray(crypted))
 
         def decryptResponse(self, response):
-                paddingLength = response['bodyLength1'] % 8
+                paddingLength = self.getPadding(response['bodyLength1'])
+                
                 iv = bytearray(response['salt'])
                 encrypted = bytearray(response['encrypted'][:-paddingLength])
                 moo = aes.AESModeOfOperation()
@@ -124,23 +123,22 @@ class kmsRequestV5(kmsBase):
         def getRandomSalt(self):
                 return bytearray(random.getrandbits(8) for i in range(16))
         
-        def generateResponse(self, iv, encryptedResponse):
-                bodyLength = 4 + len(iv) + len(encryptedResponse)
+        def generateResponse(self, iv, encryptedResponse, requestData):                
                 response = self.ResponseV5()
-                response['versionMinor'] = self.requestData['versionMinor']
-                response['versionMajor'] = self.requestData['versionMajor']
+                bodyLength = 2 + 2 + len(iv) + len(encryptedResponse)
+                response['bodyLength1'] = bodyLength
+                response['bodyLength2'] = bodyLength
+                response['versionMinor'] = requestData['versionMinor']
+                response['versionMajor'] = requestData['versionMajor']
                 response['salt'] = iv
                 response['encrypted'] = encryptedResponse
-                response['padding'] = self.getResponsePadding(bodyLength)
+                response['padding'] = bytearray(self.getPadding(bodyLength))
                 
                 shell_message(nshell = 16)
                 logging.info("KMS V%d Response: \n%s\n" % (self.ver, justify(response.dump(print_to_stdout = False))))
                 logging.info("KMS V%d Structure Bytes: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(response)))))
                         
                 return str(response)
-        
-        def getResponse(self):
-                return self.responseData
 
         def generateRequest(self, requestBase):
                 esalt = self.getRandomSalt()
@@ -159,9 +157,8 @@ class kmsRequestV5(kmsBase):
 
                 message = self.RequestV5.Message(str(bytearray(crypted)))
 
-                bodyLength = len(message) + 2 + 2
-
                 request = self.RequestV5()
+                bodyLength = 2 + 2 + len(message)
                 request['bodyLength1'] = bodyLength
                 request['bodyLength2'] = bodyLength
                 request['versionMinor'] = requestBase['versionMinor']
