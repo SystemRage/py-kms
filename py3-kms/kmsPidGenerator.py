@@ -20,32 +20,27 @@ def epidGenerator(kmsId, version, lcid):
                 try:
                         if kmsId in [ uuid.UUID(kmsitem) for kmsitem in csvlkitem['Activate'] ]:
                                 pkeys.append( (csvlkitem['GroupId'], csvlkitem['MinKeyId'], csvlkitem['MaxKeyId'], csvlkitem['InvalidWinBuild']) )
+                        else:
+                                # fallback to Windows Server 2019 parameters.
+                                pkeys.append( ('206', '551000000', '570999999', '[0,1,2]') )   
                 except IndexError:
                         # fallback to Windows Server 2019 parameters.
-                        GroupId, MinKeyId, MaxKeyId, Invalid = 206, 551000000, 570999999, [0,1,2]
-        
+                        pkeys.append( ('206', '551000000', '570999999', '[0,1,2]') )   
+                                
         pkey = random.choice(pkeys)
         GroupId, MinKeyId, MaxKeyId, Invalid = int(pkey[0]), int(pkey[1]), int(pkey[2]), literal_eval(pkey[3])
 
         # Get all KMS Server Host Builds good for EPID generation, then
         # Generate Part 1 & 7: Host Type and KMS Server OS Build
-        # https://www.itprotoday.com/windows-78/volume-activation-server-2008
-        # https://docs.microsoft.com/en-us/windows-server/get-started-19/activation-19
-        # https://docs.microsoft.com/en-us/windows-server/get-started/windows-server-release-info
-        # https://support.microsoft.com/en-us/help/13853/windows-lifecycle-fact-sheet
         for winbuild in winbuilds:
                 try:
                         # Check versus "InvalidWinBuild".
                         if int(winbuild['WinBuildIndex']) not in Invalid:
-                                # Re-check versus "version" protocol.
-                                if ((version == 4 and int(winbuild['BuildNumber']) >= 7601) or
-                                    (version == 5 and int(winbuild['BuildNumber']) >= 9200) or
-                                    (version == 6 and int(winbuild['BuildNumber']) >= 9600)):
-                                        hosts.append(winbuild)
+                                hosts.append(winbuild)
                 except KeyError:
                         # fallback to Windows Server 2019 parameters.
-                        BuildNumber, PlatformId, MinDate = '17763', '3612', '02/10/2018'
-                        
+                        hosts.append( {'BuildNumber':'17763', 'PlatformId':'3612', 'MinDate':'02/10/2018'} )
+                                
         host = random.choice(hosts)
         BuildNumber, PlatformId, MinDate = host['BuildNumber'], host['PlatformId'], host['MinDate']
 
