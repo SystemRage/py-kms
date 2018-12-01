@@ -290,17 +290,17 @@
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Next Beta [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="a40c3047-54c3-4bf9-8f09-fb7146cfcb02" InvalidWinBuild="[0,1]">
-            <Activate KmsItem="9???????-????-????-????-????????????" />
-			<Activate KmsItem="10??????-????-????-????-????????????" />
-            <Activate KmsItem="11??????-????-????-????-????????????" />
+            <Activate KmsItem="09000000-0000-0000-0000-000000000000" />
+			<Activate KmsItem="10000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="11000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Next Edition Next [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="99cb2a2c-f7ee-48e9-98b0-ae72906c6d45" InvalidWinBuild="[0,1]">
-			<Activate KmsItem="10??????-????-????-????-????????????" />
+			<Activate KmsItem="10000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Next Education [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="666dd2be-3c83-4756-9a1b-8ffb7067c8d9" InvalidWinBuild="[0,1]">
-			<Activate KmsItem="9???????-????-????-????-????????????" />
+			<Activate KmsItem="09000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
 		<CsvlkItem DisplayName="Windows Server 2012 R2 With Win 10" GroupId="206" MinKeyId="405000000" MaxKeyId="424999999" IniFileName="Windows" Id="20e938bb-df44-45ee-bde1-4e4fe7477f37" InvalidWinBuild="[0]">
@@ -434,25 +434,25 @@
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows 7 Client (All Editions) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="f9aff482-8e81-47a6-8cf6-74be7649be6f" InvalidWinBuild="[0]">
-			<Activate KmsItem="5???????-????-????-????-????????????" />
+			<Activate KmsItem="05000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows 7 Server (DataCenter &amp; Itanium) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="fed62577-3bef-4309-90e8-671abdc076d8" InvalidWinBuild="[0]">
-            <Activate KmsItem="5???????-????-????-????-????????????" />
-			<Activate KmsItem="6???????-????-????-????-????????????" />
-			<Activate KmsItem="7???????-????-????-????-????????????" />
-            <Activate KmsItem="8???????-????-????-????-????????????" />
+            <Activate KmsItem="05000000-0000-0000-0000-000000000000" />
+			<Activate KmsItem="06000000-0000-0000-0000-000000000000" />
+			<Activate KmsItem="07000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="08000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows 7 Server (Standard &amp; Enterprise) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="515ad9e6-67a8-4224-8c68-6d073038d59f" InvalidWinBuild="[0]">
-            <Activate KmsItem="5???????-????-????-????-????????????" />
-            <Activate KmsItem="6???????-????-????-????-????????????" />
-			<Activate KmsItem="7???????-????-????-????-????????????" />
+            <Activate KmsItem="05000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="06000000-0000-0000-0000-000000000000" />
+			<Activate KmsItem="07000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows 7 Server (Web no HPC) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="95e4a692-f166-45c5-a7f8-ad76c2c1e6ad" InvalidWinBuild="">
-            <Activate KmsItem="5???????-????-????-????-????????????" />
-			<Activate KmsItem="6???????-????-????-????-????????????" />
+            <Activate KmsItem="05000000-0000-0000-0000-000000000000" />
+			<Activate KmsItem="06000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
 		<CsvlkItem DisplayName="Windows Server 2008 R2 C (Datacenter &amp; Itanium)" GroupId="168" MinKeyId="305000000" MaxKeyId="312119999" IniFileName="Windows" Id="8fe15d04-fc66-40e6-bf34-942481e06fd8" InvalidWinBuild="[0]">
@@ -491,7 +491,7 @@
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Vista (All Volume) [Pre-Release]" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="b8cf7a60-5668-41b0-addd-6de32e69b0c6" InvalidWinBuild="[]">
-			<Activate KmsItem="1???????-????-????-????-????????????" />
+			<Activate KmsItem="01000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
 		<CsvlkItem DisplayName="Windows Server 2008 C (Datacenter &amp; Itanium)" GroupId="152" MinKeyId="381000000" MaxKeyId="392999999" IniFileName="Windows" Id="c90d1b4e-8aa8-439e-8b9e-b6d6b6a6d975" InvalidWinBuild="[]">
@@ -513,21 +513,21 @@
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Longhorn Server (DataCenter &amp; Itanium) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="f1658734-6bf4-48fe-862b-074740d0e51b" InvalidWinBuild="[]">
-			<Activate KmsItem="1???????-????-????-????-????????????" />
-            <Activate KmsItem="2???????-????-????-????-????????????" />
-            <Activate KmsItem="3???????-????-????-????-????????????" />
-            <Activate KmsItem="4???????-????-????-????-????????????" />
+			<Activate KmsItem="01000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="02000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="03000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="04000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Longhorn Server (Standard &amp; Enterprise) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="8f5c1ee4-4a9b-4fe1-96bd-e9290c5e14d4" InvalidWinBuild="[]">
-			<Activate KmsItem="1???????-????-????-????-????????????" />
-            <Activate KmsItem="2???????-????-????-????-????????????" />
-            <Activate KmsItem="3???????-????-????-????-????????????" />
+			<Activate KmsItem="01000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="02000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="03000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Windows Longhorn Server (Web &amp; HPC) [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" IniFileName="Windows" Id="625e13e0-7339-461b-a39b-1f2f0317449b" InvalidWinBuild="[]">
-			<Activate KmsItem="1???????-????-????-????-????????????" />
-            <Activate KmsItem="2???????-????-????-????-????????????" />
+			<Activate KmsItem="01000000-0000-0000-0000-000000000000" />
+            <Activate KmsItem="02000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
 		<CsvlkItem DisplayName="Office 2019" VlmcsdIndex="5" GroupId="206" MinKeyId="666000000" MaxKeyId="685999999" IniFileName="Office2019" EPid="06401-00206-678-008369-03-1033-9600.0000-2802018" Id="70512334-47b4-44db-a233-be5ea33b914c" InvalidWinBuild="[0,1]">
@@ -551,7 +551,7 @@
 		</CsvlkItem>
 
         <CsvlkItem DisplayName="Office16_KMSHostVL_KMS_Host [Pre-Release]" IsPreview="true" GroupId="" MinKeyId="" MaxKeyId="" Id="1114b902-9bfe-4a7c-ba7c-1a7db3669d67" InvalidWinBuild="">
-			<Activate KmsItem="????????-????-????-????-????????????" />
+			<Activate KmsItem="00000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
 	</CsvlkItems>
@@ -568,8 +568,8 @@
 				<SkuItem DisplayName="Windows Server 2019 Standard" Id="de32eafd-aaee-4662-9444-c1befb41bde2" Gvlk="N69G4-B89J2-4G8F4-WWYCC-J464C" />
 				<SkuItem DisplayName="Windows Server 2019 Datacenter (Semi-Annual Channel v.1809)" Id="90c362e5-0da1-4bfd-b53b-b87d309ade43" Gvlk="6NMRW-2C8FM-D24W7-TQWMY-CWH2D" />
 				<SkuItem DisplayName="Windows Server 2019 Standard (Semi-Annual Channel v.1809)" Id="73e3957c-fc0c-400d-9184-5f7b6f2eb409" Gvlk="N2KJX-J94YW-TQVFB-DG9YT-724CC" />
-                <SkuItem DisplayName="Windows Server 2019 Standard [Preview]" Id="" Gvlk="MFY9F-XBN2F-TYFMP-CCV49-RMYVH" />
-                <SkuItem DisplayName="Windows Server 2019 Datacenter [Preview]" Id="" Gvlk="6XBNX-4JQGW-QX6QG-74P76-72V67" />
+                <SkuItem DisplayName="Windows Server 2019 Standard [Preview]" Id="00000000-0000-0000-0000-000000000000" Gvlk="MFY9F-XBN2F-TYFMP-CCV49-RMYVH" />
+                <SkuItem DisplayName="Windows Server 2019 Datacenter [Preview]" Id="00000000-0000-0000-0000-000000000000" Gvlk="6XBNX-4JQGW-QX6QG-74P76-72V67" />
 			</KmsItem>
 
 			<KmsItem DisplayName="Windows 10 2019 (Volume)" Id="11b15659-e603-4cf1-9c1f-f0ec01b81888" DefaultKmsProtocol="6.0" NCountPolicy="25">
@@ -609,13 +609,13 @@
                 <SkuItem DisplayName="Windows 10 Education N [Pre-Release]" Id="075aca1f-05d7-42e5-a3ce-e349e7be7078" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Enterprise" Id="73111121-5638-40f6-bc11-f1d7b0d64300" Gvlk="NPPR9-FWDCX-D2C8J-H872K-2YT43" />
                 <SkuItem DisplayName="Windows 10 Enterprise [Preview]" Id="43f2ab05-7c87-4d56-b27c-44d0f9a3dabd" Gvlk="QNMXX-GCD3W-TCCT4-872RV-G6P4J" IsGeneratedGvlk="true" />
-                <SkuItem DisplayName="Windows 10 Enterprise S" Id="" Gvlk="H76BG-QBNM7-73XY9-V6W2T-684BJ" />
+                <SkuItem DisplayName="Windows 10 Enterprise S" Id="00000000-0000-0000-0000-000000000000" Gvlk="H76BG-QBNM7-73XY9-V6W2T-684BJ" />
 				<SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB" Id="7b51a46c-0c04-4e8f-9af4-8496cca90d5e" Gvlk="WNMTR-4C88C-JK8YV-HQ7T2-76DF9" />
                 <SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB [Pre-Release]" Id="2cf5af84-abab-4ff0-83f8-f040fb2576eb" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB N" Id="87b838b7-41b6-4590-8318-5797951d8529" Gvlk="2F77B-TNFGY-69QQF-B8YKP-D69TJ" />
                 <SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB N [Pre-Release]" Id="11a37f09-fb7f-4002-bd84-f3ae71d11e90" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Enterprise N" Id="e272e3e2-732f-4c65-a8f0-484747d0d947" Gvlk="DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4" />
-                <SkuItem DisplayName="Windows 10 Enterprise S N" Id="" Gvlk="X4R4B-NV6WD-PKTVK-F98BH-4C2J8" />
+                <SkuItem DisplayName="Windows 10 Enterprise S N" Id="00000000-0000-0000-0000-000000000000" Gvlk="X4R4B-NV6WD-PKTVK-F98BH-4C2J8" />
                 <SkuItem DisplayName="Windows 10 Enterprise N [Pre-Release]" Id="6ae51eeb-c268-4a21-9aae-df74c38b586d" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Professional Workstation" Id="82bbc092-bc50-4e16-8e18-b74fc486aec3" Gvlk="NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J" />
 				<SkuItem DisplayName="Windows 10 Professional Workstation N" Id="4b1571d3-bafb-4b40-8087-a961be2caf65" Gvlk="9FNHH-K3HBT-3W4TD-6383H-6XYWF" />
@@ -655,7 +655,7 @@
 
 			<KmsItem DisplayName="Windows 8 (Retail)" Id="bbb97b3b-8ca4-4a28-9717-89fabd42c4ac" IsRetail="true" DefaultKmsProtocol="5.0" NCountPolicy="25">
 				<SkuItem DisplayName="Windows 8 Core / Server 2012" Id="c04ed6bf-55c8-4b47-9f8e-5a1f31ceee60" Gvlk="BN3D2-R7TKB-3YPBD-8DRP2-27GG4" />
-                <SkuItem DisplayName="Windows 8 Core / Server 2012 [RC]" Id="" Gvlk="" />
+                <SkuItem DisplayName="Windows 8 Core / Server 2012 [RC]" Id="00000000-0000-0000-0000-000000000000" Gvlk="" />
 				<SkuItem DisplayName="Windows 8 Core / Server 2012 Country Specific" Id="9d5584a2-2d85-419a-982c-a00888bb9ddf" Gvlk="4K36P-JN4VD-GDC6V-KDT89-DYFKP" />
                 <SkuItem DisplayName="Windows 8 Core / Server 2012 Country Specific [RC]" Id="c7a8a09a-571c-4ea8-babc-0cbe4d48a89d" Gvlk="" />
 				<SkuItem DisplayName="Windows 8 Core / Server 2012 N" Id="197390a0-65f6-4a95-bdc4-55d58a3b0253" Gvlk="8N2M2-HWPGY-7PGT9-HGDD8-GVGGY" />
@@ -786,8 +786,8 @@
 				<SkuItem DisplayName="Windows Server 2016 ARM64" Id="43d9af6e-5e86-4be8-a797-d072a046896c" Gvlk="K9FYF-G6NCK-73M32-XMVPY-F9DRR" />
 				<SkuItem DisplayName="Windows Server 2016 Datacenter (Semi-Annual Channel v.1803)" Id="e49c08e7-da82-42f8-bde2-b570fbcae76c" Gvlk="2HXDN-KRXHB-GPYC7-YCKFJ-7FVDG" />
 				<SkuItem DisplayName="Windows Server 2016 Standard (Semi-Annual Channel v.1803)" Id="61c5ef22-f14f-4553-a824-c4b31e84b100" Gvlk="PTXN8-JFHJM-4WC78-MPCBR-9W4KR" />
-                <SkuItem DisplayName="Windows Server 2016 Standard (Semi-Annual Channel v.1709)" Id="" Gvlk="" />
-                <SkuItem DisplayName="Windows Server 2016 Datacenter (Semi-Annual Channel v.1709)" Id="" Gvlk="" />
+                <SkuItem DisplayName="Windows Server 2016 Standard (Semi-Annual Channel v.1709)" Id="00000000-0000-0000-0000-000000000000" Gvlk="" />
+                <SkuItem DisplayName="Windows Server 2016 Datacenter (Semi-Annual Channel v.1709)" Id="00000000-0000-0000-0000-000000000000" Gvlk="" />
 			</KmsItem>
 
 			<KmsItem DisplayName="Windows Server Preview" Id="6d5f5270-31ac-433e-b90a-39892923c657" IsPreview="true" DefaultKmsProtocol="6.0" NCountPolicy="5">
@@ -801,7 +801,7 @@
 				<SkuItem DisplayName="Windows Vista Enterprise N" Id="d4f54950-26f2-4fb4-ba21-ffab16afcade" Gvlk="VTC42-BM838-43QHV-84HX6-XJXKV" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Vista Preview" Id="1???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="25">
+            <KmsItem DisplayName="Windows Vista Preview" Id="01000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="25">
 				<SkuItem DisplayName="Windows Vista Business [Preview 1]" Id="99ff9b26-016a-49d3-982e-fc492f352e57" Gvlk="XQYF4-QVCMY-YXQRD-9QPV8-3YP9V" />
                 <SkuItem DisplayName="Windows Vista Business [Preview 2]" Id="90284483-de09-44a2-a406-98957f8dd09d" Gvlk="YVT36-YVCP2-J97GQ-7T22R-RWV8P" />
                 <SkuItem DisplayName="Windows Vista Business N [Preview]" Id="af46f56f-f06b-49f0-a420-caa8a8d2bf8c" Gvlk="HGBJ9-RWD6M-6HDGW-6T2XD-JQ66F" />
@@ -810,58 +810,58 @@
                 <SkuItem DisplayName="Windows Vista Enterprise N [Preview]" Id="0707c7fc-143d-46a4-a830-3705e908202c" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Longhorn Server Preview (Web and HPC)" Id="2???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
+            <KmsItem DisplayName="Windows Longhorn Server Preview (Web and HPC)" Id="02000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows Longhorn Web [Preview]" Id="3ddb92aa-332e-46f9-abb7-8bdf62f8d967" Gvlk="MDRCM-4WKCW-J93FF-J9Q48-M6KBB" />
                 <SkuItem DisplayName="Windows Longhorn HPC Edition [Preview]" Id="8372b47d-5221-41d8-88d0-3f924e50623e" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Longhorn Server Preview (Standard and Enterprise)" Id="3???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
+            <KmsItem DisplayName="Windows Longhorn Server Preview (Standard and Enterprise)" Id="03000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows Longhorn Standard" Id="7ea4f647-9e67-453b-a7ba-56f7102afde2" Gvlk="Q37JX-P3HHB-GKRH2-PDBKG-GGXPW" />
                 <SkuItem DisplayName="Windows Longhorn Enterprise" Id="5a99526c-1c09-4481-80fb-b60e8b3d99f8" Gvlk="7KYMQ-R788Q-4RF69-KTWKM-92PFJ" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Longhorn Server Preview (Datacenter and Itanium)" Id="4???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
+            <KmsItem DisplayName="Windows Longhorn Server Preview (Datacenter and Itanium)" Id="04000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows Longhorn Datacenter [Preview]" Id="932ef1f5-4327-4548-b147-51b0f5502995" Gvlk="HR8VD-7DHG2-48378-M9D73-28F4T" />
                 <SkuItem DisplayName="Windows Longhorn for Itanium Systems [Preview]" Id="bebf03b1-a184-4c5e-9103-88af08055e68" Gvlk="CWV9H-PHGPW-V93WV-QBQV9-8V336" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows 7 Client Preview" Id="5???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="25">
+            <KmsItem DisplayName="Windows 7 Client Preview" Id="05000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="25">
 				<SkuItem DisplayName="Windows 7 Business [Preview]" Id="957ec1e8-97cd-42a8-a091-01a30cf779da" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Business N [Preview]" Id="0ff4e536-a746-4018-b107-e81dd0b6d33a" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Enterprise [Preview]" Id="ea77973e-4930-4fa1-a899-02dfaeada1db" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Enterprise N [Preview]" Id="e4ecef68-4372-4740-98e8-6c157cd301c2" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows 7 Server Preview (Web)" Id="6???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
+            <KmsItem DisplayName="Windows 7 Server Preview (Web)" Id="06000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows 7 Server Web [Preview]" Id="4f4cfa6c-76d8-49f5-9c41-0a57f8af1bbc" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows 7 Server Preview (Standard and Enterprise)" Id="7???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
+            <KmsItem DisplayName="Windows 7 Server Preview (Standard and Enterprise)" Id="07000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows 7 Server Standard [Preview]" Id="92374131-ed4c-4d1b-846a-32f43c3eb90d" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Server Standard without Hyper-V [Preview]" Id="f963bf4b-9693-46e6-9d9d-09c73eaa2b60" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Server Enterprise [Preview]" Id="9dce1f29-bb10-4be0-8027-35b953dd46d5" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Server Enterprise without Hyper-V [Preview]" Id="dc06c019-b222-4706-a820-645e77d26a91" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows 7 Server Preview (Datacenter and Itanium)" Id="8???????-????-????-????-????????????" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
+            <KmsItem DisplayName="Windows 7 Server Preview (Datacenter and Itanium)" Id="08000000-0000-0000-0000-000000000000" IsPreview="true" DefaultKmsProtocol="4.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows 7 Server Datacenter [Preview]" Id="cc64c548-1867-4777-a1cc-0022691bc2a0" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Server Datacenter without Hyper-V [Preview]" Id="0839e017-cfef-4ac6-a97e-ed2ea7962787" Gvlk="" />
                 <SkuItem DisplayName="Windows 7 Server for Itanium Systems [Preview]" Id="bf9eda2f-74cc-4ba3-8967-cde30f18c230" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Next Education Preview" Id="9???????-????-????-????-????????????" IsPreview="" DefaultKmsProtocol="" NCountPolicy="">
+            <KmsItem DisplayName="Windows Next Education Preview" Id="09000000-0000-0000-0000-000000000000" IsPreview="" DefaultKmsProtocol="" NCountPolicy="">
 				<SkuItem DisplayName="Windows Next Education [Pre-Release]" Id="e8ced63e-420d-4ab6-8723-aaf165efb5eb" Gvlk="" />
                 <SkuItem DisplayName="Windows Next Education N [Pre-Release]" Id="3885bca5-11c1-4d4e-9395-df38f7f09a0e" Gvlk="" />
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Next Preview 1 (Volume)" Id="10??????-????-????-????-????????????" IsPreview="" DefaultKmsProtocol="" NCountPolicy="">
-                <SkuItem DisplayName="Windows Next Professional [Pre-Release]" Id="" Gvlk="" />
+            <KmsItem DisplayName="Windows Next Preview 1 (Volume)" Id="10000000-0000-0000-0000-000000000000" IsPreview="" DefaultKmsProtocol="" NCountPolicy="">
+                <SkuItem DisplayName="Windows Next Professional [Pre-Release]" Id="00000000-0000-0000-0000-000000000000" Gvlk="" />
 				<SkuItem DisplayName="Windows Next Professional N [Pre-Release]" Id="64192251-81b0-4898-ac63-913cc3edf919" Gvlk="" />
                 <SkuItem DisplayName="Windows Next Enterprise N [Pre-Release]" Id="c23947f3-3f2e-401f-a38c-f38fe0ecb0bd" Gvlk="" />
                 <SkuItem DisplayName="Windows Next Enterprise [Pre-Release]" Id="38fbe2ac-465a-4ef7-b9d8-72044f2792b6" Gvlk="" />                
 			</KmsItem>
 
-            <KmsItem DisplayName="Windows Next Preview 2 (Volume)" Id="11??????-????-????-????-????????????" IsPreview="" DefaultKmsProtocol="" NCountPolicy="">
+            <KmsItem DisplayName="Windows Next Preview 2 (Volume)" Id="11000000-0000-0000-0000-000000000000" IsPreview="" DefaultKmsProtocol="" NCountPolicy="">
                 <SkuItem DisplayName="Windows Next Enterprise S [Pre-Release]" Id="75d003b0-dc66-42c0-b3a1-308a3f35741a" Gvlk="" />
                 <SkuItem DisplayName="Windows Next Enterprise S N [Pre-Release]" Id="4e4d5504-e7b1-419c-913d-3c80c15294fc" Gvlk="" />
                 <SkuItem DisplayName="Windows Next Professional S [Pre-Release]" Id="aa234c15-ee34-4e5f-adb5-73afafb77143" Gvlk="" />
@@ -893,7 +893,7 @@
 				<SkuItem DisplayName="Office Visio Standard 2010" Id="9ed833ff-4f92-4f36-b370-8683a4f13275" Gvlk="767HD-QGMWX-8QTDB-9G3R2-KHFGJ" />
 				<SkuItem DisplayName="Office Word 2010" Id="2d0882e7-a4e7-423b-8ccc-70d91e0158b1" Gvlk="HVHB3-C6FV7-KQX9W-YQG79-CRY7T" />
                 <SkuItem DisplayName="Office Starter 2010 Retail" Id="2745e581-565a-4670-ae90-6bf7c57ffe43" Gvlk="VXHHB-W7HBD-7M342-RJ7P8-CHBD6" />
-                <SkuItem DisplayName="Office SharePoint Designer (Frontpage) 2010 Retail" Id="" Gvlk="H48K6-FB4Y6-P83GH-9J7XG-HDKKX" />
+                <SkuItem DisplayName="Office SharePoint Designer (Frontpage) 2010 Retail" Id="00000000-0000-0000-0000-000000000000" Gvlk="H48K6-FB4Y6-P83GH-9J7XG-HDKKX" />
 			</KmsItem>
 
 		</AppItem>
@@ -939,7 +939,7 @@
 				<SkuItem DisplayName="Office Visio Professional 2013 [Pre-Release]" Id="cfbfd60e-0b5f-427d-917c-a4df42a80e44" Gvlk="B3C7Q-D6NH2-2VRFW-HHWDG-FVQB6" />
 				<SkuItem DisplayName="Office Visio Standard 2013 [Pre-Release]" Id="7012cc81-8887-42e9-b17d-4e5e42760f0d" Gvlk="9MKNF-J9XQ6-JV4XB-FJQPY-43F43" />
 				<SkuItem DisplayName="Office Word 2013 [Pre-Release]" Id="de9c7eb6-5a85-420d-9703-fff11bdd4d43" Gvlk="JBGD4-3JNG7-JWWGV-CR6TP-DC62Q" />
-                <SkuItem DisplayName="Office SharePoint Designer (Frontpage) 2013 Retail [Pre-Release]" Id="" Gvlk="" />
+                <SkuItem DisplayName="Office SharePoint Designer (Frontpage) 2013 Retail [Pre-Release]" Id="00000000-0000-0000-0000-000000000000" Gvlk="" />
 			</KmsItem>
 
 			<KmsItem DisplayName="Office 2016" Id="85b5f61b-320b-4be3-814a-b76b2bfafc82" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="6.0" NCountPolicy="5">
