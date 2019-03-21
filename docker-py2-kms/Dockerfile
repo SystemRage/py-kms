@@ -37,9 +37,8 @@ RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/a
     apk upgrade && \
     apk add --update \
 	bash \
-	git \ 
-	python2 \
-	py-argparse && \
+	git \
+	py2-argparse && \
 
 # EN: Clone git-repo
 # RU: Клонирование git-репозитория
