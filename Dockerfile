@@ -8,7 +8,7 @@ RUN apt-get update && \
   add-apt-repository ppa:jonathonf/python-3.6
 RUN apt-get update -y
 
-RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip python3.6-venv && \
+RUN apt-get install -y build-essential python3.6 python3.6-dev python3-pip python3.6-venv python-sqlite && \
         apt-get install -y git
 
 # update pip
