@@ -19,6 +19,8 @@ try:
 except ImportError:
         pass
 
+logger = logging.getLogger('root')
+
 class UUID(Structure):
         commonHdr = ()
         structure = (
@@ -130,7 +132,7 @@ class kmsBase:
 skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCount INTEGER)")
 
                                 except sqlite3.Error as e:
-                                        logging.error("Error %s:" % e.args[0])
+                                        logger.error("Error %s:" % e.args[0])
                                         sys.exit(1)
 
                                 finally:
@@ -140,8 +142,8 @@ skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCo
 
                 shell_message(nshell = 15)
                 kmsRequest = byterize(kmsRequest)
-                logging.debug("KMS Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(kmsRequest).encode('latin-1')).decode('utf-8')))                         
-                logging.debug("KMS Request: \n%s\n" % justify(kmsRequest.dump(print_to_stdout = False)))
+                logger.debug("KMS Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(kmsRequest).encode('latin-1')).decode('utf-8')))                         
+                logger.debug("KMS Request: \n%s\n" % justify(kmsRequest.dump(print_to_stdout = False)))
                                         
                 clientMachineId = kmsRequest['clientMachineId'].get()
                 applicationId = kmsRequest['applicationId'].get()
@@ -156,10 +158,10 @@ skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCo
                                 tz = get_localzone()
                                 local_dt = tz.localize(requestDatetime)
                         except UnknownTimeZoneError:
-                                logging.warning('Unknown time zone ! Request time not localized.')
+                                logger.warning('Unknown time zone ! Request time not localized.')
                                 local_dt = requestDatetime
                 except ImportError:
-                        logging.warning('Module "tzlocal" not available ! Request time not localized.')
+                        logger.warning('Module "tzlocal" not available ! Request time not localized.')
                         local_dt = requestDatetime
                         
                 # Get SkuId, AppId and client threshold.
@@ -205,12 +207,12 @@ skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCo
                 }
 
                 #print infoDict
-                logging.info("Machine Name: %s" % infoDict["machineName"])
-                logging.info("Client Machine ID: %s" % infoDict["clientMachineId"])
-                logging.info("Application ID: %s" % infoDict["appId"])
-                logging.info("SKU ID: %s" % infoDict["skuId"])
-                logging.info("License Status: %s" % infoDict["licenseStatus"])
-                logging.info("Request Time: %s" % local_dt.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)'))
+                logger.info("Machine Name: %s" % infoDict["machineName"])
+                logger.info("Client Machine ID: %s" % infoDict["clientMachineId"])
+                logger.info("Application ID: %s" % infoDict["appId"])
+                logger.info("SKU ID: %s" % infoDict["skuId"])
+                logger.info("License Status: %s" % infoDict["licenseStatus"])
+                logger.info("Request Time: %s" % local_dt.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)'))
 
                 if self.config['sqlite'] and self.config['dbSupport']:
                         con = None
@@ -246,10 +248,10 @@ clientMachineId=:clientMachineId;", infoDict)
 clientMachineId=:clientMachineId;", infoDict)
 
                                 except sqlite3.Error as e:
-                                        logging.error("Error %s:" % e.args[0])
+                                        logger.error("Error %s:" % e.args[0])
                                         
                         except sqlite3.Error as e:
-                                logging.error("Error %s:" % e.args[0])
+                                logger.error("Error %s:" % e.args[0])
                                 sys.exit(1)
                         finally:
                                 if con:
@@ -290,17 +292,17 @@ clientMachineId=:clientMachineId;", infoDict)
                                                             (str(response["kmsEpid"].decode('utf-16le')), str(kmsRequest['clientMachineId'].get())))
 
                                 except sqlite3.Error as e:
-                                        logging.error("Error %s:" % e.args[0])
+                                        logger.error("Error %s:" % e.args[0])
                                         
                         except sqlite3.Error as e:
-                                logging.error("Error %s:" % e.args[0])
+                                logger.error("Error %s:" % e.args[0])
                                 sys.exit(1)
                         finally:
                                 if con:
                                         con.commit()
                                         con.close()
 
-                logging.info("Server ePID: %s" % response["kmsEpid"].decode('utf-16le'))
+                logger.info("Server ePID: %s" % response["kmsEpid"].decode('utf-16le'))
                         
                 return response
 
@@ -312,16 +314,16 @@ def generateKmsResponseData(data, config):
         currentDate = time.strftime("%a %b %d %H:%M:%S %Y")
 
         if version == 4:
-                logging.info("Received V%d request on %s." % (version, currentDate))
+                logger.info("Received V%d request on %s." % (version, currentDate))
                 messagehandler = kmsRequestV4.kmsRequestV4(data, config)     
         elif version == 5:
-                logging.info("Received V%d request on %s." % (version, currentDate))
+                logger.info("Received V%d request on %s." % (version, currentDate))
                 messagehandler = kmsRequestV5.kmsRequestV5(data, config)
         elif version == 6:
-                logging.info("Received V%d request on %s." % (version, currentDate))
+                logger.info("Received V%d request on %s." % (version, currentDate))
                 messagehandler = kmsRequestV6.kmsRequestV6(data, config)
         else:
-                logging.info("Unhandled KMS version V%d." % version)
+                logger.info("Unhandled KMS version V%d." % version)
                 messagehandler = kmsRequestUnknown.kmsRequestUnknown(data, config)
                 
         return messagehandler.executeRequestLogic()

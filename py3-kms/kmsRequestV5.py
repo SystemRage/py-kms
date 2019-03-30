@@ -10,6 +10,8 @@ from kmsBase import kmsBase
 from structure import Structure
 from formatText import justify, shell_message, byterize
 
+logger = logging.getLogger('root')
+
 class kmsRequestV5(kmsBase):
         class RequestV5(Structure):
                 class Message(Structure):
@@ -138,8 +140,8 @@ class kmsRequestV5(kmsBase):
                 
                 shell_message(nshell = 16)
                 response = byterize(response) 
-                logging.info("KMS V%d Response: \n%s\n" % (self.ver, justify(response.dump(print_to_stdout = False))))
-                logging.info("KMS V%d Structure Bytes: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8'))))
+                logger.info("KMS V%d Response: \n%s\n" % (self.ver, justify(response.dump(print_to_stdout = False))))
+                logger.info("KMS V%d Structure Bytes: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8'))))
                                                         
                 return str(response)
         
@@ -170,7 +172,7 @@ class kmsRequestV5(kmsBase):
 
                 shell_message(nshell = 10)
                 request = byterize(request)
-                logging.info("Request V%d Data: \n%s\n" % (self.ver, justify(request.dump(print_to_stdout = False))))
-                logging.info("Request V%d: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8'))))
+                logger.info("Request V%d Data: \n%s\n" % (self.ver, justify(request.dump(print_to_stdout = False))))
+                logger.info("Request V%d: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8'))))
                 
                 return request

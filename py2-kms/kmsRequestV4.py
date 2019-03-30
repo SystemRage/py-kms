@@ -9,6 +9,8 @@ from structure import Structure
 from aes import AES
 from formatText import shell_message, justify
 
+logger = logging.getLogger('root')
+
 # v4 AES Key
 key = bytearray([0x05, 0x3D, 0x83, 0x07, 0xF9, 0xE5, 0xF0, 0x88, 0xEB, 0x5E, 0xA6, 0x68, 0x6C, 0xF0, 0x37, 0xC7, 0xE4, 0xEF, 0xD2, 0xD6])
 
@@ -102,8 +104,8 @@ class kmsRequestV4(kmsBase):
 
 		## Debug stuff.
 		shell_message(nshell = 16)                
-                logging.debug("KMS V4 Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
-                logging.debug("KMS V4 Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response))))
+                logger.debug("KMS V4 Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
+                logger.debug("KMS V4 Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response))))
 			
 		return str(response)
 
@@ -120,7 +122,7 @@ class kmsRequestV4(kmsBase):
 
 		## Debug stuff.
 		shell_message(nshell = 10)                
-                logging.debug("Request V4 Data: \n%s\n" % justify(request.dump(print_to_stdout = False)))
-                logging.debug("Request V4: \n%s\n" % justify(binascii.b2a_hex(str(request))))
+                logger.debug("Request V4 Data: \n%s\n" % justify(request.dump(print_to_stdout = False)))
+                logger.debug("Request V4: \n%s\n" % justify(binascii.b2a_hex(str(request))))
                         
 		return request

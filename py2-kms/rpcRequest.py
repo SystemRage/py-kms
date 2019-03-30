@@ -8,12 +8,14 @@ import kmsBase
 import rpcBase
 from formatText import justify, shell_message
 
+logger = logging.getLogger('root')
+
 class handler(rpcBase.rpcBase):
         def parseRequest(self):
                 request = MSRPCRequestHeader(self.data)
                 shell_message(nshell = 14)
-                logging.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data)))
-                logging.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
+                logger.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data)))
+                logger.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
                 
                 return request
 
@@ -36,8 +38,8 @@ class handler(rpcBase.rpcBase):
                 response['pduData'] = responseData
 
                 shell_message(nshell = 17)
-                logging.debug("RPC Message Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
-                logging.debug("RPC Message Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response))))
+                logger.debug("RPC Message Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
+                logger.debug("RPC Message Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response))))
 
                 return response
 
@@ -54,8 +56,8 @@ class handler(rpcBase.rpcBase):
                 request['pduData'] = str(self.data)
 
                 shell_message(nshell = 11)
-                logging.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
-                logging.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request))))
+                logger.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
+                logger.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request))))
 
                 return request
 

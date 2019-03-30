@@ -10,6 +10,8 @@ from kmsBase import kmsBase
 from structure import Structure
 from formatText import justify, shell_message
 
+logger = logging.getLogger('root')
+
 class kmsRequestV5(kmsBase):
         class RequestV5(Structure):
                 class Message(Structure):
@@ -135,8 +137,8 @@ class kmsRequestV5(kmsBase):
                 response['padding'] = bytearray(self.getPadding(bodyLength))
                 
                 shell_message(nshell = 16)
-                logging.info("KMS V%d Response: \n%s\n" % (self.ver, justify(response.dump(print_to_stdout = False))))
-                logging.info("KMS V%d Structure Bytes: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(response)))))
+                logger.info("KMS V%d Response: \n%s\n" % (self.ver, justify(response.dump(print_to_stdout = False))))
+                logger.info("KMS V%d Structure Bytes: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(response)))))
                         
                 return str(response)
 
@@ -166,7 +168,7 @@ class kmsRequestV5(kmsBase):
                 request['message'] = message
 
                 shell_message(nshell = 10)
-                logging.info("Request V%d Data: \n%s\n" % (self.ver, justify(request.dump(print_to_stdout = False))))
-                logging.info("Request V%d: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(request)))))
+                logger.info("Request V%d Data: \n%s\n" % (self.ver, justify(request.dump(print_to_stdout = False))))
+                logger.info("Request V%d: \n%s\n" % (self.ver, justify(binascii.b2a_hex(str(request)))))
                                 
                 return request

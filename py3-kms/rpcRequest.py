@@ -8,13 +8,15 @@ import kmsBase
 import rpcBase
 from formatText import justify, shell_message, byterize
 
+logger = logging.getLogger('root')
+
 class handler(rpcBase.rpcBase):
         def parseRequest(self):
                 request = MSRPCRequestHeader(self.data)
                 shell_message(nshell = 14)
                 request = byterize(request)
-                logging.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data).decode('utf-8')))
-                logging.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
+                logger.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data).decode('utf-8')))
+                logger.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
                                 
                 return request
 
@@ -38,8 +40,8 @@ class handler(rpcBase.rpcBase):
 
                 shell_message(nshell = 17)
                 response = byterize(response)
-                logging.debug("RPC Message Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
-                logging.debug("RPC Message Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8')))
+                logger.debug("RPC Message Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
+                logger.debug("RPC Message Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8')))
                 
                 return response
 
@@ -57,8 +59,8 @@ class handler(rpcBase.rpcBase):
 
                 shell_message(nshell = 11)
                 request = byterize(request)
-                logging.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
-                logging.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8')))
+                logger.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
+                logger.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8')))
                 
                 return request
 
