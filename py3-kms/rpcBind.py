@@ -9,6 +9,8 @@ from dcerpc import MSRPCHeader, MSRPCBindAck
 from structure import Structure
 from formatText import shell_message, justify, byterize
 
+logger = logging.getLogger('root')
+
 uuidNDR32 = uuid.UUID('8a885d04-1ceb-11c9-9fe8-08002b104860')
 uuidNDR64 = uuid.UUID('71710533-beba-4937-8319-b5dbef9ccc36')
 uuidTime = uuid.UUID('6cb71c2c-9812-4540-0300-000000000000')
@@ -75,8 +77,8 @@ class handler(rpcBase.rpcBase):
                 request = MSRPCHeader(self.data)
                 shell_message(nshell = 3)
                 request = byterize(request)
-                logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data).decode('utf-8')))
-                logging.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
+                logger.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data).decode('utf-8')))
+                logger.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
                                                                 justify(MSRPCBind(request['pduData']).dump(print_to_stdout = False))))
                 
                 return request
@@ -119,8 +121,8 @@ class handler(rpcBase.rpcBase):
                                                 
                 shell_message(nshell = 4)
                 response = byterize(response)
-                logging.debug("RPC Bind Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
-                logging.debug("RPC Bind Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8')))
+                logger.debug("RPC Bind Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
+                logger.debug("RPC Bind Response Bytes: \n%s\n" % justify(binascii.b2a_hex(str(response).encode('latin-1')).decode('utf-8')))
                 
                 return response
 
@@ -161,9 +163,9 @@ class handler(rpcBase.rpcBase):
                 shell_message(nshell = 0)
                 bind = byterize(bind)
                 request = byterize(request)
-                logging.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
+                logger.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
                                                                 justify(MSRPCBind(request['pduData']).dump(print_to_stdout = False))))
-                logging.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8')))
+                logger.debug("RPC Bind Request Bytes: \n%s\n" % justify(binascii.b2a_hex(str(request).encode('latin-1')).decode('utf-8')))
                                 
                 return request
 

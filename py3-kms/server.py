@@ -15,6 +15,9 @@ import rpcBind, rpcRequest
 from dcerpc import MSRPCHeader
 from rpcBase import rpcBase
 from formatText import shell_message
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger('root')
 
 config = {}
 
@@ -39,6 +42,14 @@ ValidLcid = [1025, 1026, 1027, 1028, 1029,
              10241, 10249, 10250, 11265, 11273, 11274, 12289, 12297, 12298,
              13313, 13321, 13322, 14337, 14346, 15361, 15370, 16385, 16394, 17418, 18442, 19466, 20490]
 
+def createLogger(config):
+        logger.setLevel(config['loglevel'])
+
+        log_formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s', '%a, %d %b %Y %H:%M:%S')
+        log_handler = RotatingFileHandler(filename=config['logfile'], mode='a', maxBytes=int(config['logsize']*1024*512), backupCount=1, encoding=None, delay=0)
+        log_handler.setFormatter(log_formatter)
+        
+        logger.addHandler(log_handler)
 
 def main():
         parser = argparse.ArgumentParser(description='py3-kms: KMS Server Emulator written in Python3', epilog="version: py3-kms_2018-11-15")
@@ -66,11 +77,13 @@ The default is \"364F463A8863D35F\" or type \"random\" to auto generate the HWID
                             help='Use this flag to set a Loglevel. The default is \"ERROR\".', type=str)
         parser.add_argument("-f", "--logfile", dest="logfile", action="store", default=os.path.dirname(os.path.abspath( __file__ )) + "/py3kms_server.log",
                             help='Use this flag to set an output Logfile. The default is \"pykms_server.log\".', type=str)
-        
-        config.update(vars(parser.parse_args()))
+        parser.add_argument("-S", "--logsize", dest="logsize", action="store", default=0,
+                            help='Use this flag to set a maximum size (in MB) to the output Logfile. Desactivated by default.', type=float)
 
-        logging.basicConfig(level=config['loglevel'], format='%(asctime)s %(levelname)-8s %(message)s',
-                            datefmt='%a, %d %b %Y %H:%M:%S', filename=config['logfile'], filemode='w')
+        config.update(vars(parser.parse_args()))
+        
+        createLogger(config)
+
         # Random HWID.
         if config['hwid'] == "random":
                 randomhwid = uuid.uuid4().hex
@@ -80,13 +93,13 @@ The default is \"364F463A8863D35F\" or type \"random\" to auto generate the HWID
         try:
                 config['hwid'] = binascii.a2b_hex(re.sub(r'[^0-9a-fA-F]', '', config['hwid'].strip('0x')))
                 if len(binascii.b2a_hex(config['hwid'])) < 16:
-                        logging.error("Error: HWID \"%s\" is invalid. Hex string is too short." % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
+                        logger.error("Error: HWID \"%s\" is invalid. Hex string is too short." % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
                         return
                 elif len(binascii.b2a_hex(config['hwid'])) > 16:
-                        logging.error("Error: HWID \"%s\" is invalid. Hex string is too long." % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
+                        logger.error("Error: HWID \"%s\" is invalid. Hex string is too long." % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
                         return
         except TypeError:
-                logging.error("Error: HWID \"%s\" is invalid. Odd-length hex string." % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
+                logger.error("Error: HWID \"%s\" is invalid. Odd-length hex string." % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
                 return
 
         # Check LCID.
@@ -109,21 +122,21 @@ The default is \"364F463A8863D35F\" or type \"random\" to auto generate the HWID
         try:
                 import sqlite3            
         except:
-                logging.warning("Module \"sqlite3\" is not installed, database support disabled.")
+                logger.warning("Module \"sqlite3\" is not installed, database support disabled.")
                 config['dbSupport'] = False
         else:
                 config['dbSupport'] = True
                 
         server = socketserver.TCPServer((config['ip'], config['port']), kmsServer)
         server.timeout = 5
-        logging.info("TCP server listening at %s on port %d." % (config['ip'], config['port']))
-        logging.info("HWID: %s" % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
+        logger.info("TCP server listening at %s on port %d." % (config['ip'], config['port']))
+        logger.info("HWID: %s" % binascii.b2a_hex(config['hwid']).decode('utf-8').upper())
         server.serve_forever()
 
 
 class kmsServer(socketserver.BaseRequestHandler):
         def setup(self):
-                logging.info("Connection accepted: %s:%d" % (self.client_address[0], self.client_address[1]))
+                logger.info("Connection accepted: %s:%d" % (self.client_address[0], self.client_address[1]))
 
         def handle(self):
                 while True:
@@ -132,42 +145,42 @@ class kmsServer(socketserver.BaseRequestHandler):
                                 self.data = self.request.recv(1024)
                         except socket.error as e:
                                 if e.errno == errno.ECONNRESET:
-                                        logging.error("Connection reset by peer.")
+                                        logger.error("Connection reset by peer.")
                                         break
                                 else:
                                         raise
                         if self.data == '' or not self.data:
-                                logging.warning("No data received !")
+                                logger.warning("No data received !")
                                 break
                         # data = bytearray(self.data.strip())
-                        # logging.debug(binascii.b2a_hex(str(data)))
+                        # logger.debug(binascii.b2a_hex(str(data)))
                         packetType = MSRPCHeader(self.data)['type']
                         if packetType == rpcBase.packetType['bindReq']:
-                                logging.info("RPC bind request received.") 
+                                logger.info("RPC bind request received.") 
                                 shell_message(nshell = [-2, 2])
                                 handler = rpcBind.handler(self.data, config)
                         elif packetType == rpcBase.packetType['request']:
-                                logging.info("Received activation request.")
+                                logger.info("Received activation request.")
                                 shell_message(nshell = [-2, 13])
                                 handler = rpcRequest.handler(self.data, config)
                         else:
-                                logging.error("Error: Invalid RPC request type ", packetType)
+                                logger.error("Error: Invalid RPC request type ", packetType)
                                 break                        
                        
                         res = str(handler.populate()).encode('latin-1')
                         self.request.send(res)
 
                         if packetType == rpcBase.packetType['bindReq']:
-                                logging.info("RPC bind acknowledged.")
+                                logger.info("RPC bind acknowledged.")
                                 shell_message(nshell = [-3, 5, 6])
                         elif packetType == rpcBase.packetType['request']:
-                                logging.info("Responded to activation request.")
+                                logger.info("Responded to activation request.")
                                 shell_message(nshell = [-3, 18, 19])
                                 break
 
         def finish(self):
                 self.request.close()
-                logging.info("Connection closed: %s:%d" % (self.client_address[0], self.client_address[1]))
+                logger.info("Connection closed: %s:%d" % (self.client_address[0], self.client_address[1]))
                 
 if __name__ == "__main__":
         main()
