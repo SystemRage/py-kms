@@ -1,3 +1,15 @@
+### py-kms_2019-05-15
+- Merging for Python2 / Python3 compatibility all-in-one.
+- Added new options: 
+    - timeout, [logsize](https://github.com/SystemRage/py-kms/pull/21).
+    - more control on logging and info visualization (custom loglevel and stdout logfile redirection) to match [this](https://github.com/SystemRage/py-kms/issues/22) request.
+- Setup for multithreading support.
+- Graphical improvements:
+    - added a (_"really silly"_) tkinter GUI as an alternative to command line.
+- [Dockerized](https://github.com/SystemRage/py-kms/pull/20) with sqlite-web. 
+- Fixed activation threshold.
+- Renamed files, cosmetics and many other little big adjustments.
+
 ### py-kms_2018-11-15
  - Implemented some good modifications inspired by [this](https://github.com/ThunderEX/py-kms) other fork.
  	- Clean up code ( deleted no longer useful files randomHWID.py, randomEPID.py, timezones.py;
