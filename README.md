@@ -44,6 +44,7 @@ Argument _IPADDRESS_ is always required, while the default _PORT_ is "1688", so 
 - To get the HWID from any server use the client, for example type: ```python pykms_Client.py 0.0.0.0 1688 -m Windows8.1 -V INFO```
 - To view a minimal set of logging informations use ```-V MINI``` option, for example: ```python pykms_Server.py -V MINI```
 - To redirect logging on stdout use ```-F STDOUT``` option, for example: ```python pykms_Server.py -F STDOUT```
+- For launching py-kms GUI make executable all _.py_ files in _py-kms_ directory ```chmod +x /path/to/scripts/py-kms/*.py```, then simply run ```pykms_Server.py``` double-clicking.
 
 # Other Important Stuff
 Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more informations about activation with _py-kms_ and to get GVLK keys.
