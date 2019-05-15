@@ -25,12 +25,16 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 
 # Dependencies
 - Python 3.x or Python 2.7.x or Python 2.6.x with the ```argparse``` module installed.
-- Tkinter (optional) if you want to use the GUI.
+- Tkinter module.
 - If the ```tzlocal``` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the ```sqlite3``` module so you can use the database function, storing activation data so it can be recalled again. 
 - Installation example on Ubuntu / Mint:
     - ```sudo apt-get update```
-    - ```sudo apt-get install python3-tk python-tk python-pip```
+    - for python3
+    - ```sudo apt-get install python3-tk python3-pip```
+    - ```sudo pip3 install tzlocal pysqlite3```
+    - or for python2
+    - ```sudo apt-get install python-tk python-pip```
     - ```sudo pip install tzlocal pysqlite```
        
 # Usage
@@ -42,12 +46,12 @@ Argument _IPADDRESS_ is always required, while the default _PORT_ is "1688", so 
 - To show the help pages type: ```python pykms_Server.py -h``` and ```python pykms_Client.py -h```
 - To generate a random HWID use ```-w``` option: ```python pykms_Server.py -w RANDOM```
 - To get the HWID from any server use the client, for example type: ```python pykms_Client.py 0.0.0.0 1688 -m Windows8.1 -V INFO```
-- To view a minimal set of logging informations use ```-V MINI``` option, for example: ```python pykms_Server.py -V MINI```
+- To view a minimal set of logging information use ```-V MINI``` option, for example: ```python pykms_Server.py -V MINI```
 - To redirect logging on stdout use ```-F STDOUT``` option, for example: ```python pykms_Server.py -F STDOUT```
 - For launching py-kms GUI make executable all _.py_ files in _py-kms_ directory ```chmod +x /path/to/scripts/py-kms/*.py```, then simply run ```pykms_Server.py``` double-clicking.
 
 # Other Important Stuff
-Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more informations about activation with _py-kms_ and to get GVLK keys.
+Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more information about activation with _py-kms_ and to get GVLK keys.
 
 # License
    [![License](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
