@@ -117,7 +117,7 @@ def client_update():
                                                 break
         
 def client_create():
-        loggerclt.info("\n\nConnecting to %s on port %d..." % (clt_config['ip'], clt_config['port']))
+        loggerclt.info("Connecting to %s on port %d..." % (clt_config['ip'], clt_config['port']))
         s = socket.create_connection((clt_config['ip'], clt_config['port']))
         loggerclt.info("Connection successful !")
         binder = pykms_RpcBind.handler(None, clt_config)
@@ -161,9 +161,11 @@ def client_create():
                 loggerclt.info("KMS Host Current Client Count: %s" % kmsResp['currentClientCount'])
                 loggerclt.info("KMS VL Activation Interval: %s" % kmsResp['vLActivationInterval'])
                 loggerclt.info("KMS VL Renewal Interval: %s" % kmsResp['vLRenewalInterval'])
-                loggerclt.mini("", extra = {'host': socket.gethostname() + " [" + clt_config["ip"] + "]",
-                                            'status' : "Activated",
-                                            'product' : clt_config["mode"]})
+                
+                if clt_config['loglevel'] == 'MINI':
+                        loggerclt.mini("", extra = {'host': socket.gethostname() + " [" + clt_config["ip"] + "]",
+                                                    'status' : "Activated",
+                                                    'product' : clt_config["mode"]})
                 
                 ShellMessage.Process(21).run()
                 

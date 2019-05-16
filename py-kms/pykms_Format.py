@@ -184,8 +184,11 @@ class ShellMessage(object):
             # Do something with output.
             toprint = self.read(0.1) # 0.1 s to let the shell output the result
             # Redirect output.
-            from pykms_GuiBase import gui_redirect # Import after variables creation !
-            gui_redirect(toprint)
+            if sys.stdout.isatty():
+                print(toprint)
+            else:
+                from pykms_GuiBase import gui_redirect # Import after variables creation.
+                gui_redirect(toprint)
                                 
         def spawn(self):
             # Save everything that would otherwise go to stdout.

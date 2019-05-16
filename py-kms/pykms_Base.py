@@ -198,9 +198,11 @@ class kmsBase:
                 loggersrv.info("SKU ID: %s" % infoDict["skuId"])
                 loggersrv.info("License Status: %s" % infoDict["licenseStatus"])
                 loggersrv.info("Request Time: %s" % local_dt.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)'))
-                loggersrv.mini("", extra = {'host': socket.gethostname() + " [" + self.srv_config["ip"] + "]",
-                                         'status' : infoDict["licenseStatus"],
-                                         'product' : infoDict["skuId"]})
+                
+                if self.srv_config['loglevel'] == 'MINI':
+                        loggersrv.mini("", extra = {'host': socket.gethostname() + " [" + self.srv_config["ip"] + "]",
+                                                    'status' : infoDict["licenseStatus"],
+                                                    'product' : infoDict["skuId"]})
 
                 if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
                         sql_update(self.dbName, infoDict)

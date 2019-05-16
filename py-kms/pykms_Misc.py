@@ -50,7 +50,7 @@ def add_logging_level(levelName, levelNum, methodName = None):
 	
 class LevelFormatter(logging.Formatter):
 	dfmt = '%a, %d %b %Y %H:%M:%S'
-	default_fmt = logging.Formatter('[%(asctime)s] [%(levelname)8s] %(message)s', datefmt = dfmt)
+	default_fmt = logging.Formatter('%(message)s', datefmt = dfmt)
 	
 	def __init__(self, formats):
 		""" `formats` is a dict { loglevel : logformat } """
@@ -81,8 +81,23 @@ def logger_create(log_obj, config, mode = 'a'):
 						  backupCount = 1, encoding = None, delay = 0)
 		
 	log_handler.setLevel(config['loglevel'])
+	
 	# Configure formattation.
-	formatter = LevelFormatter({logging.MINI : '[%(asctime)s] [%(levelname)8s]   %(host)s   %(status)s   %(product)s   %(message)s'})
+	try:
+                levelnames = logging._levelToName
+        except AttributeError:
+                levelnames = logging._levelNames
+        levelnum = [k for k in levelnames if k != 0]
+	form0 = '%(asctime)s %(levelname)-8s %(message)s'
+	form1 = '[%(asctime)s] [%(levelname)-8s]   %(host)s   %(status)s   %(product)s   %(message)s'
+	levelformdict = {}
+	for num in levelnum:
+                if num != logging.CRITICAL + 10:
+                        levelformdict[num] = form0
+                else:
+                        levelformdict[num] = form1
+	
+	formatter = LevelFormatter(levelformdict)
 	log_handler.setFormatter(formatter)
 	# Attach.
 	log_obj.setLevel(config['loglevel'])

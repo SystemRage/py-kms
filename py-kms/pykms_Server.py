@@ -119,7 +119,7 @@ def server_options():
 def server_check():
         # Setup hidden or not messages.
         ShellMessage.view = ( False if srv_config['logfile'] == 'STDOUT' else True )
-        # Create log.
+        # Create log.        
         logger_create(loggersrv, srv_config, mode = 'a')
         
         # Random HWID.
@@ -180,7 +180,7 @@ def server_create():
         socketserver.TCPServer.allow_reuse_address = True
         server = socketserver.TCPServer((srv_config['ip'], srv_config['port']), kmsServer)
         server.timeout = srv_config['timeout']
-        loggersrv.info("\n\nTCP server listening at %s on port %d." % (srv_config['ip'], srv_config['port']))
+        loggersrv.info("TCP server listening at %s on port %d." % (srv_config['ip'], srv_config['port']))
         loggersrv.info("HWID: %s" % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
         return server
 
