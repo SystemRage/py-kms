@@ -75,7 +75,7 @@ def sql_update_epid(dbName, kmsRequest, response):
 	cmid = str(kmsRequest['clientMachineId'].get())
 	con = None
 	try:
-		con = sqlite3.connect(self.dbName)
+		con = sqlite3.connect(dbName)
 		cur = con.cursor()
 		cur.execute("SELECT * FROM clients WHERE clientMachineId=?;", [cmid])
 		try:
