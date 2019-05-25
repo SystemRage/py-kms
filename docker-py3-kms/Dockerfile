@@ -102,7 +102,7 @@ chmod a+x /usr/bin/start.sh && \
 apk del git py3-pip
 
 # Set Workdir
-WORKDIR /home/py-kms/py3-kms
+WORKDIR /home/py-kms/py-kms
 
 # Expose ports
 EXPOSE ${PORT}/tcp
