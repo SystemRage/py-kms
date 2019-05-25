@@ -1,7 +1,7 @@
 #!/bin/bash
 # EN: Start daemons
 # RU: Запуск демонов
-cd /home/py-kms/py3-kms
+cd /home/py-kms/py-kms
 if [ "$SQLITE" == false ];
 then
   if [ "$EPID" == "" ];
