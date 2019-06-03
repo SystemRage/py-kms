@@ -62,8 +62,8 @@ ENV LOGLEVEL		ERROR
 
 # EN: log file
 # RU: Лог-файл
-ENV LOGFILE		/var/log/pykms_server.log
-# Use this flag to set an output Logfile. The default is "/var/log/pykms_server.log".
+ENV LOGFILE		/var/log/pykms_logserver.log
+# Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
 
 # EN: Startup script
 # RU: Скрипт автозапуска
