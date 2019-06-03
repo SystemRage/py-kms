@@ -82,6 +82,7 @@ RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/a
 	py3-tz \
 	py3-flask \
 	py3-pygments \
+	python3-tkinter \
 	sqlite-libs \
 	py3-pip && \
 
