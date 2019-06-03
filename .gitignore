@@ -1,6 +1,5 @@
 # App files
-py2kms_server.log*
-py3kms_server.log*
+pykms_logserver.log*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
