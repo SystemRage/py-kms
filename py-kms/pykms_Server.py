@@ -41,22 +41,22 @@ class server_thread(threading.Thread):
                 
         def run(self):
             while True:
-                if not self.queue.empty():
-                        item = self.queue.get()
-                        if item == 'start':
-                                self.is_running = True
-                                # Check options.
-                                server_check()
-                                # Create and run threaded server.
-                                self.server = server_create()
-                                try:
-                                        self.server.serve_forever()
-                                except KeyboardInterrupt:
-                                        sys.exit(0)
-                        elif item == 'stop':
-                                self.is_running = False
-                                self.server = None
-                        self.queue.task_done()
+                    if not self.queue.empty():
+                            item = self.queue.get()
+                            if item == 'start':
+                                    self.is_running = True
+                                    # Check options.
+                                    server_check()
+                                    # Create and run threaded server.
+                                    self.server = server_create()
+                                    try:
+                                            self.server.serve_forever()
+                                    except KeyboardInterrupt:
+                                            sys.exit(0)
+                            elif item == 'stop':
+                                    self.is_running = False
+                                    self.server = None
+                            self.queue.task_done()
 
 ##-----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -75,19 +75,19 @@ for server OSes and Office >=5', 'def' : None, 'des' : "CurrentClientCount"},
         'activation' : {'help' : 'Use this option to specify the activation interval (in minutes). Default is \"120\" minutes (2 hours).',
                         'def' : 120, 'des': "VLActivationInterval"},
         'renewal' : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
-                     'def' : 1440 * 7, 'des' : "VLRenewalInterval"},
+                         'def' : 1440 * 7, 'des' : "VLRenewalInterval"},
         'sql' : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Desactivated by default.',
                  'def' : False, 'des' : "sqlite"},
         'hwid' : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
 The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.', 'def' : "364F463A8863D35F", 'des' : "hwid"},
         'time' : {'help' : 'Disconnect clients after time of inactivity (in seconds). The default is \"30\" seconds', 'def' : 30, 'des' : "timeout"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
-                    'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
+                        'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
         'lfile' : {'help' : 'Use this option to set or not an output log file. The default is \"pykms_logserver.log\" or type \"STDOUT\" to view log info on stdout.',
                    'def' : os.path.dirname(os.path.abspath( __file__ )) + "/pykms_logserver.log", 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
-       
+           
 def server_options():
         parser = argparse.ArgumentParser(description = srv_description, epilog = 'version: ' + srv_version)
         parser.add_argument("ip", nargs = "?", action = "store", default = srv_options['ip']['def'], help = srv_options['ip']['help'], type = str)
@@ -95,23 +95,23 @@ def server_options():
         parser.add_argument("-e", "--epid", dest = srv_options['epid']['des'], default = srv_options['epid']['def'], help = srv_options['epid']['help'], type = str)
         parser.add_argument("-l", "--lcid", dest = srv_options['lcid']['des'], default = srv_options['lcid']['def'], help = srv_options['lcid']['help'], type = int)
         parser.add_argument("-c", "--client-count", dest = srv_options['count']['des'] , default = srv_options['count']['def'],
-                            help = srv_options['count']['help'], type = int)
+                                help = srv_options['count']['help'], type = int)
         parser.add_argument("-a", "--activation-interval", dest = srv_options['activation']['des'], default = srv_options['activation']['def'],
-                            help = srv_options['activation']['help'], type = int)
+                                help = srv_options['activation']['help'], type = int)
         parser.add_argument("-r", "--renewal-interval", dest = srv_options['renewal']['des'], default = srv_options['renewal']['def'],
-                            help = srv_options['renewal']['help'], type = int)
+                                help = srv_options['renewal']['help'], type = int)
         parser.add_argument("-s", "--sqlite", dest = srv_options['sql']['des'], action = "store_const", const = True, default = srv_options['sql']['def'],
-                            help = srv_options['sql']['help'])
+                                help = srv_options['sql']['help'])
         parser.add_argument("-w", "--hwid", dest = srv_options['hwid']['des'], action = "store", default = srv_options['hwid']['def'],
-                            help = srv_options['hwid']['help'], type = str)
+                                help = srv_options['hwid']['help'], type = str)
         parser.add_argument("-t", "--timeout", dest = srv_options['time']['des'], action = "store", default = srv_options['time']['def'],
-                            help = srv_options['time']['help'], type = int)
+                                help = srv_options['time']['help'], type = int)
         parser.add_argument("-V", "--loglevel", dest = srv_options['llevel']['des'], action = "store", choices = srv_options['llevel']['choi'],
-                            default = srv_options['llevel']['def'], help = srv_options['llevel']['help'], type = str)
+                                default = srv_options['llevel']['def'], help = srv_options['llevel']['help'], type = str)
         parser.add_argument("-F", "--logfile", dest = srv_options['lfile']['des'], action = "store", default = srv_options['lfile']['def'],
-                            help = srv_options['lfile']['help'], type = str)
+                                help = srv_options['lfile']['help'], type = str)
         parser.add_argument("-S", "--logsize", dest = srv_options['lsize']['des'], action = "store", default = srv_options['lsize']['def'],
-                            help = srv_options['lsize']['help'], type = float)
+                                help = srv_options['lsize']['help'], type = float)
         
         srv_config.update(vars(parser.parse_args()))
 
@@ -126,7 +126,7 @@ def server_check():
         if srv_config['hwid'] == "RANDOM":
                 randomhwid = uuid.uuid4().hex
                 srv_config['hwid'] = randomhwid[:16]
-       
+           
         # Sanitize HWID.
         try:
                 srv_config['hwid'] = binascii.a2b_hex(re.sub(r'[^0-9a-fA-F]', '', srv_config['hwid'].strip('0x')))
@@ -238,7 +238,7 @@ class kmsServer(socketserver.BaseRequestHandler):
                         else:
                                 loggersrv.error("Invalid RPC request type ", packetType)
                                 break                        
-                       
+                           
                         res = enco(str(handler.populate()), 'latin-1')
                         self.request.send(res)
 
@@ -263,4 +263,7 @@ if __name__ == "__main__":
         if sys.stdout.isatty():
                 srv_main_without_gui()
         else:
-                srv_main_with_gui()
+                try:
+                        srv_main_with_gui()
+                except:
+                        srv_main_without_gui()
