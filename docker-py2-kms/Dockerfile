@@ -83,6 +83,7 @@ RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/a
 	py2-pysqlite \
 	py2-flask \
 	py2-pygments \
+	python-tk \
 	py2-pip && \
 
 # EN: Clone git-repo
