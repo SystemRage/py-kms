@@ -187,8 +187,11 @@ class ShellMessage(object):
             if sys.stdout.isatty():
                 print(toprint)
             else:
-                from pykms_GuiBase import gui_redirect # Import after variables creation.
-                gui_redirect(toprint)
+                try:
+                    from pykms_GuiBase import gui_redirect # Import after variables creation.
+                    gui_redirect(toprint)
+                except:
+                    print(toprint)
                                 
         def spawn(self):
             # Save everything that would otherwise go to stdout.
