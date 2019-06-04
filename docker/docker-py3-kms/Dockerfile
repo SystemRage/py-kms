@@ -1,48 +1,9 @@
-# History
-_py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMS Emulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
- 
-# Features
-- Responds to V4, V5, and V6 KMS requests.
-- Supports activating:
-	- Windows Vista 
-	- Windows 7 
-	- Windows 8
-	- Windows 8.1
-	- Windows 10 ( 1511 / 1607 / 1703 / 1709 / 1803 / 1809 )
-	- Windows Server 2008
-	- Windows Server 2008 R2
-	- Windows Server 2012
-	- Windows Server 2012 R2
-	- Windows Server 2016
-	- Windows Server 2019
-	- Microsoft Office 2010 ( Volume License )
-	- Microsoft Office 2013 ( Volume License )
-	- Microsoft Office 2016 ( Volume License )
-	- Microsoft Office 2019 ( Volume License )
-- It's written in Python:
-	- _py3-kms_ tested with Python 3.5.2
+# Use Alpine Linux
+FROM alpine:3.8
 
-# Usage
-```
-docker run -d --name py3-kms \
-    -p 8080:8080 \
-    -p 1688:1688 \
-    -e IP=0.0.0.0 \
-    -e PORT=1688 \
-    -e SQLITE=true \
-    -e HWID=random \
-    -e LOGLEVEL=INFO \
-    -e LOGFILE=/var/log/py3-kms.log \
-    -v /etc/localtime:/etc/localtime:ro \
-    -v /var/log:/var/log:rw \
-    --restart unless-stopped ekonprof18/pykms:py3-kms
-```
-# Sqlite-web
-A web-based SQLite database browser written in Python.
-Start on http://example.com:8080/ in read-only mode for clients.db.
+# Maintainer
+#MAINTAINER Artur Petrov <artur@phpchain.ru>
 
-# Options
-```
 # EN: Variables
 # RU: Переменные
 
@@ -103,10 +64,49 @@ ENV LOGLEVEL		ERROR
 # RU: Лог-файл
 ENV LOGFILE		/var/log/pykms_logserver.log
 # Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
-```
 
-# Other Important Stuff
-Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more informations about activation with _py-kms_ and to get GVLK keys.
+# EN: Startup script
+# RU: Скрипт автозапуска
+COPY start.sh /usr/bin/start.sh
 
-# License
-   [![License](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
+# EN: Software installation
+# RU: Установка программного обеспечения
+RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/apk/repositories && \
+    apk update && \
+    apk upgrade && \
+    apk add --update \
+	bash \
+	git \
+	python3 \
+	py3-argparse \
+	py3-tz \
+	py3-flask \
+	py3-pygments \
+	python3-tkinter \
+	sqlite-libs \
+	py3-pip && \
+
+# EN: Clone git-repo
+# RU: Клонирование git-репозитория
+git clone https://github.com/SystemRage/py-kms.git /home/py-kms && \
+git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
+mv /tmp/sqlite_web/sqlite_web /home/ && \
+rm -rf /tmp/sqlite_web && \
+pip3 install peewee tzlocal && \
+
+# EN: Change permissions
+# RU: Меняем права доступа
+chmod a+x /usr/bin/start.sh && \
+
+# EN: Clear after install software
+# RU: Очистка после установки программного обеспечения
+apk del git py3-pip
+
+# Set Workdir
+WORKDIR /home/py-kms/py-kms
+
+# Expose ports
+EXPOSE ${PORT}/tcp
+
+# Entry point
+ENTRYPOINT ["/usr/bin/start.sh"]

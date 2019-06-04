@@ -77,14 +77,14 @@ RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/a
     apk add --update \
 	bash \
 	git \
-	python3 \
-	py3-argparse \
-	py3-tz \
-	py3-flask \
-	py3-pygments \
-	python3-tk \
-	sqlite-libs \
-	py3-pip && \
+	python2 \
+	py2-argparse \
+	py2-tz \
+	py2-pysqlite \
+	py2-flask \
+	py2-pygments \
+	python2-tkinter \
+	py2-pip && \
 
 # EN: Clone git-repo
 # RU: Клонирование git-репозитория
@@ -92,7 +92,7 @@ git clone https://github.com/SystemRage/py-kms.git /home/py-kms && \
 git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
 mv /tmp/sqlite_web/sqlite_web /home/ && \
 rm -rf /tmp/sqlite_web && \
-pip3 install peewee tzlocal && \
+pip install peewee tzlocal && \
 
 # EN: Change permissions
 # RU: Меняем права доступа
@@ -100,7 +100,7 @@ chmod a+x /usr/bin/start.sh && \
 
 # EN: Clear after install software
 # RU: Очистка после установки программного обеспечения
-apk del git py3-pip
+apk del git py2-pip
 
 # Set Workdir
 WORKDIR /home/py-kms/py-kms
