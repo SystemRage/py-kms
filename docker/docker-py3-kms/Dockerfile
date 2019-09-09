@@ -65,6 +65,11 @@ ENV LOGLEVEL		ERROR
 ENV LOGFILE		/var/log/pykms_logserver.log
 # Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
 
+# EN: log file size in MB
+# RU: Максимальный размер Лог-файл в мегабайтах
+ENV LOGSIZE		""
+# Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+
 # EN: Startup script
 # RU: Скрипт автозапуска
 COPY start.sh /usr/bin/start.sh
