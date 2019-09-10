@@ -89,8 +89,7 @@ RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/a
 	py3-pygments \
 	python3-tkinter \
 	sqlite-libs \
-	py3-pip \
-	py-pysqlite && \
+	py3-pip && \
 
 # EN: Clone git-repo
 # RU: Клонирование git-репозитория
@@ -98,7 +97,7 @@ git clone https://github.com/SystemRage/py-kms.git /home/py-kms && \
 git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
 mv /tmp/sqlite_web/sqlite_web /home/ && \
 rm -rf /tmp/sqlite_web && \
-pip3 install peewee tzlocal && \
+pip3 install peewee tzlocal pysqlite3 && \
 
 # EN: Change permissions
 # RU: Меняем права доступа
