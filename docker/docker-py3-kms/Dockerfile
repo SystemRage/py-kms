@@ -105,7 +105,7 @@ chmod a+x /usr/bin/start.sh && \
 
 # EN: Clear after install software
 # RU: Очистка после установки программного обеспечения
-apk del git py3-pip
+apk del git
 
 # Set Workdir
 WORKDIR /home/py-kms/py-kms
