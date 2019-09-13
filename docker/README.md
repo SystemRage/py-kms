@@ -106,12 +106,12 @@ ENV LOGLEVEL		ERROR
 # RU: Лог-файл
 ENV LOGFILE		/var/log/pykms_logserver.log
 # Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
-```
 
 # EN: log file size in MB
 # RU: Максимальный размер Лог-файл в мегабайтах
 ENV LOGSIZE             ""
 # Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+```
 
 # Other Important Stuff
 Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more informations about activation with _py-kms_ and to get GVLK keys.
