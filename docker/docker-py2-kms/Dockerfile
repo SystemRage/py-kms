@@ -53,7 +53,7 @@ ENV SQLITE		false
 ENV HWID		364F463A8863D35F
 # Use this flag to specify a HWID. 
 # The HWID must be an 16-character string of hex characters.
-# The default is "364F463A8863D35F" or type "random" to auto generate the HWID.
+# The default is "364F463A8863D35F" or type "RANDOM" to auto generate the HWID.
 
 # EN: log level ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
 # RU: Уровень логирования ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
@@ -65,13 +65,18 @@ ENV LOGLEVEL		ERROR
 ENV LOGFILE		/var/log/pykms_logserver.log
 # Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
 
+# EN: log file size in MB
+# RU: Максимальный размер Лог-файл в мегабайтах
+ENV LOGSIZE             ""
+# Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+
 # EN: Startup script
 # RU: Скрипт автозапуска
 COPY start.sh /usr/bin/start.sh
 
 # EN: Software installation
 # RU: Установка программного обеспечения
-RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/apk/repositories && \
+RUN     echo "http://dl-cdn.alpinelinux.org/alpine/v3.8/main" >> /etc/apk/repositories && \
     apk update && \
     apk upgrade && \
     apk add --update \
@@ -80,17 +85,19 @@ RUN     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" >> /etc/a
 	python2 \
 	py2-argparse \
 	py2-tz \
-	py2-pysqlite \
 	py2-flask \
 	py2-pygments \
 	python2-tkinter \
+	py2-pysqlite \
 	py2-pip && \
 
 # EN: Clone git-repo
 # RU: Клонирование git-репозитория
-git clone https://github.com/SystemRage/py-kms.git /home/py-kms && \
+git clone https://github.com/SystemRage/py-kms.git /tmp/py-kms && \
 git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
+mv /tmp/py-kms/py-kms /home/ && \
 mv /tmp/sqlite_web/sqlite_web /home/ && \
+rm -rf /tmp/py-kms && \
 rm -rf /tmp/sqlite_web && \
 pip install peewee tzlocal && \
 
@@ -103,7 +110,7 @@ chmod a+x /usr/bin/start.sh && \
 apk del git py2-pip
 
 # Set Workdir
-WORKDIR /home/py-kms/py-kms
+WORKDIR /home/py-kms
 
 # Expose ports
 EXPOSE ${PORT}/tcp
