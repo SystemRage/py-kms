@@ -31,8 +31,9 @@ docker run -d --name py3-kms \
     -e IP=0.0.0.0 \
     -e PORT=1688 \
     -e SQLITE=true \
-    -e HWID=random \
+    -e HWID=RANDOM \
     -e LOGLEVEL=INFO \
+    -e LOGSIZE=2 \
     -e LOGFILE=/var/log/py3-kms.log \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
@@ -94,7 +95,7 @@ ENV SQLITE		false
 ENV HWID		364F463A8863D35F
 # Use this flag to specify a HWID. 
 # The HWID must be an 16-character string of hex characters.
-# The default is "364F463A8863D35F" or type "random" to auto generate the HWID.
+# The default is "364F463A8863D35F" or type "RANDOM" to auto generate the HWID.
 
 # EN: log level ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
 # RU: Уровень логирования ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
@@ -105,6 +106,11 @@ ENV LOGLEVEL		ERROR
 # RU: Лог-файл
 ENV LOGFILE		/var/log/pykms_logserver.log
 # Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
+
+# EN: log file size in MB
+# RU: Максимальный размер Лог-файл в мегабайтах
+ENV LOGSIZE             ""
+# Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 ```
 
 # Other Important Stuff
