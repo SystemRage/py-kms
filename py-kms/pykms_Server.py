@@ -128,17 +128,26 @@ def server_check():
                 srv_config['hwid'] = randomhwid[:16]
            
         # Sanitize HWID.
-        try:
-                srv_config['hwid'] = binascii.a2b_hex(re.sub(r'[^0-9a-fA-F]', '', srv_config['hwid'].strip('0x')))
-                if len(binascii.b2a_hex(srv_config['hwid'])) < 16:
-                        loggersrv.error("HWID \"%s\" is invalid. Hex string is too short." % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
-                        return
-                elif len(binascii.b2a_hex(srv_config['hwid'])) > 16:
-                        loggersrv.error("HWID \"%s\" is invalid. Hex string is too long." % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
-                        return
-        except TypeError:
-                loggersrv.error("HWID \"%s\" is invalid. Odd-length hex string." % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
-                return
+        hexstr = srv_config['hwid'].strip('0x')
+        hexsub = re.sub(r'[^0-9a-fA-F]', '', hexstr)
+        diff = set(hexstr).symmetric_difference(set(hexsub))
+
+        if len(diff) != 0:
+                loggersrv.error("HWID \"%s\" is invalid. Non hexadecimal digit %s found." %(hexstr.upper(), diff))
+                sys.exit(1)
+        else:
+                lh = len(hexsub)
+                if lh % 2 != 0:
+                        loggersrv.error("HWID \"%s\" is invalid. Hex string is odd length." % hexsub.upper())
+                        sys.exit(1)
+                elif lh < 16:
+                        loggersrv.error("HWID \"%s\" is invalid. Hex string is too short." % hexsub.upper())
+                        sys.exit(1)
+                elif lh > 16:
+                        loggersrv.error("HWID \"%s\" is invalid. Hex string is too long." % hexsub.upper())
+                        sys.exit(1)
+                else:
+                        srv_config['hwid'] = binascii.a2b_hex(hexsub)
 
         # Check LCID.
         # http://stackoverflow.com/questions/3425294/how-to-detect-the-os-default-language-in-python
@@ -168,13 +177,12 @@ def server_check():
 
         # Check port.
         try:
-                p = srv_config['port']
-                if p > 65535:
+                if srv_config['port'] > 65535:
                         loggersrv.error('Please enter a valid port number between 1 - 65535')
-                        return
+                        sys.exit(1)
         except Exception as e:
                 loggersrv.error('%s' %e)
-                return
+                sys.exit(1)
 
 def server_create():
         socketserver.TCPServer.allow_reuse_address = True
