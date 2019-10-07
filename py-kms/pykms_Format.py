@@ -120,7 +120,7 @@ MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{
           -2 : {'text' : "{white}\n\n\t\t\t\t\t\t\t\tClient sending{end}",                                           'where' : "srv"},
           -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'where' : "srv"},
           -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"},
-          30 : {'text' : "{red}{bold}\nServer connection timed out. Exiting...{end}",                                'where' : "srv"}
+          30 : {'text' : "{red}{bold}Server connection timed out. Exiting...{end}",                                  'where' : "srv"}
           }
 
 
@@ -171,9 +171,12 @@ class ShellMessage(object):
             StringIO.write(self, s)
             
     class Process(object):
-        def __init__(self, nshell):
+        def __init__(self, nshell, get_text = False, put_text = None):
             self.nshell = nshell
             self.print_queue = Queue.Queue()
+            self.get_text = get_text
+            self.plaintext = []
+            self.put_text = put_text
                                 
         def run(self):           
             if not ShellMessage.view:
@@ -193,19 +196,27 @@ class ShellMessage(object):
                     gui_redirect(toprint)
                 except:
                     print(toprint)
+            # Get string/s printed.
+            if self.get_text:
+                return self.plaintext
                                 
         def spawn(self):
             # Save everything that would otherwise go to stdout.
             outstream = ShellMessage.Collect()
             sys.stdout = outstream
-           
+
             try:
                 # Print something.
-                if isinstance(self.nshell, list):
-                    for n in self.nshell:
-                        print(MsgMap[n]['text'].format(**ColorExtraMap), flush = True)
-                else:
-                    print(MsgMap[self.nshell]['text'].format(**ColorExtraMap), flush = True)  
+                if not isinstance(self.nshell, list):
+                    self.nshell = [self.nshell]
+                for n in self.nshell:
+                    if self.put_text is None:
+                        msg = MsgMap[n]['text'].format(**ColorExtraMap)
+                    else:
+                        msg = MsgMap[n]['text'].format(*self.put_text, **ColorExtraMap)
+                    print(msg, flush = True)
+                    if self.get_text:
+                        self.plaintext.append(unshell_message(msg, m = 0)[0]["tag00"]['text'])
             finally:
                 # Restore stdout and send content.
                 sys.stdout = sys.__stdout__

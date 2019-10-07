@@ -36,8 +36,8 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         allow_reuse_address = True
  
         def handle_timeout(self):
-                ShellMessage.Process([30]).run()
-                loggersrv.error("Server connection timed out. Exiting...")
+                errmsg = ShellMessage.Process(30, get_text = True).run()
+                loggersrv.error(errmsg[0])
                 sys.exit(1)
                                 
 class server_thread(threading.Thread):
