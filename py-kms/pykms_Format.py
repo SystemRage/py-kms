@@ -119,7 +119,8 @@ MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{
           -1 : {'text' : "{white}Server receiving{end}",                                                             'where' : "clt"},
           -2 : {'text' : "{white}\n\n\t\t\t\t\t\t\t\tClient sending{end}",                                           'where' : "srv"},
           -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'where' : "srv"},
-          -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"}
+          -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"},
+          30 : {'text' : "{red}{bold}\nServer connection timed out. Exiting...{end}",                                'where' : "srv"}
           }
 
 

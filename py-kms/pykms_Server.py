@@ -31,7 +31,15 @@ srv_version = 'py-kms_2019-05-15'
 srv_config = {}
 
 ##---------------------------------------------------------------------------------------------------------------------------------------------------------
-
+class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
+        daemon_threads = True
+        allow_reuse_address = True
+ 
+        def handle_timeout(self):
+                ShellMessage.Process([30]).run()
+                loggersrv.error("Server connection timed out. Exiting...")
+                sys.exit(1)
+                                
 class server_thread(threading.Thread):
         def __init__(self):
                 threading.Thread.__init__(self)
@@ -50,9 +58,12 @@ class server_thread(threading.Thread):
                                     # Create and run threaded server.
                                     self.server = server_create()
                                     try:
-                                            self.server.serve_forever()
+                                            while True:
+                                                    self.server.handle_request()
                                     except KeyboardInterrupt:
-                                            sys.exit(0)
+                                            pass
+                                    finally:
+                                            self.server.server_close()
                             elif item == 'stop':
                                     self.is_running = False
                                     self.server = None
@@ -80,7 +91,7 @@ for server OSes and Office >=5', 'def' : None, 'des' : "CurrentClientCount"},
                  'def' : False, 'des' : "sqlite"},
         'hwid' : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
 The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.', 'def' : "364F463A8863D35F", 'des' : "hwid"},
-        'time' : {'help' : 'Disconnect clients after time of inactivity (in seconds). The default is \"30\" seconds', 'def' : 30, 'des' : "timeout"},
+        'time' : {'help' : 'Max time (in seconds) for server to generate an answer. If \"None\" (default) serve forever.', 'def' : None, 'des' : "timeout"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
         'lfile' : {'help' : 'Use this option to set or not an output log file. The default is \"pykms_logserver.log\" or type \"STDOUT\" to view log info on stdout.',
@@ -185,13 +196,12 @@ def server_check():
                 sys.exit(1)
 
 def server_create():
-        socketserver.TCPServer.allow_reuse_address = True
-        server = socketserver.TCPServer((srv_config['ip'], srv_config['port']), kmsServer)
+        server = KeyServer((srv_config['ip'], srv_config['port']), kmsServerHandler)
         server.timeout = srv_config['timeout']
         loggersrv.info("TCP server listening at %s on port %d." % (srv_config['ip'], srv_config['port']))
         loggersrv.info("HWID: %s" % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
         return server
-
+                
 def srv_main_without_gui():
         # Parse options.
         server_options()        
@@ -215,7 +225,7 @@ def srv_main_with_gui(width = 950, height = 660):
         root.mainloop()
 
 
-class kmsServer(socketserver.BaseRequestHandler):
+class kmsServerHandler(socketserver.BaseRequestHandler):
         def setup(self):
                 loggersrv.info("Connection accepted: %s:%d" % (self.client_address[0], self.client_address[1]))
 
