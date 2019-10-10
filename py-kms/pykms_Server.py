@@ -36,9 +36,7 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         allow_reuse_address = True
  
         def handle_timeout(self):
-                errmsg = ShellMessage.Process(30, get_text = True).run()
-                loggersrv.error(errmsg[0])
-                sys.exit(1)
+                server_errors(30)
                                 
 class server_thread(threading.Thread):
         def __init__(self):
@@ -98,9 +96,17 @@ The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID
                    'def' : os.path.dirname(os.path.abspath( __file__ )) + "/pykms_logserver.log", 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
-           
+
+
+class KmsSrvException(Exception):
+        pass
+
+class KmsSrvParser(argparse.ArgumentParser):
+        def error(self, message):
+                raise KmsSrvException(message)
+
 def server_options():
-        parser = argparse.ArgumentParser(description = srv_description, epilog = 'version: ' + srv_version)
+        parser = KmsSrvParser(description = srv_description, epilog = 'version: ' + srv_version)
         parser.add_argument("ip", nargs = "?", action = "store", default = srv_options['ip']['def'], help = srv_options['ip']['help'], type = str)
         parser.add_argument("port", nargs = "?", action = "store", default = srv_options['port']['def'], help = srv_options['port']['help'], type = int)
         parser.add_argument("-e", "--epid", dest = srv_options['epid']['des'], default = srv_options['epid']['def'], help = srv_options['epid']['help'], type = str)
@@ -123,10 +129,22 @@ def server_options():
                             help = srv_options['lfile']['help'], type = str)
         parser.add_argument("-S", "--logsize", dest = srv_options['lsize']['des'], action = "store", default = srv_options['lsize']['def'],
                             help = srv_options['lsize']['help'], type = float)
-        
-        srv_config.update(vars(parser.parse_args()))
 
-                
+        try:
+                srv_config.update(vars(parser.parse_args()))
+        except KmsSrvException as e:
+                server_errors(36, False, str(e), False)
+
+def server_errors(error_num, get_text = True, put_text = None, log_text = True):
+        """ error_num --> an int or list of int.
+            put_text  --> a string or list of strings. (applied to each "error_num")
+        """
+        error_msgs = ShellMessage.Process(error_num, get_text = get_text, put_text = put_text).run()
+        if log_text:
+                for err in error_msgs:
+                        loggersrv.error(err)
+        sys.exit(1)
+
 def server_check():
         # Setup hidden or not messages.
         ShellMessage.view = ( False if srv_config['logfile'] == 'STDOUT' else True )
@@ -144,19 +162,15 @@ def server_check():
         diff = set(hexstr).symmetric_difference(set(hexsub))
 
         if len(diff) != 0:
-                loggersrv.error("HWID \"%s\" is invalid. Non hexadecimal digit %s found." %(hexstr.upper(), diff))
-                sys.exit(1)
+                server_errors(31, put_text = [hexstr.upper(), diff])
         else:
                 lh = len(hexsub)
                 if lh % 2 != 0:
-                        loggersrv.error("HWID \"%s\" is invalid. Hex string is odd length." % hexsub.upper())
-                        sys.exit(1)
+                        server_errors(32, put_text = hexsub.upper())
                 elif lh < 16:
-                        loggersrv.error("HWID \"%s\" is invalid. Hex string is too short." % hexsub.upper())
-                        sys.exit(1)
+                        server_errors(33, put_text = hexsub.upper())
                 elif lh > 16:
-                        loggersrv.error("HWID \"%s\" is invalid. Hex string is too long." % hexsub.upper())
-                        sys.exit(1)
+                        server_errors(34, put_text = hexsub.upper())
                 else:
                         srv_config['hwid'] = binascii.a2b_hex(hexsub)
 
@@ -187,13 +201,8 @@ def server_check():
                 srv_config['dbSupport'] = True
 
         # Check port.
-        try:
-                if srv_config['port'] > 65535:
-                        loggersrv.error('Please enter a valid port number between 1 - 65535')
-                        sys.exit(1)
-        except Exception as e:
-                loggersrv.error('%s' %e)
-                sys.exit(1)
+        if not 1 <= srv_config['port'] <= 65535:
+                server_errors(35, put_text = srv_config['port'])
 
 def server_create():
         server = KeyServer((srv_config['ip'], srv_config['port']), kmsServerHandler)
@@ -204,7 +213,7 @@ def server_create():
                 
 def srv_main_without_gui():
         # Parse options.
-        server_options()        
+        server_options()
         # Run threaded server.
         serverqueue.put('start')
         serverthread.join()

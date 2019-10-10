@@ -120,9 +120,15 @@ MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{
           -2 : {'text' : "{white}\n\n\t\t\t\t\t\t\t\tClient sending{end}",                                           'where' : "srv"},
           -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'where' : "srv"},
           -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"},
-          30 : {'text' : "{red}{bold}Server connection timed out. Exiting...{end}",                                  'where' : "srv"}
+          
+          30 : {'text' : "{red}{bold}Server connection timed out. Exiting...{end}",                                  'where' : "srv"},
+          31 : {'text' : "{red}{bold}HWID '{0}' is invalid. Digit {1} non hexadecimal. Exiting...{end}",             'where' : "srv"},
+          32 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is odd length. Exiting...{end}",              'where' : "srv"},
+          33 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too short. Exiting...{end}",               'where' : "srv"},
+          34 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too long. Exiting...{end}",                'where' : "srv"},
+          35 : {'text' : "{red}{bold}Port number '{0}' is invalid. Enter between 1 - 65535. Exiting...{end}",        'where' : "srv"},
+          36 : {'text' : "{red}{bold}{0}. Exiting...{end}",                                                          'where' : "srv"},
           }
-
 
 def pick_MsgMap(messagelist):
         pattern = r"(?<!\{)\{([^}]+)\}(?!\})"
@@ -163,7 +169,7 @@ if pyver < (3, 3):
 
 # https://ryanjoneil.github.io/posts/2014-02-14-capturing-stdout-in-a-python-child-process.html
 class ShellMessage(object):
-    view = None
+    view = True
 
     class Collect(StringIO):
         # Capture string sent to stdout.
@@ -176,8 +182,9 @@ class ShellMessage(object):
             self.print_queue = Queue.Queue()
             self.get_text = get_text
             self.plaintext = []
-            self.put_text = put_text
-                                
+            if not isinstance(put_text, list):
+                self.put_text = [put_text]
+        
         def run(self):           
             if not ShellMessage.view:
                 return
@@ -204,7 +211,7 @@ class ShellMessage(object):
             # Save everything that would otherwise go to stdout.
             outstream = ShellMessage.Collect()
             sys.stdout = outstream
-
+            
             try:
                 # Print something.
                 if not isinstance(self.nshell, list):
