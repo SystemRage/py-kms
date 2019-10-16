@@ -23,7 +23,7 @@ except ImportError:
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
-from pykms_Misc import ValidLcid, logger_create
+from pykms_Misc import logger_create, check_logfile, check_lcid, pretty_errors
 from pykms_Format import enco, deco, ShellMessage
 
 srv_description = 'KMS Server Emulator written in Python'
@@ -36,8 +36,8 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         allow_reuse_address = True
  
         def handle_timeout(self):
-                server_errors(30)
-                                
+                pretty_errors(40, loggersrv)
+    
 class server_thread(threading.Thread):
         def __init__(self):
                 threading.Thread.__init__(self)
@@ -92,7 +92,8 @@ The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID
         'time' : {'help' : 'Max time (in seconds) for server to generate an answer. If \"None\" (default) serve forever.', 'def' : None, 'des' : "timeout"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
-        'lfile' : {'help' : 'Use this option to set or not an output log file. The default is \"pykms_logserver.log\" or type \"STDOUT\" to view log info on stdout.',
+        'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logserver.log\". Type \"STDOUT\" to view \
+log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
                    'def' : os.path.dirname(os.path.abspath( __file__ )) + "/pykms_logserver.log", 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
@@ -125,32 +126,24 @@ def server_options():
                             help = srv_options['time']['help'], type = int)
         parser.add_argument("-V", "--loglevel", dest = srv_options['llevel']['des'], action = "store", choices = srv_options['llevel']['choi'],
                             default = srv_options['llevel']['def'], help = srv_options['llevel']['help'], type = str)
-        parser.add_argument("-F", "--logfile", dest = srv_options['lfile']['des'], action = "store", default = srv_options['lfile']['def'],
+        parser.add_argument("-F", "--logfile", nargs = "+", dest = srv_options['lfile']['des'], default = srv_options['lfile']['def'],
                             help = srv_options['lfile']['help'], type = str)
         parser.add_argument("-S", "--logsize", dest = srv_options['lsize']['des'], action = "store", default = srv_options['lsize']['def'],
                             help = srv_options['lsize']['help'], type = float)
 
         try:
                 srv_config.update(vars(parser.parse_args()))
+                # Check logfile.
+                srv_config['logfile'] = check_logfile(srv_config['logfile'], srv_options['lfile']['def'], loggersrv)
         except KmsSrvException as e:
-                server_errors(36, False, str(e), False)
-
-def server_errors(error_num, get_text = True, put_text = None, log_text = True):
-        """ error_num --> an int or list of int.
-            put_text  --> a string or list of strings. (applied to each "error_num")
-        """
-        error_msgs = ShellMessage.Process(error_num, get_text = get_text, put_text = put_text).run()
-        if log_text:
-                for err in error_msgs:
-                        loggersrv.error(err)
-        sys.exit(1)
+                pretty_errors(46, loggersrv, get_text = False, put_text = str(e), log_text = False)
 
 def server_check():
         # Setup hidden or not messages.
-        ShellMessage.view = ( False if srv_config['logfile'] == 'STDOUT' else True )
+        ShellMessage.view = ( False if any(i in ['STDOUT', 'FILESTDOUT'] for i in srv_config['logfile']) else True )
         # Create log.        
         logger_create(loggersrv, srv_config, mode = 'a')
-        
+
         # Random HWID.
         if srv_config['hwid'] == "RANDOM":
                 randomhwid = uuid.uuid4().hex
@@ -162,34 +155,20 @@ def server_check():
         diff = set(hexstr).symmetric_difference(set(hexsub))
 
         if len(diff) != 0:
-                server_errors(31, put_text = [hexstr.upper(), diff])
+                pretty_errors(41, loggersrv, put_text = [hexstr.upper(), diff])
         else:
                 lh = len(hexsub)
                 if lh % 2 != 0:
-                        server_errors(32, put_text = hexsub.upper())
+                        pretty_errors(42, loggersrv, put_text = hexsub.upper())
                 elif lh < 16:
-                        server_errors(33, put_text = hexsub.upper())
+                        pretty_errors(43, loggersrv, put_text = hexsub.upper())
                 elif lh > 16:
-                        server_errors(34, put_text = hexsub.upper())
+                        pretty_errors(44, loggersrv, put_text = hexsub.upper())
                 else:
                         srv_config['hwid'] = binascii.a2b_hex(hexsub)
 
         # Check LCID.
-        # http://stackoverflow.com/questions/3425294/how-to-detect-the-os-default-language-in-python
-        if not srv_config['lcid'] or (srv_config['lcid'] not in ValidLcid):
-                if hasattr(sys, 'implementation') and sys.implementation.name == 'cpython':
-                        srv_config['lcid'] = 1033
-                elif os.name == 'nt':
-                        import ctypes
-
-                        srv_config['lcid'] = ctypes.windll.kernel32.GetUserDefaultUILanguage()
-                else:
-                        import locale
-
-                        try:
-                                srv_config['lcid'] = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
-                        except StopIteration:
-                                srv_config['lcid'] = 1033
+        srv_config['lcid'] = check_lcid(srv_config['lcid'], loggersrv)
                                 
         # Check sqlite.
         try:
@@ -202,7 +181,7 @@ def server_check():
 
         # Check port.
         if not 1 <= srv_config['port'] <= 65535:
-                server_errors(35, put_text = srv_config['port'])
+                pretty_errors(45, loggersrv, put_text = srv_config['port'])
 
 def server_create():
         server = KeyServer((srv_config['ip'], srv_config['port']), kmsServerHandler)

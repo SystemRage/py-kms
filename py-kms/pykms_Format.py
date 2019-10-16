@@ -71,7 +71,8 @@ def justify(astring, indent = 35, break_every = 100):
     return justy
 
 ##----------------------------------------------------------------------------------------------------------------------------------------------------
-ColorMap = {'red'        : '\x1b[91m',
+ColorMap = {'gray'       : '\x1b[90m',
+            'red'        : '\x1b[91m',
             'green'      : '\x1b[92m',
             'yellow'     : '\x1b[93m',
             'blue'       : '\x1b[94m',
@@ -121,13 +122,13 @@ MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{
           -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'where' : "srv"},
           -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"},
           
-          30 : {'text' : "{red}{bold}Server connection timed out. Exiting...{end}",                                  'where' : "srv"},
-          31 : {'text' : "{red}{bold}HWID '{0}' is invalid. Digit {1} non hexadecimal. Exiting...{end}",             'where' : "srv"},
-          32 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is odd length. Exiting...{end}",              'where' : "srv"},
-          33 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too short. Exiting...{end}",               'where' : "srv"},
-          34 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too long. Exiting...{end}",                'where' : "srv"},
-          35 : {'text' : "{red}{bold}Port number '{0}' is invalid. Enter between 1 - 65535. Exiting...{end}",        'where' : "srv"},
-          36 : {'text' : "{red}{bold}{0}. Exiting...{end}",                                                          'where' : "srv"},
+          40 : {'text' : "{red}{bold}Server connection timed out. Exiting...{end}",                                  'where' : "srv"},
+          41 : {'text' : "{red}{bold}HWID '{0}' is invalid. Digit {1} non hexadecimal. Exiting...{end}",             'where' : "srv"},
+          42 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is odd length. Exiting...{end}",              'where' : "srv"},
+          43 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too short. Exiting...{end}",               'where' : "srv"},
+          44 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too long. Exiting...{end}",                'where' : "srv"},
+          45 : {'text' : "{red}{bold}Port number '{0}' is invalid. Enter between 1 - 65535. Exiting...{end}",        'where' : "srv"},
+          46 : {'text' : "{red}{bold}{0}. Exiting...{end}",                                                          'where' : "srv"},
           }
 
 def pick_MsgMap(messagelist):
@@ -181,13 +182,32 @@ class ShellMessage(object):
             self.nshell = nshell
             self.print_queue = Queue.Queue()
             self.get_text = get_text
+            self.put_text = put_text
             self.plaintext = []
+
+            if not isinstance(nshell, list):
+                self.nshell = [nshell]
             if not isinstance(put_text, list):
                 self.put_text = [put_text]
-        
+
+        def formatter(self, num):
+            if self.put_text is None:
+                self.msg = MsgMap[num]['text'].format(**ColorExtraMap)
+            else:
+                self.msg = MsgMap[num]['text'].format(*self.put_text, **ColorExtraMap)
+
+            if self.get_text:
+                self.plaintext.append(unshell_message(self.msg, m = 0)[0]["tag00"]['text'])
+
         def run(self):           
             if not ShellMessage.view:
-                return
+                if self.get_text:
+                    for num in self.nshell:
+                        self.formatter(num)
+                    return self.plaintext
+                else:
+                    return
+
             # Start thread process.
             print_thread = threading.Thread(target = self.spawn(), args=(self.print_queue,))
             print_thread.setDaemon(True)
@@ -214,16 +234,9 @@ class ShellMessage(object):
             
             try:
                 # Print something.
-                if not isinstance(self.nshell, list):
-                    self.nshell = [self.nshell]
-                for n in self.nshell:
-                    if self.put_text is None:
-                        msg = MsgMap[n]['text'].format(**ColorExtraMap)
-                    else:
-                        msg = MsgMap[n]['text'].format(*self.put_text, **ColorExtraMap)
-                    print(msg, flush = True)
-                    if self.get_text:
-                        self.plaintext.append(unshell_message(msg, m = 0)[0]["tag00"]['text'])
+                for num in self.nshell:
+                    self.formatter(num)
+                    print(self.msg, flush = True)
             finally:
                 # Restore stdout and send content.
                 sys.stdout = sys.__stdout__

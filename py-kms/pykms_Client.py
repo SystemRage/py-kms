@@ -22,7 +22,7 @@ from pykms_RequestV5 import kmsRequestV5
 from pykms_RequestV6 import kmsRequestV6
 from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
-from pykms_Misc import logger_create
+from pykms_Misc import logger_create, check_logfile
 from pykms_Format import justify, byterize, enco, deco, ShellMessage
 
 clt_description = 'KMS Client Emulator written in Python'
@@ -46,7 +46,8 @@ clt_options = {
 will be generated.', 'def' : None, 'des' : "machineName"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
-        'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\" or type \"STDOUT\" to view log info on stdout.',
+        'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". Type \"STDOUT\" to view \
+log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
                    'def' : os.path.dirname(os.path.abspath( __file__ )) + "/pykms_logclient.log", 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
@@ -61,17 +62,19 @@ def client_options():
         parser.add_argument("-n", "--name", dest = clt_options['name']['des'] , default = clt_options['name']['def'], help = clt_options['name']['help'], type = str)
         parser.add_argument("-V", "--loglevel", dest = clt_options['llevel']['des'], action = "store", choices = clt_options['llevel']['choi'],
                             default = clt_options['llevel']['def'], help = clt_options['llevel']['help'], type = str)
-        parser.add_argument("-F", "--logfile", dest = clt_options['lfile']['des'], action = "store", default = clt_options['lfile']['def'],
+        parser.add_argument("-F", "--logfile", nargs = "+", dest = clt_options['lfile']['des'], default = clt_options['lfile']['def'],
                             help = clt_options['lfile']['help'], type = str)
         parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store", default = clt_options['lsize']['def'],
                             help = clt_options['lsize']['help'], type = float)
         
         clt_config.update(vars(parser.parse_args()))
+        # Check logfile.
+        clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], loggerclt)
         
 
 def client_check():
         # Setup hidden or not messages.
-        ShellMessage.view = ( False if clt_config['logfile'] == 'STDOUT' else True )
+        ShellMessage.view = ( False if any(i in ['STDOUT', 'FILESTDOUT'] for i in clt_config['logfile']) else True )
         # Create log.
         logger_create(loggerclt, clt_config, mode = 'a')
 
