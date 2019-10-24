@@ -22,7 +22,7 @@ from pykms_RequestV5 import kmsRequestV5
 from pykms_RequestV6 import kmsRequestV6
 from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
-from pykms_Misc import logger_create, check_logfile
+from pykms_Misc import logger_create, check_logfile, pretty_printer
 from pykms_Format import justify, byterize, enco, deco, ShellMessage
 
 clt_description = 'KMS Client Emulator written in Python'
@@ -126,31 +126,30 @@ def client_create():
         binder = pykms_RpcBind.handler(None, clt_config)
         RPC_Bind = enco(str(binder.generateRequest()), 'latin-1')
         loggerclt.info("Sending RPC bind request...")
-        ShellMessage.Process([-1, 1]).run()
+        pretty_printer(None, num_text = [-1, 1])
         s.send(RPC_Bind)
+
         try:
-                ShellMessage.Process([-4, 7]).run()
                 bindResponse = s.recv(1024)
+                if bindResponse == '' or not bindResponse:
+                        pretty_printer(loggerclt.warning, get_text = True, log_text = True, to_exit = True,
+                                       put_text = "{yellow}{bold}No data received.{end}")
+                pretty_printer(None, num_text = [-4, 7])
         except socket.error as e:
-                if e.errno == errno.ECONNRESET:
-                        loggerclt.error("Connection reset by peer. Exiting...")
-                        sys.exit()
-                else:
-                        raise
-        if bindResponse == '' or not bindResponse:
-                loggerclt.error("No data received ! Exiting...")
-                sys.exit()
+                pretty_printer(loggerclt.error, get_text = True, log_text = True, to_exit = True,
+                               put_text = "{red}{bold}While receiving: %s{end}" %str(e))
+
         packetType = MSRPCHeader(bindResponse)['type']
         if packetType == rpcBase.packetType['bindAck']:
                 loggerclt.info("RPC bind acknowledged.")
-                ShellMessage.Process(8).run()
+                pretty_printer(None, num_text = 8)
                 kmsRequest = createKmsRequest()
                 requester = pykms_RpcRequest.handler(kmsRequest, clt_config)
                 s.send(enco(str(requester.generateRequest()), 'latin-1'))
-                ShellMessage.Process([-1, 12]).run()
+                pretty_printer(None, num_text = [-1, 12])
                 response = s.recv(1024)
                 loggerclt.debug("Response: \n%s\n" % justify(deco(binascii.b2a_hex(response), 'latin-1')))
-                ShellMessage.Process([-4, 20]).run() 
+                pretty_printer(None, num_text = [-4, 20])
                 parsed = MSRPCRespHeader(response)
                 kmsData = readKmsResponse(parsed['pduData'], kmsRequest, clt_config)
                 kmsResp = kmsData['response']
@@ -169,16 +168,15 @@ def client_create():
                         loggerclt.mini("", extra = {'host': socket.gethostname() + " [" + clt_config["ip"] + "]",
                                                     'status' : "Activated",
                                                     'product' : clt_config["mode"]})
-                
-                ShellMessage.Process(21).run()
+
+                pretty_printer(None, num_text = 21)
                 
         elif packetType == rpcBase.packetType['bindNak']:
                 loggerclt.info(justify(MSRPCBindNak(bindResponse).dump(print_to_stdout = False)))
-                sys.exit()
+                sys.exit(0)
         else:
-                loggerclt.critical("Something went wrong.")
-                sys.exit()
-
+                pretty_printer(loggerclt.warning, get_text = True, log_text = True, to_exit = True,
+                               put_text = "{magenta}{bold}Something went wrong.{end}")
 
 def clt_main(with_gui = False):
         if not with_gui:
@@ -211,7 +209,7 @@ def createKmsRequestBase():
         requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
         
         # Debug Stuff
-        ShellMessage.Process(9).run()
+        pretty_printer(None, num_text = 9)
         requestDict = byterize(requestDict)
         loggerclt.debug("Request Base Dictionary: \n%s\n" % justify(requestDict.dump(print_to_stdout = False)))
         

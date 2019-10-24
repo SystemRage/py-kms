@@ -13,7 +13,8 @@ from pykms_DB2Dict import kmsDB2Dict
 from pykms_PidGenerator import epidGenerator
 from pykms_Filetimes import filetime_to_dt
 from pykms_Sql import sql_initialize, sql_update, sql_update_epid
-from pykms_Format import justify, byterize, enco, deco, ShellMessage
+from pykms_Format import justify, byterize, enco, deco
+from pykms_Misc import pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -111,8 +112,8 @@ class kmsBase:
         def serverLogic(self, kmsRequest):
                 if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
                         self.dbName = sql_initialize()
-                                                                        
-                ShellMessage.Process(15).run()
+
+                pretty_printer(None, num_text = 15)
                 kmsRequest = byterize(kmsRequest)
                 loggersrv.debug("KMS Request Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(kmsRequest), 'latin-1')), 'latin-1')))                         
                 loggersrv.debug("KMS Request: \n%s\n" % justify(kmsRequest.dump(print_to_stdout = False)))
@@ -130,10 +131,12 @@ class kmsBase:
                                 tz = get_localzone()
                                 local_dt = tz.localize(requestDatetime)
                         except UnknownTimeZoneError:
-                                loggersrv.warning('Unknown time zone ! Request time not localized.')
+                                pretty_printer(loggersrv.warning, get_text = True, log_text = True,
+                                               put_text = "{yellow}{bold}Unknown time zone ! Request time not localized.{end}")
                                 local_dt = requestDatetime
                 except ImportError:
-                        loggersrv.warning('Module "tzlocal" not available ! Request time not localized.')
+                        pretty_printer(loggersrv.warning, get_text = True, log_text = True,
+                                       put_text = "{yellow}{bold}Module 'tzlocal' not available ! Request time not localized.{end}")
                         local_dt = requestDatetime
 
                 # Activation threshold.

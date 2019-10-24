@@ -8,7 +8,8 @@ import random
 import pykms_Aes as aes
 from pykms_Base import kmsBase
 from pykms_Structure import Structure
-from pykms_Format import justify, byterize, enco, deco, ShellMessage
+from pykms_Format import justify, byterize, enco, deco
+from pykms_Misc import pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -140,7 +141,7 @@ class kmsRequestV5(kmsBase):
                 response['encrypted'] = bytes(bytearray(encryptedResponse))
                 response['padding'] = bytes(bytearray(self.getPadding(bodyLength)))
 
-                ShellMessage.Process(16).run()
+                pretty_printer(None, num_text = 16)
                 response = byterize(response) 
                 loggersrv.info("KMS V%d Response: \n%s\n" % (self.ver, justify(response.dump(print_to_stdout = False))))
                 loggersrv.info("KMS V%d Structure Bytes: \n%s\n" % (self.ver, justify(deco(binascii.b2a_hex(enco(str(response), 'latin-1')), 'utf-8'))))
@@ -172,7 +173,7 @@ class kmsRequestV5(kmsBase):
                 request['versionMajor'] = requestBase['versionMajor']
                 request['message'] = message
 
-                ShellMessage.Process(10).run()
+                pretty_printer(None, num_text = 10)
                 request = byterize(request)
                 loggersrv.info("Request V%d Data: \n%s\n" % (self.ver, justify(request.dump(print_to_stdout = False))))
                 loggersrv.info("Request V%d: \n%s\n" % (self.ver, justify(deco(binascii.b2a_hex(enco(str(request), 'latin-1')), 'utf-8'))))

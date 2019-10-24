@@ -7,7 +7,8 @@ import logging
 from pykms_Base import kmsBase
 from pykms_Structure import Structure
 from pykms_Aes import AES
-from pykms_Format import justify, byterize, enco, deco, ShellMessage
+from pykms_Format import justify, byterize, enco, deco
+from pykms_Misc import pretty_printer
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -105,7 +106,7 @@ class kmsRequestV4(kmsBase):
                 response['padding'] = bytes(bytearray(self.getPadding(bodyLength)))
                 
                 ## Debug stuff.
-                ShellMessage.Process(16).run()
+                pretty_printer(None, num_text = 16)
                 response = byterize(response)
                 loggersrv.debug("KMS V4 Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
                 loggersrv.debug("KMS V4 Response Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(response), 'latin-1')), 'utf-8')))
@@ -124,7 +125,7 @@ class kmsRequestV4(kmsBase):
                 request['padding'] = bytes(bytearray(self.getPadding(bodyLength)))
  
                 ## Debug stuff.
-                ShellMessage.Process(10).run()
+                pretty_printer(None, num_text = 10)
                 request = byterize(request)
                 loggersrv.debug("Request V4 Data: \n%s\n" % justify(request.dump(print_to_stdout = False)))
                 loggersrv.debug("Request V4: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(request), 'latin-1')), 'utf-8')))

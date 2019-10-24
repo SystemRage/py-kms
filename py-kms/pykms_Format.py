@@ -118,17 +118,9 @@ MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{
           20 : {'text' : "{white}===============>{end}{blue}\tClient received Response !!!{end}",                    'where' : "clt"},
           21 : {'text' : "{green}{bold}\t\t\tActivation Done !!!{end}",                                              'where' : "clt"},
           -1 : {'text' : "{white}Server receiving{end}",                                                             'where' : "clt"},
-          -2 : {'text' : "{white}\n\n\t\t\t\t\t\t\t\tClient sending{end}",                                           'where' : "srv"},
+          -2 : {'text' : "{white}\n\n\n\t\t\t\t\t\t\t\tClient sending{end}",                                         'where' : "srv"},
           -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'where' : "srv"},
           -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"},
-          
-          40 : {'text' : "{red}{bold}Server connection timed out. Exiting...{end}",                                  'where' : "srv"},
-          41 : {'text' : "{red}{bold}HWID '{0}' is invalid. Digit {1} non hexadecimal. Exiting...{end}",             'where' : "srv"},
-          42 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is odd length. Exiting...{end}",              'where' : "srv"},
-          43 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too short. Exiting...{end}",               'where' : "srv"},
-          44 : {'text' : "{red}{bold}HWID '{0}' is invalid. Hex string is too long. Exiting...{end}",                'where' : "srv"},
-          45 : {'text' : "{red}{bold}Port number '{0}' is invalid. Enter between 1 - 65535. Exiting...{end}",        'where' : "srv"},
-          46 : {'text' : "{red}{bold}{0}. Exiting...{end}",                                                          'where' : "srv"},
           }
 
 def pick_MsgMap(messagelist):
@@ -180,30 +172,25 @@ class ShellMessage(object):
     class Process(object):
         def __init__(self, nshell, get_text = False, put_text = None):
             self.nshell = nshell
-            self.print_queue = Queue.Queue()
             self.get_text = get_text
             self.put_text = put_text
+            self.print_queue = Queue.Queue()
             self.plaintext = []
 
-            if not isinstance(nshell, list):
-                self.nshell = [nshell]
-            if not isinstance(put_text, list):
-                self.put_text = [put_text]
-
-        def formatter(self, num):
-            if self.put_text is None:
-                self.msg = MsgMap[num]['text'].format(**ColorExtraMap)
-            else:
-                self.msg = MsgMap[num]['text'].format(*self.put_text, **ColorExtraMap)
-
+        def formatter(self, msgtofrmt):
+            self.msgfrmt = msgtofrmt.format(**ColorExtraMap)
             if self.get_text:
-                self.plaintext.append(unshell_message(self.msg, m = 0)[0]["tag00"]['text'])
+                self.plaintext.append(unshell_message(self.msgfrmt, m = 0)[0]["tag00"]['text'])
 
         def run(self):           
             if not ShellMessage.view:
                 if self.get_text:
-                    for num in self.nshell:
-                        self.formatter(num)
+                    if self.put_text is not None:
+                        for mess in self.put_text:
+                            self.formatter(mess)
+                    else:
+                        for num in self.nshell:
+                            self.formatter(MsgMap[num]['text'])
                     return self.plaintext
                 else:
                     return
@@ -234,9 +221,14 @@ class ShellMessage(object):
             
             try:
                 # Print something.
-                for num in self.nshell:
-                    self.formatter(num)
-                    print(self.msg, flush = True)
+                if self.put_text is not None:
+                    for mess in self.put_text:
+                        self.formatter(mess)
+                        print(self.msgfrmt, end = '\n', flush = True)
+                else:
+                    for num in self.nshell:
+                        self.formatter(MsgMap[num]['text'])
+                        print(self.msgfrmt, end = '\n', flush = True)
             finally:
                 # Restore stdout and send content.
                 sys.stdout = sys.__stdout__
