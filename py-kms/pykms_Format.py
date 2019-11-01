@@ -3,6 +3,7 @@
 from __future__ import print_function, unicode_literals
 import re
 import sys
+import os
 import threading
 
 try:
@@ -101,29 +102,29 @@ MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{
           3  : {'text' : "{yellow}Server parsing RPC Bind Request...{end}",                                          'where' : "srv"},
           4  : {'text' : "{yellow}Server generating RPC Bind Response...{end}",                                      'where' : "srv"},
           5  : {'text' : "{yellow}Server sending RPC Bind Response...\t\t\t\t{end}{white}===============>{end}",     'where' : "srv"},
-          6  : {'text' : "{green}{bold}RPC Bind acknowledged !!!\n\n{end}",                                          'where' : "srv"},
+          6  : {'text' : "{green}{bold}\nRPC Bind acknowledged !!!{end}",                                            'where' : "srv"},
           7  : {'text' : "{white}===============>{end}{yellow}\tClient received RPC Bind Response !!!{end}",         'where' : "clt"},
-          8  : {'text' : "{green}{bold}\t\t\tRPC Bind acknowledged !!!\n{end}",                                      'where' : "clt"},
+          8  : {'text' : "{green}{bold}\t\t\tRPC Bind acknowledged !!!{end}",                                        'where' : "clt"},
           9  : {'text' : "{blue}\t\t\tClient generating Activation Request dictionary...{end}",                      'where' : "clt"},
           10 : {'text' : "{blue}\t\t\tClient generating Activation Request data...{end}",                            'where' : "clt"},
           11 : {'text' : "{blue}\t\t\tClient generating RPC Activation Request...{end}",                             'where' : "clt"},
-          12 : {'text' : "{white}<==============={end}{blue}\tClient sending RPC Activation Request...\n\n{end}",    'where' : "clt"},
+          12 : {'text' : "{white}<==============={end}{blue}\tClient sending RPC Activation Request...{end}",        'where' : "clt"},
           13 : {'text' : "{blue}Server received RPC Activation Request !!!\t\t\t{end}{white}<==============={end}",  'where' : "srv"},
           14 : {'text' : "{blue}Server parsing RPC Activation Request...{end}",                                      'where' : "srv"},
           15 : {'text' : "{blue}Server processing KMS Activation Request...{end}",                                   'where' : "srv"},
           16 : {'text' : "{blue}Server processing KMS Activation Response...{end}",                                  'where' : "srv"},
           17 : {'text' : "{blue}Server generating RPC Activation Response...{end}",                                  'where' : "srv"},
           18 : {'text' : "{blue}Server sending RPC Activation Response...\t\t\t{end}{white}===============>{end}",   'where' : "srv"},
-          19 : {'text' : "{green}{bold}Server responded, now in Stand by...\n{end}",                                 'where' : "srv"},
+          19 : {'text' : "{green}{bold}\nServer responded, now in Stand by...\n{end}",                               'where' : "srv"},
           20 : {'text' : "{white}===============>{end}{blue}\tClient received Response !!!{end}",                    'where' : "clt"},
           21 : {'text' : "{green}{bold}\t\t\tActivation Done !!!{end}",                                              'where' : "clt"},
           -1 : {'text' : "{white}Server receiving{end}",                                                             'where' : "clt"},
-          -2 : {'text' : "{white}\n\n\n\t\t\t\t\t\t\t\tClient sending{end}",                                         'where' : "srv"},
+          -2 : {'text' : "{white}\t\t\t\t\t\t\t\tClient sending{end}",                                               'where' : "srv"},
           -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'where' : "srv"},
-          -4 : {'text' : "{white}\n\nServer sending{end}",                                                           'where' : "clt"},
+          -4 : {'text' : "{white}Server sending{end}",                                                               'where' : "clt"},
           }
 
-def pick_MsgMap(messagelist):
+def MsgMap_unformat(messagelist):
         pattern = r"(?<!\{)\{([^}]+)\}(?!\})"
         picktxt, pickarrw = [ [] for _ in range(2) ]
                                        
@@ -137,17 +138,17 @@ def pick_MsgMap(messagelist):
                         pass
         return picktxt, pickarrw
 
-def unshell_MsgMap(arrows):
+def MsgMap_unshell(arrows):
         unMsgMap = {}
         for key, values in MsgMap.items():
-                txt = pick_MsgMap([values])
+                txt = MsgMap_unformat([values])
 
                 if txt[0][0] in arrows:
                         unMsgMap.update({txt[1][0] : values['where']})
                 else:
                         unMsgMap.update({txt[0][0] : values['where']})
         return unMsgMap
-    
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 # https://stackoverflow.com/questions/230751/how-to-flush-output-of-print-function
 if pyver < (3, 3):
@@ -163,6 +164,7 @@ if pyver < (3, 3):
 # https://ryanjoneil.github.io/posts/2014-02-14-capturing-stdout-in-a-python-child-process.html
 class ShellMessage(object):
     view = True
+    count, remain, numlist = (0, 0, [])
 
     class Collect(StringIO):
         # Capture string sent to stdout.
@@ -176,8 +178,20 @@ class ShellMessage(object):
             self.put_text = put_text
             self.print_queue = Queue.Queue()
             self.plaintext = []
+            self.path = os.path.dirname(os.path.abspath( __file__ )) + '/newlines.txt'
 
         def formatter(self, msgtofrmt):
+            if self.newlines:
+                text = MsgMap_unformat([msgtofrmt])[0][0]
+                msgtofrmt = msgtofrmt['text'].replace(text, self.newlines * '\n' + text)
+                self.newlines = 0
+            else:
+                try:
+                    # comes from MsgMap.
+                    msgtofrmt = msgtofrmt['text']
+                except:
+                    # comes from `put_text` option.
+                    pass
             self.msgfrmt = msgtofrmt.format(**ColorExtraMap)
             if self.get_text:
                 self.plaintext.append(unshell_message(self.msgfrmt, m = 0)[0]["tag00"]['text'])
@@ -185,12 +199,13 @@ class ShellMessage(object):
         def run(self):           
             if not ShellMessage.view:
                 if self.get_text:
+                    self.newlines = 0
                     if self.put_text is not None:
-                        for mess in self.put_text:
-                            self.formatter(mess)
+                        for msg in self.put_text:
+                            self.formatter(msg)
                     else:
                         for num in self.nshell:
-                            self.formatter(MsgMap[num]['text'])
+                            self.formatter(MsgMap[num])
                     return self.plaintext
                 else:
                     return
@@ -213,21 +228,60 @@ class ShellMessage(object):
             # Get string/s printed.
             if self.get_text:
                 return self.plaintext
-                                
+
+        def newlines_file(self, mode, *args):
+            try:
+                with open(self.path, mode) as file:
+                    if mode in ['w', 'a']:
+                        file.write(args[0])
+                    elif mode == 'r':
+                        data = [int(i) for i in [line.rstrip('\n') for line in file.readlines()]]
+                        self.newlines, ShellMessage.remain = data[0], sum(data[1:])
+            except:
+                with open(self.path, 'w') as file: pass
+
+        def newlines_count(self, num):
+            ShellMessage.count += MsgMap[num]['text'].count('\n')
+            if num >= 0:
+                ShellMessage.numlist.append(num)
+                if self.continuecount:
+                    # Note: bypassed '\n' counted after message with arrow,
+                    # isn't: str(len(ShellMessage.numlist) + ShellMessage.count)
+                    towrite = str(len(ShellMessage.numlist)) + '\n'
+                    self.newlines_file('a', towrite)
+                    ShellMessage.count, ShellMessage.numlist = (0, [])
+            else:
+                ShellMessage.count += (len(ShellMessage.numlist) - ShellMessage.remain) * 2
+                if num in [-1, -3]:
+                    towrite = str(ShellMessage.count) + '\n'
+                    self.newlines_file('w', towrite)
+                    ShellMessage.count, ShellMessage.remain, ShellMessage.numlist = (0, 0, [])
+                    self.continuecount = True
+                elif num in [-2 ,-4]:
+                    self.newlines_file('r')
+            if num == 21:
+                os.remove(self.path)
+
         def spawn(self):
             # Save everything that would otherwise go to stdout.
             outstream = ShellMessage.Collect()
             sys.stdout = outstream
             
             try:
+                self.continuecount = False
+                self.newlines = 0
+
                 # Print something.
                 if self.put_text is not None:
-                    for mess in self.put_text:
-                        self.formatter(mess)
+                    for msg in self.put_text:
+                        ShellMessage.count += msg.count('\n')
+                        ShellMessage.numlist.append('put')
+                        self.formatter(msg)
                         print(self.msgfrmt, end = '\n', flush = True)
                 else:
                     for num in self.nshell:
-                        self.formatter(MsgMap[num]['text'])
+                        self.newlines_count(num)
+                        self.formatter(MsgMap[num])
                         print(self.msgfrmt, end = '\n', flush = True)
             finally:
                 # Restore stdout and send content.

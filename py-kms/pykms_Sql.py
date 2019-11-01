@@ -2,7 +2,6 @@
 
 import os
 import logging
-import sys
 
 # sqlite3 is optional.
 try:
@@ -28,8 +27,8 @@ def sql_initialize():
 licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCount INTEGER)")
 
 		except sqlite3.Error as e:
-                        pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{red}{bold}%s. Exiting...{end}" %str(e))
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
 		finally:
 			if con:
 				con.commit()
@@ -65,11 +64,11 @@ skuId, licenseStatus, lastRequestTime, requestCount) VALUES (:clientMachineId, :
 				cur.execute("UPDATE clients SET requestCount=requestCount+1 WHERE clientMachineId=:clientMachineId;", infoDict)
 
 		except sqlite3.Error as e:
-                        pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{red}{bold}%s. Exiting...{end}" %str(e))
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
 	except sqlite3.Error as e:
-                pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                               put_text = "{red}{bold}%s. Exiting...{end}" %str(e))
+                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
 	finally:
 		if con:
 		    con.commit()
@@ -90,11 +89,11 @@ def sql_update_epid(dbName, kmsRequest, response):
 				cur.execute("UPDATE clients SET kmsEpid=? WHERE clientMachineId=?;", (str(response["kmsEpid"].decode('utf-16le')),
 												      cmid))
 		except sqlite3.Error as e:
-                        pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{red}{bold}%s. Exiting...{end}" %str(e))
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
 	except sqlite3.Error as e:
-                pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                               put_text = "{red}{bold}%s. Exiting...{end}" %str(e))
+                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
 	finally:
 		if con:
 			con.commit()

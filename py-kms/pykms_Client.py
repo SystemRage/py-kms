@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import argparse
 import binascii
 import datetime
 import random
@@ -11,7 +10,6 @@ import sys
 import uuid
 import logging
 import os
-import errno
 
 import pykms_RpcBind, pykms_RpcRequest 
 from pykms_Filetimes import dt_to_filetime
@@ -23,6 +21,7 @@ from pykms_RequestV6 import kmsRequestV6
 from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
 from pykms_Misc import logger_create, check_logfile, pretty_printer
+from pykms_Misc import KmsParser, KmsException
 from pykms_Format import justify, byterize, enco, deco, ShellMessage
 
 clt_description = 'KMS Client Emulator written in Python'
@@ -53,7 +52,7 @@ log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
         }
 
 def client_options():
-        parser = argparse.ArgumentParser(description = clt_description, epilog = 'version: ' + clt_version)
+        parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version)
         parser.add_argument("ip", nargs = "?", action = "store", default = clt_options['ip']['def'], help = clt_options['ip']['help'], type = str)
         parser.add_argument("port", nargs = "?", action = "store", default = clt_options['port']['def'], help = clt_options['port']['help'], type = int)
         parser.add_argument("-m", "--mode", dest = clt_options['mode']['des'], default = clt_options['mode']['def'], choices = clt_options['mode']['choi'],
@@ -62,15 +61,17 @@ def client_options():
         parser.add_argument("-n", "--name", dest = clt_options['name']['des'] , default = clt_options['name']['def'], help = clt_options['name']['help'], type = str)
         parser.add_argument("-V", "--loglevel", dest = clt_options['llevel']['des'], action = "store", choices = clt_options['llevel']['choi'],
                             default = clt_options['llevel']['def'], help = clt_options['llevel']['help'], type = str)
-        parser.add_argument("-F", "--logfile", nargs = "+", dest = clt_options['lfile']['des'], default = clt_options['lfile']['def'],
+        parser.add_argument("-F", "--logfile", nargs = "+", action = "store", dest = clt_options['lfile']['des'], default = clt_options['lfile']['def'],
                             help = clt_options['lfile']['help'], type = str)
         parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store", default = clt_options['lsize']['def'],
                             help = clt_options['lsize']['help'], type = float)
-        
-        clt_config.update(vars(parser.parse_args()))
-        # Check logfile.
-        clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], loggerclt)
-        
+
+        try:
+                clt_config.update(vars(parser.parse_args()))
+                # Check logfile.
+                clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'])
+        except KmsException as e:
+                pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
 def client_check():
         # Setup hidden or not messages.
@@ -83,14 +84,13 @@ def client_check():
                 try:
                         uuid.UUID(clt_config['cmid'])
                 except ValueError:
-                        loggerclt.error("Bad CMID. Exiting...")
-                        sys.exit()
-                        
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}Bad CMID. Exiting...{end}")
         # Check machineName.
         if clt_config['machineName'] is not None:
                 if len(clt_config['machineName']) < 2 or len(clt_config['machineName']) > 63:
-                        loggerclt.error("machineName must be between 2 and 63 characters in length.")
-                        sys.exit()
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}machineName must be between 2 and 63 characters in length. Exiting...{end}")
                         
         clt_config['call_id'] = 1
 
@@ -125,31 +125,46 @@ def client_create():
         loggerclt.info("Connection successful !")
         binder = pykms_RpcBind.handler(None, clt_config)
         RPC_Bind = enco(str(binder.generateRequest()), 'latin-1')
-        loggerclt.info("Sending RPC bind request...")
-        pretty_printer(None, num_text = [-1, 1])
-        s.send(RPC_Bind)
 
+        try:
+                loggerclt.info("Sending RPC bind request...")
+                s.send(RPC_Bind)
+                pretty_printer(num_text = [-1, 1])
+        except socket.error as e:
+                pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
         try:
                 bindResponse = s.recv(1024)
                 if bindResponse == '' or not bindResponse:
-                        pretty_printer(loggerclt.warning, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{yellow}{bold}No data received.{end}")
-                pretty_printer(None, num_text = [-4, 7])
+                        pretty_printer(log_obj = loggerclt.warning, to_exit = True,
+                                       put_text = "{reverse}{yellow}{bold}No data received.{end}")
+                pretty_printer(num_text = [-4, 7])
         except socket.error as e:
-                pretty_printer(loggerclt.error, get_text = True, log_text = True, to_exit = True,
-                               put_text = "{red}{bold}While receiving: %s{end}" %str(e))
+                pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
 
         packetType = MSRPCHeader(bindResponse)['type']
         if packetType == rpcBase.packetType['bindAck']:
                 loggerclt.info("RPC bind acknowledged.")
-                pretty_printer(None, num_text = 8)
+                pretty_printer(num_text = 8)
                 kmsRequest = createKmsRequest()
                 requester = pykms_RpcRequest.handler(kmsRequest, clt_config)
-                s.send(enco(str(requester.generateRequest()), 'latin-1'))
-                pretty_printer(None, num_text = [-1, 12])
-                response = s.recv(1024)
+
+                try:
+                        loggerclt.info("Sending RPC activation request...")
+                        s.send(enco(str(requester.generateRequest()), 'latin-1'))
+                        pretty_printer(num_text = [-1, 12])
+                except socket.error as e:
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
+                try:
+                        response = s.recv(1024)
+                        pretty_printer(num_text = [-4, 20])
+                except socket.error as e:
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
+
                 loggerclt.debug("Response: \n%s\n" % justify(deco(binascii.b2a_hex(response), 'latin-1')))
-                pretty_printer(None, num_text = [-4, 20])
                 parsed = MSRPCRespHeader(response)
                 kmsData = readKmsResponse(parsed['pduData'], kmsRequest, clt_config)
                 kmsResp = kmsData['response']
@@ -169,14 +184,14 @@ def client_create():
                                                     'status' : "Activated",
                                                     'product' : clt_config["mode"]})
 
-                pretty_printer(None, num_text = 21)
+                pretty_printer(num_text = 21)
                 
         elif packetType == rpcBase.packetType['bindNak']:
                 loggerclt.info(justify(MSRPCBindNak(bindResponse).dump(print_to_stdout = False)))
                 sys.exit(0)
         else:
-                pretty_printer(loggerclt.warning, get_text = True, log_text = True, to_exit = True,
-                               put_text = "{magenta}{bold}Something went wrong.{end}")
+                pretty_printer(log_obj = loggerclt.warning, to_exit = True,
+                               put_text = "{reverse}{magenta}{bold}Something went wrong.{end}")
 
 def clt_main(with_gui = False):
         if not with_gui:
@@ -209,7 +224,7 @@ def createKmsRequestBase():
         requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
         
         # Debug Stuff
-        pretty_printer(None, num_text = 9)
+        pretty_printer(num_text = 9)
         requestDict = byterize(requestDict)
         loggerclt.debug("Request Base Dictionary: \n%s\n" % justify(requestDict.dump(print_to_stdout = False)))
         

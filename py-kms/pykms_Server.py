@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import binascii
 import re
 import sys
@@ -8,7 +7,6 @@ import socket
 import uuid
 import logging
 import os
-import errno
 import threading
 
 try:
@@ -24,6 +22,7 @@ import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
 from pykms_Misc import logger_create, check_logfile, check_lcid, pretty_printer
+from pykms_Misc import KmsParser, KmsException
 from pykms_Format import enco, deco, ShellMessage
 
 srv_description = 'KMS Server Emulator written in Python'
@@ -36,8 +35,8 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         allow_reuse_address = True
  
         def handle_timeout(self):
-                pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                               put_text = "{red}{bold}Server connection timed out. Exiting...{end}")
+                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}Server connection timed out. Exiting...{end}")
         def handle_error(self, request, client_address):
                 pass
     
@@ -101,16 +100,8 @@ log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
 
-
-class KmsSrvException(Exception):
-        pass
-
-class KmsSrvParser(argparse.ArgumentParser):
-        def error(self, message):
-                raise KmsSrvException(message)
-
 def server_options():
-        parser = KmsSrvParser(description = srv_description, epilog = 'version: ' + srv_version)
+        parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version)
         parser.add_argument("ip", nargs = "?", action = "store", default = srv_options['ip']['def'], help = srv_options['ip']['help'], type = str)
         parser.add_argument("port", nargs = "?", action = "store", default = srv_options['port']['def'], help = srv_options['port']['help'], type = int)
         parser.add_argument("-e", "--epid", dest = srv_options['epid']['des'], default = srv_options['epid']['def'], help = srv_options['epid']['help'], type = str)
@@ -129,7 +120,7 @@ def server_options():
                             help = srv_options['time']['help'], type = int)
         parser.add_argument("-V", "--loglevel", dest = srv_options['llevel']['des'], action = "store", choices = srv_options['llevel']['choi'],
                             default = srv_options['llevel']['def'], help = srv_options['llevel']['help'], type = str)
-        parser.add_argument("-F", "--logfile", nargs = "+", dest = srv_options['lfile']['des'], default = srv_options['lfile']['def'],
+        parser.add_argument("-F", "--logfile", nargs = "+", action = "store", dest = srv_options['lfile']['des'], default = srv_options['lfile']['def'],
                             help = srv_options['lfile']['help'], type = str)
         parser.add_argument("-S", "--logsize", dest = srv_options['lsize']['des'], action = "store", default = srv_options['lsize']['def'],
                             help = srv_options['lsize']['help'], type = float)
@@ -137,9 +128,9 @@ def server_options():
         try:
                 srv_config.update(vars(parser.parse_args()))
                 # Check logfile.
-                srv_config['logfile'] = check_logfile(srv_config['logfile'], srv_options['lfile']['def'], loggersrv.error)
-        except KmsSrvException as e:
-                pretty_printer(loggersrv.error, to_exit = True, put_text = "{red}{bold}%s. Exiting...{end}" %str(e))
+                srv_config['logfile'] = check_logfile(srv_config['logfile'], srv_options['lfile']['def'])
+        except KmsException as e:
+                pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
 def server_check():
         # Setup hidden or not messages.
@@ -159,19 +150,19 @@ def server_check():
 
         if len(diff) != 0:
                 diff = str(diff).replace('{', '').replace('}', '')
-                pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                               put_text = "{red}{bold}HWID '%s' is invalid. Digit %s non hexadecimal. Exiting...{end}" %(hexstr.upper(), diff))
+                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}HWID '%s' is invalid. Digit %s non hexadecimal. Exiting...{end}" %(hexstr.upper(), diff))
         else:
                 lh = len(hexsub)
                 if lh % 2 != 0:
-                        pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{red}{bold}HWID '%s' is invalid. Hex string is odd length. Exiting...{end}" %hexsub.upper())
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}HWID '%s' is invalid. Hex string is odd length. Exiting...{end}" %hexsub.upper())
                 elif lh < 16:
-                        pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{red}{bold}HWID '%s' is invalid. Hex string is too short. Exiting...{end}" %hexsub.upper())
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}HWID '%s' is invalid. Hex string is too short. Exiting...{end}" %hexsub.upper())
                 elif lh > 16:
-                        pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
-                                       put_text = "{red}{bold}HWID '%s' is invalid. Hex string is too long. Exiting...{end}" %hexsub.upper())
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}HWID '%s' is invalid. Hex string is too long. Exiting...{end}" %hexsub.upper())
                 else:
                         srv_config['hwid'] = binascii.a2b_hex(hexsub)
 
@@ -182,15 +173,15 @@ def server_check():
         try:
                 import sqlite3            
         except:
-                pretty_printer(loggersrv.warning, get_text = True, log_text = True,
-                               put_text = "Module 'sqlite3' is not installed, database support disabled.")
+                pretty_printer(log_obj = loggersrv.warning,
+                               put_text = "{reverse}{yellow}{bold}Module 'sqlite3' is not installed, database support disabled.{end}")
                 srv_config['dbSupport'] = False
         else:
                 srv_config['dbSupport'] = True
 
         # Check port.
         if not 1 <= srv_config['port'] <= 65535:
-                pretty_printer(loggersrv.error, get_text = True, log_text = True, to_exit = True,
+                pretty_printer(log_obj = loggersrv.error, to_exit = True,
                                put_text = "{red}{bold}Port number '%s' is invalid. Enter between 1 - 65535. Exiting...{end}" %srv_config['port'])
 
 def server_create():
@@ -233,37 +224,45 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
                         try:
                                 self.data = self.request.recv(1024)
                                 if self.data == '' or not self.data:
-                                        pretty_printer(loggersrv.warning, get_text = True, log_text = True,
-                                                       put_text = "{yellow}{bold}No data received.{end}")
+                                        pretty_printer(log_obj = loggersrv.warning,
+                                                       put_text = "{reverse}{yellow}{bold}No data received.{end}")
                                         break
                         except socket.error as e:
-                                pretty_printer(loggersrv.error, get_text = True, log_text = True,
-                                               put_text = "{red}{bold}While receiving: %s{end}" %str(e))
+                                pretty_printer(log_obj = loggersrv.error,
+                                               put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
                                 break
                         
                         packetType = MSRPCHeader(self.data)['type']
                         if packetType == rpcBase.packetType['bindReq']:
                                 loggersrv.info("RPC bind request received.")
-                                pretty_printer(None, num_text = [-2, 2])
+                                pretty_printer(num_text = [-2, 2])
                                 handler = pykms_RpcBind.handler(self.data, srv_config)
                         elif packetType == rpcBase.packetType['request']:
                                 loggersrv.info("Received activation request.")
-                                pretty_printer(None, num_text = [-2, 13])
+                                pretty_printer(num_text = [-2, 13])
                                 handler = pykms_RpcRequest.handler(self.data, srv_config)
                         else:
-                                pretty_printer(loggersrv.error, get_text = True, log_text = True,
-                                               put_text = "Invalid RPC request type %s" %packetType)
-                                break                        
-                           
+                                pretty_printer(log_obj = loggersrv.error,
+                                               put_text = "{reverse}{red}{bold}Invalid RPC request type %s.{end}" %packetType)
+                                break
+
                         res = enco(str(handler.populate()), 'latin-1')
-                        self.request.send(res)
 
                         if packetType == rpcBase.packetType['bindReq']:
                                 loggersrv.info("RPC bind acknowledged.")
-                                pretty_printer(None, num_text = [-3, 5, 6])
+                                pretty_printer(num_text = [-3, 5, 6])
                         elif packetType == rpcBase.packetType['request']:
                                 loggersrv.info("Responded to activation request.")
-                                pretty_printer(None, num_text = [-3, 18, 19])
+                                pretty_printer(num_text = [-3, 18, 19])
+
+                        try:
+                                self.request.send(res)
+                        except socket.error as e:
+                                pretty_printer(log_obj = loggersrv.error,
+                                               put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
+                                break
+
+                        if packetType == rpcBase.packetType['request']:
                                 break
 
         def finish(self):

@@ -3,6 +3,7 @@
 import sys
 import logging
 import os
+import argparse
 from logging.handlers import RotatingFileHandler
 from pykms_Format import ColorExtraMap, ShellMessage
 
@@ -132,20 +133,20 @@ def logger_create(log_obj, config, mode = 'a'):
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def check_logfile(optionlog, defaultlog, log_obj):
+def check_logfile(optionlog, defaultlog):
         if not isinstance(optionlog, list):
                 optionlog = [optionlog]
 
         lenopt = len(optionlog)
-        msg_long = "{red}{bold}Argument logfile: Too much arguments{end}"
+        msg_dir  = "{reverse}{red}{bold}argument logfile: no such file or directory: %s. Exiting...{end}"
+        msg_long = "{reverse}{red}{bold}argument logfile: too much arguments. Exiting...{end}"
 
         def checkdir(path):
                 if not os.path.isdir(os.path.dirname(path)):
-                        pretty_printer(log_obj, to_exit = True,
-                                       put_text = "{red}{bold}Argument logfile: No such file or directory: %s{end}" %path)
+                        pretty_printer(put_text = msg_dir %path, to_exit = True)
 
         if lenopt > 2:
-                pretty_printer(log_obj, to_exit = True, put_text = msg_long)
+                pretty_printer(put_text = msg_long, to_exit = True)
 
         if 'FILESTDOUT' in optionlog:
                 if lenopt == 1:
@@ -156,30 +157,30 @@ def check_logfile(optionlog, defaultlog, log_obj):
                         checkdir(optionlog[1])
         else:
                 if lenopt == 2:
-                        pretty_printer(46, log_obj, to_exit = True, put_text = msg_long)
+                        pretty_printer(put_text = msg_long, to_exit = True)
                 elif lenopt == 1 and 'STDOUT' not in optionlog:
                         # check directory path.
                         checkdir(optionlog[0])
         return optionlog
 
 
-def pretty_printer(log_obj, **kwargs):
-        """ `log_obj` --> logging object.
-            kwargs:
+def pretty_printer(**kwargs):
+        """kwargs:
+                    `log_obj`  --> if logging object specified the text not ansi
+                                   formatted is logged.
                     `get_text` --> if True obtain text not ansi formatted,
                                    after printing it with ansi formattation.
                     `put_text` --> a string or list of strings with ansi formattation.
                                    if None refer to `num_text` for printing process.
-                    `num_text` --> a number or list of numbers of numbered message map.
+                    `num_text` --> a number or list of numbers refering numbered message map.
                                    if None `put_text` must be defined for printing process.
-                    `log_text` --> if True the text not ansi formatted is logged.
                     `to_exit ` --> if True system exit is called.
         """
         # Set defaults for not defined options.
-        options = {'get_text' : False,
+        options = {'log_obj'  : None,
+                   'get_text' : False,
                    'put_text' : None,
                    'num_text' : None,
-                   'log_text' : False,
                    'to_exit'  : False,
                    }
         options.update(kwargs)
@@ -194,12 +195,18 @@ def pretty_printer(log_obj, **kwargs):
         if (options['put_text'] is not None) and (not isinstance(options['put_text'], list)):
                 options['put_text'] = [options['put_text']]
 
-        # Process errors.
+        # Overwrite `get_text` (used as hidden).
+        if options['put_text']:
+                options['get_text'] = True
+        elif options['num_text']: # further check.
+                options['get_text'] = False
+
+        # Process messages.
         plain_messages = ShellMessage.Process(options['num_text'], get_text = options['get_text'], put_text = options['put_text']).run()
 
-        if options['log_text']:
+        if options['log_obj']:
                 for plain_message in plain_messages:
-                        log_obj(plain_message)
+                        options['log_obj'](plain_message)
         if options['to_exit']:
                 sys.exit(1)
 
@@ -242,10 +249,19 @@ def check_lcid(lcid, log_obj):
                                 fixlcid = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
                         except StopIteration:
                                 fixlcid = 1033
-                pretty_printer(log_obj, get_text = True, log_text = True,
-                               put_text = "{yellow}{bold}lcid %s auto-fixed with lcid %s{end}" %(lcid, fixlcid))
+                pretty_printer(log_obj = log_obj,
+                               put_text = "{reverse}{yellow}{bold}LCID %s auto-fixed with LCID %s{end}" %(lcid, fixlcid))
                 return fixlcid
         return lcid
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class KmsException(Exception):
+        pass
+
+class KmsParser(argparse.ArgumentParser):
+        def error(self, message):
+                raise KmsException(message)
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
