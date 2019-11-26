@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import binascii
 import re
@@ -13,17 +14,21 @@ try:
         # Python 2 import.
         import SocketServer as socketserver
         import Queue as Queue
+        import pykms_Selectors as selectors
+        from pykms_Time import monotonic as time
 except ImportError:
         # Python 3 import.
         import socketserver
         import queue as Queue
+        import selectors
+        from time import monotonic as time
 
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
-from pykms_Misc import logger_create, check_logfile, check_lcid, pretty_printer
+from pykms_Misc import logger_create, check_logfile, check_lcid
 from pykms_Misc import KmsParser, KmsException
-from pykms_Format import enco, deco, ShellMessage
+from pykms_Format import enco, deco, ShellMessage, pretty_printer
 
 srv_description = 'KMS Server Emulator written in Python'
 srv_version = 'py-kms_2019-05-15'
@@ -33,43 +38,120 @@ srv_config = {}
 class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         daemon_threads = True
         allow_reuse_address = True
- 
+
+        def __init__(self, server_address, RequestHandlerClass):
+                socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
+                self.__shutdown_request = False
+                self.r_service, self.w_service = os.pipe()
+
+                if hasattr(selectors, 'PollSelector'):
+                        self._ServerSelector = selectors.PollSelector
+                else:
+                        self._ServerSelector = selectors.SelectSelector
+
+        def pykms_serve(self):
+                """ Mixing of socketserver serve_forever() and handle_request() functions,
+                    without elements blocking tkinter.
+                    Handle one request at a time, possibly blocking.
+                    Respects self.timeout.
+                """
+                # Support people who used socket.settimeout() to escape
+                # pykms_serve() before self.timeout was available.
+                timeout = self.socket.gettimeout()
+                if timeout is None:
+                        timeout = self.timeout
+                elif self.timeout is not None:
+                        timeout = min(timeout, self.timeout)
+                if timeout is not None:
+                        deadline = time() + timeout
+
+                try:
+                        # Wait until a request arrives or the timeout expires.
+                        with self._ServerSelector() as selector:
+                                selector.register(fileobj = self, events = selectors.EVENT_READ)
+                                # self-pipe trick.
+                                selector.register(fileobj = self.r_service, events = selectors.EVENT_READ)
+
+                                while not self.__shutdown_request:
+                                        ready = selector.select(timeout)
+                                        if self.__shutdown_request:
+                                                break
+
+                                        if ready == []:
+                                                if timeout is not None:
+                                                        timeout = deadline - time()
+                                                        if timeout < 0:
+                                                                return self.handle_timeout()
+                                        else:
+                                                for key, mask in ready:
+                                                        if key.fileobj is self:
+                                                                self._handle_request_noblock()
+                                                        elif key.fileobj is self.r_service:
+                                                                # only to clean buffer.
+                                                                msgkill = os.read(self.r_service, 8).decode('utf-8')
+                                                                sys.exit(0)
+                finally:
+                        self.__shutdown_request = False
+
+        def shutdown(self):
+                self.__shutdown_request = True
+
         def handle_timeout(self):
                 pretty_printer(log_obj = loggersrv.error, to_exit = True,
                                put_text = "{reverse}{red}{bold}Server connection timed out. Exiting...{end}")
+
         def handle_error(self, request, client_address):
                 pass
-    
-class server_thread(threading.Thread):
-        def __init__(self):
-                threading.Thread.__init__(self)
-                self.queue = serverqueue
-                self.is_running = False 
-                self.daemon = True
-                
-        def run(self):
-            while True:
-                    if not self.queue.empty():
-                            item = self.queue.get()
-                            if item == 'start':
-                                    self.is_running = True
-                                    # Check options.
-                                    server_check()
-                                    # Create and run threaded server.
-                                    self.server = server_create()
-                                    try:
-                                            while True:
-                                                    self.server.handle_request()
-                                    except KeyboardInterrupt:
-                                            pass
-                                    finally:
-                                            self.server.server_close()
-                            elif item == 'stop':
-                                    self.is_running = False
-                                    self.server = None
-                            self.queue.task_done()
 
-##-----------------------------------------------------------------------------------------------------------------------------------------------
+
+class server_thread(threading.Thread):
+        def __init__(self, queue):
+                threading.Thread.__init__(self)
+                self.queue = queue
+                self.server = None
+                self.is_running_server, self.with_gui = [False for _ in range(2)]
+                self.is_running_thread = threading.Event()
+
+        def terminate_serve(self):
+                self.server.shutdown()
+                self.server.server_close()
+
+        def terminate_thread(self):
+                self.is_running_thread.set()
+
+        def terminate_eject(self):
+                os.write(self.server.w_service, u'☠'.encode('utf-8'))
+
+        def run(self):
+                while not self.is_running_thread.is_set():
+                        try:
+                                item = self.queue.get(block = True, timeout = 0.1)
+                                self.queue.task_done()
+                        except Queue.Empty:
+                                continue
+                        else:
+                                try:
+                                        if item == 'start':
+                                                self.eject = False
+                                                self.is_running_server = True
+                                                # Check options.
+                                                server_check()
+                                                # Create and run server.
+                                                self.server = server_create()
+                                                self.server.pykms_serve()
+                                        elif item == 'stop':
+                                                self.server = None
+                                                self.is_running_server = False
+                                        elif item == 'exit':
+                                                self.terminate_thread()
+                                except SystemExit as e:
+                                        self.eject = True
+                                        if not self.with_gui:
+                                                raise
+                                        else:
+                                                continue
+
+##---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 loggersrv = logging.getLogger('logsrv')
 
@@ -190,17 +272,29 @@ def server_create():
         loggersrv.info("TCP server listening at %s on port %d." % (srv_config['ip'], srv_config['port']))
         loggersrv.info("HWID: %s" % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
         return server
-                
+
+def srv_terminate(exit_server = False, exit_thread = False):
+        if exit_server:
+                serverthread.terminate_serve()
+                serverqueue.put('stop')
+        if exit_thread:
+                serverqueue.put('exit')
+
 def srv_main_without_gui():
         # Parse options.
         server_options()
         # Run threaded server.
         serverqueue.put('start')
-        serverthread.join()
-        
+        # Wait to finish.
+        try:
+                while serverthread.is_alive():
+                        serverthread.join(timeout = 0.5)
+        except (KeyboardInterrupt, SystemExit):
+                srv_terminate(exit_server = True, exit_thread = True)
+
 def srv_main_with_gui(width = 950, height = 660):
         import pykms_GuiBase
-        
+
         root = pykms_GuiBase.KmsGui()
         root.title(pykms_GuiBase.gui_description + ' ' + pykms_GuiBase.gui_version)
         # Main window initial position.
@@ -210,9 +304,7 @@ def srv_main_with_gui(width = 950, height = 660):
         x = (ws / 2) - (width / 2)
         y = (hs / 2) - (height / 2)
         root.geometry('+%d+%d' %(x, y))
-                
         root.mainloop()
-
 
 class kmsServerHandler(socketserver.BaseRequestHandler):
         def setup(self):
@@ -235,11 +327,11 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
                         packetType = MSRPCHeader(self.data)['type']
                         if packetType == rpcBase.packetType['bindReq']:
                                 loggersrv.info("RPC bind request received.")
-                                pretty_printer(num_text = [-2, 2])
+                                pretty_printer(num_text = [-2, 2], where = "srv")
                                 handler = pykms_RpcBind.handler(self.data, srv_config)
                         elif packetType == rpcBase.packetType['request']:
                                 loggersrv.info("Received activation request.")
-                                pretty_printer(num_text = [-2, 13])
+                                pretty_printer(num_text = [-2, 13], where = "srv")
                                 handler = pykms_RpcRequest.handler(self.data, srv_config)
                         else:
                                 pretty_printer(log_obj = loggersrv.error,
@@ -250,19 +342,18 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
 
                         if packetType == rpcBase.packetType['bindReq']:
                                 loggersrv.info("RPC bind acknowledged.")
-                                pretty_printer(num_text = [-3, 5, 6])
+                                pretty_printer(num_text = [-3, 5, 6], where = "srv")
                         elif packetType == rpcBase.packetType['request']:
                                 loggersrv.info("Responded to activation request.")
-                                pretty_printer(num_text = [-3, 18, 19])
+                                pretty_printer(num_text = [-3, 18, 19], where = "srv")
 
                         try:
                                 self.request.send(res)
+                                if packetType == rpcBase.packetType['request']:
+                                        break
                         except socket.error as e:
                                 pretty_printer(log_obj = loggersrv.error,
                                                put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
-                                break
-
-                        if packetType == rpcBase.packetType['request']:
                                 break
 
         def finish(self):
@@ -271,7 +362,8 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
 
 
 serverqueue = Queue.Queue(maxsize = 0)
-serverthread = server_thread()
+serverthread = server_thread(serverqueue)
+serverthread.setDaemon(True)
 serverthread.start()
 
 if __name__ == "__main__":

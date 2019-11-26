@@ -5,7 +5,7 @@ import logging
 import os
 import argparse
 from logging.handlers import RotatingFileHandler
-from pykms_Format import ColorExtraMap, ShellMessage
+from pykms_Format import ColorExtraMap, pretty_printer
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -162,53 +162,6 @@ def check_logfile(optionlog, defaultlog):
                         # check directory path.
                         checkdir(optionlog[0])
         return optionlog
-
-
-def pretty_printer(**kwargs):
-        """kwargs:
-                    `log_obj`  --> if logging object specified the text not ansi
-                                   formatted is logged.
-                    `get_text` --> if True obtain text not ansi formatted,
-                                   after printing it with ansi formattation.
-                    `put_text` --> a string or list of strings with ansi formattation.
-                                   if None refer to `num_text` for printing process.
-                    `num_text` --> a number or list of numbers refering numbered message map.
-                                   if None `put_text` must be defined for printing process.
-                    `to_exit ` --> if True system exit is called.
-        """
-        # Set defaults for not defined options.
-        options = {'log_obj'  : None,
-                   'get_text' : False,
-                   'put_text' : None,
-                   'num_text' : None,
-                   'to_exit'  : False,
-                   }
-        options.update(kwargs)
-        # Check options.
-        if (options['num_text'] is None) and (options['put_text'] is None):
-                raise ValueError('One of `num_text` and `put_text` must be provided.')
-        elif (options['num_text'] is not None) and (options['put_text'] is not None):
-                raise ValueError('These parameters are mutually exclusive.')
-
-        if (options['num_text'] is not None) and (not isinstance(options['num_text'], list)):
-                options['num_text'] = [options['num_text']]
-        if (options['put_text'] is not None) and (not isinstance(options['put_text'], list)):
-                options['put_text'] = [options['put_text']]
-
-        # Overwrite `get_text` (used as hidden).
-        if options['put_text']:
-                options['get_text'] = True
-        elif options['num_text']: # further check.
-                options['get_text'] = False
-
-        # Process messages.
-        plain_messages = ShellMessage.Process(options['num_text'], get_text = options['get_text'], put_text = options['put_text']).run()
-
-        if options['log_obj']:
-                for plain_message in plain_messages:
-                        options['log_obj'](plain_message)
-        if options['to_exit']:
-                sys.exit(1)
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 

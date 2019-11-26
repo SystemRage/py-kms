@@ -9,7 +9,7 @@ try:
 except ImportError:
 	pass
 
-from pykms_Misc import pretty_printer
+from pykms_Format import pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 

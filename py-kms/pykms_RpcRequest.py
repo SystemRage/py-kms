@@ -6,8 +6,7 @@ import logging
 import pykms_Base
 import pykms_RpcBase
 from pykms_Dcerpc import MSRPCRequestHeader, MSRPCRespHeader
-from pykms_Format import justify, byterize, enco, deco
-from pykms_Misc import pretty_printer
+from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -16,7 +15,7 @@ loggersrv = logging.getLogger('logsrv')
 class handler(pykms_RpcBase.rpcBase):
         def parseRequest(self):
                 request = MSRPCRequestHeader(self.data)
-                pretty_printer(num_text = 14)
+                pretty_printer(num_text = 14, where = "srv")
                 request = byterize(request)
                 loggersrv.debug("RPC Message Request Bytes: \n%s\n" % justify(binascii.b2a_hex(self.data).decode('utf-8')))
                 loggersrv.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
@@ -41,7 +40,7 @@ class handler(pykms_RpcBase.rpcBase):
 
                 response['pduData'] = responseData
 
-                pretty_printer(num_text = 17)
+                pretty_printer(num_text = 17, where = "srv")
                 response = byterize(response)
                 loggersrv.debug("RPC Message Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
                 loggersrv.debug("RPC Message Response Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(response), 'latin-1')), 'utf-8')))
@@ -60,7 +59,7 @@ class handler(pykms_RpcBase.rpcBase):
                 request['alloc_hint'] = len(self.data)
                 request['pduData'] = str(self.data)
                 
-                pretty_printer(num_text = 11)
+                pretty_printer(num_text = 11, where = "clt")
                 request = byterize(request)
                 loggersrv.debug("RPC Message Request: \n%s\n" % justify(request.dump(print_to_stdout = False)))
                 loggersrv.debug("RPC Message Request Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(request), 'latin-1')), 'utf-8')))

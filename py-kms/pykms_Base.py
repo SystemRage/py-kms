@@ -11,8 +11,7 @@ from pykms_DB2Dict import kmsDB2Dict
 from pykms_PidGenerator import epidGenerator
 from pykms_Filetimes import filetime_to_dt
 from pykms_Sql import sql_initialize, sql_update, sql_update_epid
-from pykms_Format import justify, byterize, enco, deco
-from pykms_Misc import pretty_printer
+from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -111,7 +110,7 @@ class kmsBase:
                 if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
                         self.dbName = sql_initialize()
 
-                pretty_printer(num_text = 15)
+                pretty_printer(num_text = 15, where = "srv")
                 kmsRequest = byterize(kmsRequest)
                 loggersrv.debug("KMS Request Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(kmsRequest), 'latin-1')), 'latin-1')))                         
                 loggersrv.debug("KMS Request: \n%s\n" % justify(kmsRequest.dump(print_to_stdout = False)))

@@ -3,6 +3,7 @@
 import os
 import sys
 import threading
+from time import sleep
 
 try:
         # Python 2.x imports
@@ -19,10 +20,11 @@ except ImportError:
         from tkinter import filedialog
         import tkinter.font as tkFont
         
-from pykms_Server import srv_options, srv_version, srv_config, serverqueue, serverthread
-from pykms_GuiMisc import ToolTip, TextDoubleScroll, TextRedirect, custom_background, make_clear
+from pykms_Server import srv_options, srv_version, srv_config, srv_terminate, serverqueue, serverthread
+from pykms_GuiMisc import ToolTip, TextDoubleScroll, TextRedirect, custom_background
 from pykms_Client import clt_options, clt_version, clt_config, clt_main
 
+from pykms_Misc import check_logfile
 gui_description = 'py-kms GUI'
 gui_version = 'v1.0'
 
@@ -55,11 +57,11 @@ def switch_dir(path):
         else:
                 return
         
-def gui_redirect(str_to_print):
+def gui_redirect(str_to_print, where):
         global txsrv, txclt, txcol, rclt
-       
+
         try:
-                TextRedirect.StdoutRedirect(txsrv, txclt, txcol, rclt, str_to_print)
+                TextRedirect.StdoutRedirect(txsrv, txclt, txcol, rclt, str_to_print, where)
         except:
                 print(str_to_print)
 
@@ -76,6 +78,7 @@ class KmsGui(tk.Tk):
         def __init__(self, *args, **kwargs):
                 tk.Tk.__init__(self, *args, **kwargs)
                 self.wraplength = 200
+                serverthread.with_gui = True
                                                                                                 
                 ## Define fonts and colors.
                 self.btnwinfont = tkFont.Font(family = 'Times', size = 12, weight = 'bold')
@@ -131,14 +134,14 @@ class KmsGui(tk.Tk):
                 ## Create widgets (btnsrvwin) -----------------------------------------------------------------------------------------------------------
                 self.statesrv = tk.Label(self.btnsrvwin, text = 'Server\nState:\nStopped', font = self.othfont, foreground = self.customcolors['red'])
                 self.runbtnsrv = tk.Button(self.btnsrvwin, text = 'START\nSERVER', background = self.customcolors['green'],
-                                           foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.srv_clickedmain)
+                                           foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.srv_on_start)
                 self.shbtnclt = tk.Button(self.btnsrvwin, text = 'SHOW\nCLIENT', background = self.customcolors['magenta'],
-                                          foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.clt_showhide)
+                                          foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.clt_on_show)
                 self.clearbtnsrv = tk.Button(self.btnsrvwin, text = 'CLEAR', background = self.customcolors['orange'],
                                              foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont,
-                                             command = lambda: make_clear([txsrv, txclt]))
+                                             command = lambda: self.on_clear([txsrv, txclt]))
                 self.exitbtnsrv = tk.Button(self.btnsrvwin, text = 'EXIT', background = self.customcolors['black'],
-                                            foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.destroy)
+                                            foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.on_exit)
         
                 ## Layout widgets (btnsrvwin)
                 self.statesrv.grid(row = 0, column = 0, padx = 2, pady = 2, sticky = 'ew')
@@ -197,6 +200,7 @@ class KmsGui(tk.Tk):
                 filelbl = tk.Label(self.optsrvwin, text = 'Logfile Path / Name: ', font = self.optfont)
                 self.file = tk.Entry(self.optsrvwin, width = 10, font = self.optfont)
                 self.file.insert('end', srv_options['lfile']['def'])
+                self.file.xview_moveto(1)
                 ToolTip(self.file, text = srv_options['lfile']['help'], wraplength = self.wraplength)
                 filebtnwin = tk.Button(self.optsrvwin, text = 'Browse', command = lambda: self.browse(self.file, srv_options))
                 # Loglevel.
@@ -286,7 +290,7 @@ class KmsGui(tk.Tk):
                 # Create widgets (btncltwin) ------------------------------------------------------------------------------------------------------------
                 self.runbtnclt = tk.Button(self.btncltwin, text = 'START\nCLIENT', background = self.customcolors['blue'],
                                            foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont,
-                                           state = 'disabled', command = self.clt_clickedstart)
+                                           state = 'disabled', command = self.clt_on_start)
                 
                 #self.othbutt = tk.Button(self.btncltwin, text = 'Botton\n2', background = self.customcolors['green'],
                 #                               foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont)
@@ -328,6 +332,7 @@ class KmsGui(tk.Tk):
                 cltfilelbl = tk.Label(self.optcltwin, text = 'Logfile Path / Name: ', font = self.optfont)
                 self.cltfile = tk.Entry(self.optcltwin, width = 10, font = self.optfont)
                 self.cltfile.insert('end', clt_options['lfile']['def'])
+                self.cltfile.xview_moveto(1)
                 ToolTip(self.cltfile, text = clt_options['lfile']['help'], wraplength = self.wraplength)
                 cltfilebtnwin = tk.Button(self.optcltwin, text = 'Browse', command = lambda: self.browse(self.cltfile, clt_options))
                 # Loglevel.
@@ -366,7 +371,7 @@ class KmsGui(tk.Tk):
                 except TypeError:
                         return value
                        
-        def clt_showhide(self, force = False):                
+        def clt_on_show(self, force = False):
                 if self.optcltwin.winfo_ismapped() or force:
                         self.shbtnclt['text'] = 'SHOW\nCLIENT'
                         self.optcltwin.grid_remove()
@@ -378,19 +383,28 @@ class KmsGui(tk.Tk):
                         self.msgcltwin.grid()
                         self.btncltwin.place(x = self.btncltwin_X, y = self.btncltwin_Y, bordermode = 'inside', anchor = 'nw')
 
-        def srv_clickedmain(self):
+        def srv_on_start(self):
                 if self.runbtnsrv['text'] == 'START\nSERVER':
-                        if self.srv_clickedstart():
+                        if self.srv_actions_start():
+                                self.on_clear([txsrv, txclt])
                                 self.runbtnsrv.configure(text = 'STOP\nSERVER', background = self.customcolors['red'],
                                                          foreground = self.customcolors['white'])
                                 self.runbtnclt.configure(state = 'normal')
+
+                                # run thread for interrupting.
+                                self.ejectthread = threading.Thread(target = self.srv_eject, name = "Thread-Ejt")
+                                self.ejectthread.setDaemon(True)
+                                self.ejectthread.start()
+
                 elif self.runbtnsrv['text'] == 'STOP\nSERVER':
-                        self.srv_clickedstop()
-                        self.runbtnsrv.configure(text = 'START\nSERVER', background = self.customcolors['green'],
-                                                 foreground = self.customcolors['white'])
-                        self.runbtnclt.configure(state = 'disabled')
-                                                                       
-        def srv_clickedstart(self):
+                        serverthread.terminate_eject()
+
+        def srv_eject(self):
+                while not serverthread.eject:
+                        sleep(0.1)
+                self.srv_actions_stop()
+
+        def srv_actions_start(self):
                 ok = False
                 if switch_dir(os.path.dirname(self.file.get())):
                         if self.file.get().lower().endswith('.log'):
@@ -403,44 +417,49 @@ class KmsGui(tk.Tk):
                                 srv_config[srv_options['count']['des']] = self.proper_none(self.count.get())
                                 srv_config[srv_options['activation']['des']] = int(self.activ.get())
                                 srv_config[srv_options['renewal']['des']] = int(self.renew.get())
-                                srv_config[srv_options['lfile']['des']] = self.file.get()
+                                srv_config[srv_options['lfile']['des']] = check_logfile(self.file.get(), srv_options['lfile']['def'])
                                 srv_config[srv_options['llevel']['des']] = self.level.get()
                                 srv_config[srv_options['sql']['des']] = self.chkval.get()
                                 ## TODO.
                                 srv_config[srv_options['lsize']['des']] = 0
-                                srv_config[srv_options['time']['des']] = 30
+                                srv_config[srv_options['time']['des']] = None
 
                                 serverqueue.put('start')
                                 # wait for switch.
-                                while not serverthread.is_running:
+                                while not serverthread.is_running_server:
                                         pass
-                                self.srv_togglestate()
+                                self.srv_toggle()
                                 ok = True
                         else:
                                 messagebox.showerror('Invalid extension', 'Not a .log file !')   
                 else:
                         messagebox.showerror('Invalid path', 'Path you have provided not found !')
                 return ok
-                
 
-        def srv_clickedstop(self):
-                if serverthread.is_running:
-                        serverqueue.put('stop')
-                        serverthread.server.shutdown()
+        def srv_actions_stop(self):
+                if serverthread.is_running_server:
+                        srv_terminate(exit_server = True)
                         # wait for switch.
-                        while serverthread.is_running:
+                        while serverthread.is_running_server:
                                 pass
-                        self.srv_togglestate()
+                        self.srv_toggle()
+                        self.runbtnsrv.configure(text = 'START\nSERVER', background = self.customcolors['green'],
+                                                 foreground = self.customcolors['white'])
+                        self.runbtnclt.configure(state = 'disabled')
 
-        def srv_togglestate(self):
-                if serverthread.is_running:
+        def srv_toggle(self):
+                if serverthread.is_running_server:
                         txt, color = ('Server\nState:\nServing', self.customcolors['green'])
                 else:
                         txt, color = ('Server\nState:\nStopped', self.customcolors['red'])
                         
                 self.statesrv.configure(text = txt, foreground = color)
 
-        def clt_clickedstart(self):                                        
+        def clt_on_start(self):
+                self.on_clear([txsrv, txclt])
+                self.clt_actions_start()
+
+        def clt_actions_start(self):
                 if switch_dir(os.path.dirname(self.cltfile.get())):
                         if self.cltfile.get().lower().endswith('.log'):
                                 # Load dict.
@@ -449,16 +468,28 @@ class KmsGui(tk.Tk):
                                 clt_config[clt_options['mode']['des']] = self.cltmode.get()
                                 clt_config[clt_options['cmid']['des']] = self.proper_none(self.cltcmid.get())
                                 clt_config[clt_options['name']['des']] = self.proper_none(self.cltname.get())
-                                clt_config[clt_options['lfile']['des']] = self.cltfile.get()
+                                clt_config[clt_options['lfile']['des']] = check_logfile(self.cltfile.get(), clt_options['lfile']['def'])
                                 clt_config[clt_options['llevel']['des']] = self.cltlevel.get()
                                 ## TODO
                                 clt_config[clt_options['lsize']['des']] = 0
 
                                 
-                                clientthread = threading.Thread(target = clt_main, args=(True,))
-                                clientthread.setDaemon(True)
-                                clientthread.start()                                       
+                                self.clientthread = threading.Thread(target = clt_main, name = 'Thread-Clt', args=(True,))
+                                self.clientthread.setDaemon(True)
+                                self.clientthread.start()
                         else:
                                 messagebox.showerror('Invalid extension', 'Not a .log file !')   
                 else:
                         messagebox.showerror('Invalid path', 'Path you have provided not found !')
+
+        def on_exit(self):
+                if serverthread.is_running_server:
+                        srv_terminate(exit_server = True)
+                srv_terminate(exit_thread = True)
+                self.destroy()
+
+        def on_clear(self, widgetlist):
+                for widget in widgetlist:
+                        widget.configure(state = 'normal')
+                        widget.delete('1.0', 'end')
+                        widget.configure(state = 'disabled')

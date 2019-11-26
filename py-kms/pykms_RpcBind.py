@@ -7,8 +7,7 @@ import uuid
 import pykms_RpcBase
 from pykms_Dcerpc import MSRPCHeader, MSRPCBindAck
 from pykms_Structure import Structure
-from pykms_Format import justify, byterize, enco, deco
-from pykms_Misc import pretty_printer
+from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -78,7 +77,7 @@ class MSRPCBind(Structure):
 class handler(pykms_RpcBase.rpcBase):
         def parseRequest(self):
                 request = MSRPCHeader(self.data)
-                pretty_printer(num_text = 3)
+                pretty_printer(num_text = 3, where = "srv")
                 request = byterize(request)
                 loggersrv.debug("RPC Bind Request Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(self.data), 'utf-8')))
                 loggersrv.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),
@@ -122,7 +121,7 @@ class handler(pykms_RpcBase.rpcBase):
                         resp = preparedResponses[ts_uuid]
                         response['ctx_items'] += str(resp)
 
-                pretty_printer(num_text = 4)
+                pretty_printer(num_text = 4, where = "srv")
                 response = byterize(response)
                 loggersrv.debug("RPC Bind Response: \n%s\n" % justify(response.dump(print_to_stdout = False)))
                 loggersrv.debug("RPC Bind Response Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(response), 'latin-1')), 'utf-8')))
@@ -163,7 +162,7 @@ class handler(pykms_RpcBase.rpcBase):
                 request['call_id'] = self.srv_config['call_id']
                 request['pduData'] = str(bind)
 
-                pretty_printer(num_text = 0)
+                pretty_printer(num_text = 0, where = "clt")
                 bind = byterize(bind)
                 request = byterize(request)
                 loggersrv.debug("RPC Bind Request: \n%s\n%s\n" % (justify(request.dump(print_to_stdout = False)),

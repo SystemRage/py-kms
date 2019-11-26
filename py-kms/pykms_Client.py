@@ -20,9 +20,9 @@ from pykms_RequestV5 import kmsRequestV5
 from pykms_RequestV6 import kmsRequestV6
 from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
-from pykms_Misc import logger_create, check_logfile, pretty_printer
+from pykms_Misc import logger_create, check_logfile
 from pykms_Misc import KmsParser, KmsException
-from pykms_Format import justify, byterize, enco, deco, ShellMessage
+from pykms_Format import justify, byterize, enco, deco, ShellMessage, pretty_printer
 
 clt_description = 'KMS Client Emulator written in Python'
 clt_version = 'py-kms_2019-05-15'
@@ -128,8 +128,8 @@ def client_create():
 
         try:
                 loggerclt.info("Sending RPC bind request...")
+                pretty_printer(num_text = [-1, 1], where = "clt")
                 s.send(RPC_Bind)
-                pretty_printer(num_text = [-1, 1])
         except socket.error as e:
                 pretty_printer(log_obj = loggerclt.error, to_exit = True,
                                put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
@@ -138,7 +138,7 @@ def client_create():
                 if bindResponse == '' or not bindResponse:
                         pretty_printer(log_obj = loggerclt.warning, to_exit = True,
                                        put_text = "{reverse}{yellow}{bold}No data received.{end}")
-                pretty_printer(num_text = [-4, 7])
+                pretty_printer(num_text = [-4, 7], where = "clt")
         except socket.error as e:
                 pretty_printer(log_obj = loggerclt.error, to_exit = True,
                                put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
@@ -146,20 +146,21 @@ def client_create():
         packetType = MSRPCHeader(bindResponse)['type']
         if packetType == rpcBase.packetType['bindAck']:
                 loggerclt.info("RPC bind acknowledged.")
-                pretty_printer(num_text = 8)
+                pretty_printer(num_text = 8, where = "clt")
                 kmsRequest = createKmsRequest()
                 requester = pykms_RpcRequest.handler(kmsRequest, clt_config)
 
                 try:
                         loggerclt.info("Sending RPC activation request...")
-                        s.send(enco(str(requester.generateRequest()), 'latin-1'))
-                        pretty_printer(num_text = [-1, 12])
+                        RPC_Actv = enco(str(requester.generateRequest()), 'latin-1')
+                        pretty_printer(num_text = [-1, 12], where = "clt")
+                        s.send(RPC_Actv)
                 except socket.error as e:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True,
                                        put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
                 try:
                         response = s.recv(1024)
-                        pretty_printer(num_text = [-4, 20])
+                        pretty_printer(num_text = [-4, 20], where = "clt")
                 except socket.error as e:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True,
                                        put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
@@ -184,7 +185,7 @@ def client_create():
                                                     'status' : "Activated",
                                                     'product' : clt_config["mode"]})
 
-                pretty_printer(num_text = 21)
+                pretty_printer(num_text = 21, where = "clt")
                 
         elif packetType == rpcBase.packetType['bindNak']:
                 loggerclt.info(justify(MSRPCBindNak(bindResponse).dump(print_to_stdout = False)))
@@ -224,7 +225,7 @@ def createKmsRequestBase():
         requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
         
         # Debug Stuff
-        pretty_printer(num_text = 9)
+        pretty_printer(num_text = 9, where = "clt")
         requestDict = byterize(requestDict)
         loggerclt.debug("Request Base Dictionary: \n%s\n" % justify(requestDict.dump(print_to_stdout = False)))
         
