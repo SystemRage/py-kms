@@ -134,6 +134,8 @@ class TextRedirect(object):
                 lenarrow = len(arrows[0])
                 srv_msg_nonewline = [ item[0] for item in unformat_message([MsgMap[2], MsgMap[5], MsgMap[13], MsgMap[18]]) ]
                 terminator = unformat_message([MsgMap[21]])[0][0]
+                msg_align = [ msg[0].replace('\t', '').replace('\n', '') for msg in unformat_message([MsgMap[-2], MsgMap[-4]])]
+                newlinecut = [-1, -2, -4, -5]
 
                 def __init__(self, srv_text_space, clt_text_space, customcolors, runclt, str_to_print, where):
                         self.srv_text_space = srv_text_space
@@ -148,11 +150,13 @@ class TextRedirect(object):
                 def textbox_finish(self, message):
                         if message == self.terminator:
                                 TextRedirect.StdoutRedirect.tag_num = 0
+                                TextRedirect.StdoutRedirect.newlinecut = [-1, -2, -4, -5]
                                 self.runclt.configure(state = 'normal')
                             
                 def textbox_write(self, tag, message, color, extras):
                         widget = self.textbox_choose(message)
-                        self.maxchar = widget['width']
+                        self.w_maxpix, self.h_maxpix = widget.winfo_width(), widget.winfo_height()
+                        self.xfont = tkFont.Font(font = widget['font'])
                         widget.configure(state = 'normal')
                         widget.insert('end', self.textbox_format(message), tag)
                         self.textbox_color(tag, widget, color, self.customcolors['black'], extras)
@@ -169,40 +173,47 @@ class TextRedirect(object):
                                 return self.clt_text_space
                                                                                         
                 def textbox_color(self, tag, widget, forecolor = 'white', backcolor = 'black', extras = []):
-                        xfont = tkFont.Font(font = widget['font'])
-                        
                         for extra in extras:
                                 if extra == 'bold':
-                                        xfont.configure(weight = "bold")
+                                        self.xfont.configure(weight = "bold")
                                 elif extra == 'italic':
-                                        xfont.configure(slant = "italic")
+                                        self.xfont.configure(slant = "italic")
                                 elif extra == 'underlined':
-                                        xfont.text_font.configure(underline = True)
+                                        self.xfont.text_font.configure(underline = True)
                                 elif extra == 'strike':
-                                        xfont.configure(overstrike = True)
+                                        self.xfont.configure(overstrike = True)
+                                elif extra == 'reverse':
+                                        forecolor, backcolor = backcolor, forecolor
 
-                        widget.tag_configure(tag, foreground = forecolor, background = backcolor, font = xfont)
+                        widget.tag_configure(tag, foreground = forecolor, background = backcolor, font = self.xfont)
                         widget.tag_add(tag, "insert linestart", "insert lineend")
 
+                def textbox_newline(self, message):
+                        if not message.endswith('\n'):
+                                return message + '\n'
+                        else:
+                                return message
+
                 def textbox_format(self, message):
-                        lenfixed = self.maxchar - len(message.replace('\t', ''))
-                        
-                        if self.where == "srv":
-                                if message in self.srv_msg_nonewline:
-                                        lung = lenfixed - self.lenarrow + 4
-                                else:
-                                        lung = lenfixed + self.lenarrow + 10
-                                        if not message.endswith('\n'):
-                                                message += '\n'
-                        elif self.where == "clt":                                        
+                        # vertical align.
+                        self.w_maxpix = self.w_maxpix - 5 # pixel reduction for distance from border.
+                        w_fontpix, h_fontpix = (self.xfont.measure('0'), self.xfont.metrics('linespace'))
+                        msg_unformat = message.replace('\t', '').replace('\n', '')
+                        lenfixed_chars = int((self.w_maxpix / w_fontpix) - len(msg_unformat))
+
+                        if message in self.srv_msg_nonewline + self.clt_msg_nonewline:
+                                lung = lenfixed_chars - self.lenarrow
                                 if message in self.clt_msg_nonewline:
-                                        lung = lenfixed - self.lenarrow
-                                        if not message.endswith('\n'):
-                                                message += '\n'
-                                else:
-                                        lung = lenfixed + 10
-                                        if not message.endswith('\n') and message not in self.arrows:
-                                                message += '\n'
+                                        message = self.textbox_newline(message)
+                        else:
+                                lung = lenfixed_chars
+                                if (self.where == "srv") or (self.where == "clt" and message not in self.arrows):
+                                         message = self.textbox_newline(message)
+                                # horizontal align.
+                                if msg_unformat in self.msg_align:
+                                        msg_strip = message.lstrip('\n')
+                                        message = '\n' * (len(message) - len(msg_strip) + TextRedirect.StdoutRedirect.newlinecut[0]) + msg_strip
+                                        TextRedirect.StdoutRedirect.newlinecut.pop(0)
 
                         count = Counter(message)
                         countab = (count['\t'] if count['\t'] != 0 else 1)

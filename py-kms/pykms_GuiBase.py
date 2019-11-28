@@ -84,7 +84,7 @@ class KmsGui(tk.Tk):
                 self.btnwinfont = tkFont.Font(family = 'Times', size = 12, weight = 'bold')
                 self.othfont = tkFont.Font(family = 'Times', size = 9, weight = 'bold')
                 self.optfont = tkFont.Font(family = 'Helvetica', size = 11, weight = 'bold')
-                self.msgfont = tkFont.Font(family = 'Helvetica', size = 7)
+                self.msgfont = tkFont.Font(family = 'Monospace', size = 6) # need a monospaced type (like courier, etc..).
 
                 self.customcolors = { 'black'   : '#000000',
                                       'white'   : '#FFFFFF',
@@ -241,7 +241,7 @@ class KmsGui(tk.Tk):
                 chksql.grid(row = 12, column = 1, padx = 5, pady = 5, sticky = 'ew')
 
                 ## Create widgets and layout (msgsrvwin) -----------------------------------------------------------------------------------------------
-                self.textboxsrv = TextDoubleScroll(self.msgsrvwin, background = self.customcolors['black'], wrap = 'word', state = 'disabled',
+                self.textboxsrv = TextDoubleScroll(self.msgsrvwin, background = self.customcolors['black'], wrap = 'none', state = 'disabled',
                                                    relief = 'ridge', font = self.msgfont)
                 self.textboxsrv.put()
                 
@@ -360,7 +360,7 @@ class KmsGui(tk.Tk):
                 self.cltlevel.grid(row = 7, column = 1, padx = 5, pady = 5, sticky = 'ew')
                 
                 # Create widgets and layout (msgcltwin) ----------------------------------------------------------------------------------------------------------
-                self.textboxclt = TextDoubleScroll(self.msgcltwin, background = self.customcolors['black'], wrap = 'word', state = 'disabled',
+                self.textboxclt = TextDoubleScroll(self.msgcltwin, background = self.customcolors['black'], wrap = 'none', state = 'disabled',
                                                    relief = 'ridge', font = self.msgfont)
                 self.textboxclt.put()
                                
