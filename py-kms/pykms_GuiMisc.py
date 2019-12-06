@@ -137,12 +137,10 @@ class TextRedirect(object):
                 msg_align = [ msg[0].replace('\t', '').replace('\n', '') for msg in unformat_message([MsgMap[-2], MsgMap[-4]])]
                 newlinecut = [-1, -2, -4, -5]
 
-                def __init__(self, srv_text_space, clt_text_space, customcolors, runclt, str_to_print, where):
+                def __init__(self, srv_text_space, clt_text_space, customcolors, str_to_print, where):
                         self.srv_text_space = srv_text_space
                         self.clt_text_space = clt_text_space
                         self.customcolors = customcolors
-                        self.runclt = runclt
-                        self.runclt.configure(state = 'disabled')
                         self.str_to_print = str_to_print
                         self.where = where
                         self.textbox_do()
@@ -151,7 +149,6 @@ class TextRedirect(object):
                         if message == self.terminator:
                                 TextRedirect.StdoutRedirect.tag_num = 0
                                 TextRedirect.StdoutRedirect.newlinecut = [-1, -2, -4, -5]
-                                self.runclt.configure(state = 'normal')
                             
                 def textbox_write(self, tag, message, color, extras):
                         widget = self.textbox_choose(message)
@@ -231,9 +228,9 @@ class TextRedirect(object):
                         self.clt_text_space = clt_text_space
                         self.customcolors = customcolors
                         self.tag_err = 'STDERR'
+                        self.xfont = tkFont.Font(font = self.srv_text_space['font'])
                                                 
                 def write(self, string):
-                        self.textbox_clear()                                
                         self.textbox_color(self.tag_err, self.srv_text_space, self.customcolors['red'], self.customcolors['black'])
                         self.srv_text_space.configure(state = 'normal')
                         self.srv_text_space.insert('end', string, self.tag_err)

@@ -10,6 +10,7 @@ import sys
 import uuid
 import logging
 import os
+import threading
 
 import pykms_RpcBind, pykms_RpcRequest 
 from pykms_Filetimes import dt_to_filetime
@@ -27,6 +28,16 @@ from pykms_Format import justify, byterize, enco, deco, ShellMessage, pretty_pri
 clt_description = 'KMS Client Emulator written in Python'
 clt_version = 'py-kms_2019-05-15'
 clt_config = {}
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------
+class client_thread(threading.Thread):
+        def __init__(self, name):
+                threading.Thread.__init__(self)
+                self.name = name
+                self.with_gui = False
+
+        def run(self):
+                clt_main(with_gui = self.with_gui)
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -69,13 +80,22 @@ def client_options():
         try:
                 clt_config.update(vars(parser.parse_args()))
                 # Check logfile.
-                clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'])
+                clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], where = "clt")
         except KmsException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
 def client_check():
+        # Check logfile (only for GUI).
+        try:
+                from pykms_GuiBase import clientthread
+                if clientthread.with_gui:
+                        clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], where = "clt")
+        except ImportError:
+                pass
+
         # Setup hidden or not messages.
         ShellMessage.view = ( False if any(i in ['STDOUT', 'FILESTDOUT'] for i in clt_config['logfile']) else True )
+
         # Create log.
         logger_create(loggerclt, clt_config, mode = 'a')
 
@@ -84,12 +104,12 @@ def client_check():
                 try:
                         uuid.UUID(clt_config['cmid'])
                 except ValueError:
-                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                        put_text = "{reverse}{red}{bold}Bad CMID. Exiting...{end}")
         # Check machineName.
         if clt_config['machineName'] is not None:
                 if len(clt_config['machineName']) < 2 or len(clt_config['machineName']) > 63:
-                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                        put_text = "{reverse}{red}{bold}machineName must be between 2 and 63 characters in length. Exiting...{end}")
                         
         clt_config['call_id'] = 1
@@ -131,16 +151,16 @@ def client_create():
                 pretty_printer(num_text = [-1, 1], where = "clt")
                 s.send(RPC_Bind)
         except socket.error as e:
-                pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
         try:
                 bindResponse = s.recv(1024)
                 if bindResponse == '' or not bindResponse:
-                        pretty_printer(log_obj = loggerclt.warning, to_exit = True,
+                        pretty_printer(log_obj = loggerclt.warning, to_exit = True, where = "clt",
                                        put_text = "{reverse}{yellow}{bold}No data received.{end}")
                 pretty_printer(num_text = [-4, 7], where = "clt")
         except socket.error as e:
-                pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
 
         packetType = MSRPCHeader(bindResponse)['type']
@@ -156,13 +176,13 @@ def client_create():
                         pretty_printer(num_text = [-1, 12], where = "clt")
                         s.send(RPC_Actv)
                 except socket.error as e:
-                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                        put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
                 try:
                         response = s.recv(1024)
                         pretty_printer(num_text = [-4, 20], where = "clt")
                 except socket.error as e:
-                        pretty_printer(log_obj = loggerclt.error, to_exit = True,
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                        put_text = "{reverse}{red}{bold}While receiving: %s{end}" %str(e))
 
                 loggerclt.debug("Response: \n%s\n" % justify(deco(binascii.b2a_hex(response), 'latin-1')))
@@ -191,7 +211,7 @@ def client_create():
                 loggerclt.info(justify(MSRPCBindNak(bindResponse).dump(print_to_stdout = False)))
                 sys.exit(0)
         else:
-                pretty_printer(log_obj = loggerclt.warning, to_exit = True,
+                pretty_printer(log_obj = loggerclt.warning, to_exit = True, where = "clt",
                                put_text = "{reverse}{magenta}{bold}Something went wrong.{end}")
 
 def clt_main(with_gui = False):

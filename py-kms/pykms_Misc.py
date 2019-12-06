@@ -133,20 +133,25 @@ def logger_create(log_obj, config, mode = 'a'):
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def check_logfile(optionlog, defaultlog):
+def check_logfile(optionlog, defaultlog, where):
         if not isinstance(optionlog, list):
                 optionlog = [optionlog]
 
         lenopt = len(optionlog)
-        msg_dir  = "{reverse}{red}{bold}argument logfile: no such file or directory: %s. Exiting...{end}"
+        msg_dir  = "{reverse}{red}{bold}argument logfile: invalid directory: '%s'. Exiting...{end}"
         msg_long = "{reverse}{red}{bold}argument logfile: too much arguments. Exiting...{end}"
+        msg_log = "{reverse}{red}{bold}argument logfile: not a log file, invalid extension: '%s'. Exiting...{end}"
 
         def checkdir(path):
-                if not os.path.isdir(os.path.dirname(path)):
-                        pretty_printer(put_text = msg_dir %path, to_exit = True)
+                filename = os.path.basename(path)
+                pathname = os.path.dirname(path)
+                if not os.path.isdir(pathname):
+                        pretty_printer(put_text = msg_dir %pathname, where = where, to_exit = True)
+                elif not filename.lower().endswith('.log'):
+                        pretty_printer(put_text = msg_log %filename, where = where, to_exit = True)
 
         if lenopt > 2:
-                pretty_printer(put_text = msg_long, to_exit = True)
+                pretty_printer(put_text = msg_long, where = where, to_exit = True)
 
         if 'FILESTDOUT' in optionlog:
                 if lenopt == 1:
@@ -157,7 +162,7 @@ def check_logfile(optionlog, defaultlog):
                         checkdir(optionlog[1])
         else:
                 if lenopt == 2:
-                        pretty_printer(put_text = msg_long, to_exit = True)
+                        pretty_printer(put_text = msg_long, where = where, to_exit = True)
                 elif lenopt == 1 and 'STDOUT' not in optionlog:
                         # check directory path.
                         checkdir(optionlog[0])

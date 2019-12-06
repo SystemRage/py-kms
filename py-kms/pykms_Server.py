@@ -105,8 +105,9 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 
 class server_thread(threading.Thread):
-        def __init__(self, queue):
+        def __init__(self, queue, name):
                 threading.Thread.__init__(self)
+                self.name = name
                 self.queue = queue
                 self.server = None
                 self.is_running_server, self.with_gui = [False for _ in range(2)]
@@ -210,13 +211,18 @@ def server_options():
         try:
                 srv_config.update(vars(parser.parse_args()))
                 # Check logfile.
-                srv_config['logfile'] = check_logfile(srv_config['logfile'], srv_options['lfile']['def'])
+                srv_config['logfile'] = check_logfile(srv_config['logfile'], srv_options['lfile']['def'], where = "srv")
         except KmsException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
 def server_check():
+        # Check logfile (only for GUI).
+        if serverthread.with_gui:
+                srv_config['logfile'] = check_logfile(srv_config['logfile'], srv_options['lfile']['def'], where = "srv")
+
         # Setup hidden or not messages.
         ShellMessage.view = ( False if any(i in ['STDOUT', 'FILESTDOUT'] for i in srv_config['logfile']) else True )
+
         # Create log.        
         logger_create(loggersrv, srv_config, mode = 'a')
 
@@ -304,6 +310,8 @@ def srv_main_with_gui(width = 950, height = 660):
         x = (ws / 2) - (width / 2)
         y = (hs / 2) - (height / 2)
         root.geometry('+%d+%d' %(x, y))
+        # disable maximize button.
+        root.resizable(0, 0)
         root.mainloop()
 
 class kmsServerHandler(socketserver.BaseRequestHandler):
@@ -362,7 +370,7 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
 
 
 serverqueue = Queue.Queue(maxsize = 0)
-serverthread = server_thread(serverqueue)
+serverthread = server_thread(serverqueue, name = "Thread-Srv")
 serverthread.setDaemon(True)
 serverthread.start()
 
