@@ -215,7 +215,7 @@ class ShellMessage(object):
             self.put_text = put_text
             self.where = where
             self.plaintext = []
-            self.path = os.path.dirname(os.path.abspath( __file__ )) + '/newlines.txt'
+            self.path = os.path.dirname(os.path.abspath( __file__ )) + '/pykms_newlines.txt'
             self.print_queue = Queue.Queue()
 
         def formatter(self, msgtofrmt):

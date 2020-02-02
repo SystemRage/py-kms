@@ -221,6 +221,31 @@ class KmsParser(argparse.ArgumentParser):
         def error(self, message):
                 raise KmsException(message)
 
+class KmsHelper(object):
+        def replace(self, parser):
+                text = parser.format_help().splitlines()
+                help_list = []
+                for line in text:
+                        if line == parser.description:
+                                continue
+                        if line == parser.epilog:
+                                line = 80 * '*' + '\n'
+                        help_list.append(line)
+                return help_list
+
+        def print(self, parsers):
+                parser_base, parser_adj, parser_sub = parsers
+                print('\n' + parser_base.description)
+                print(len(parser_base.description) * '-' + '\n')
+                for line in self.replace(parser_base):
+                        print(line)
+                print(parser_adj.description + '\n')
+                for line in self.replace(parser_sub):
+                        print(line)
+                print('\n' + len(parser_base.epilog) * '-')
+                print(parser_base.epilog + '\n')
+                parser_base.exit()
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # http://joshpoley.blogspot.com/2011/09/hresults-user-0x004.html  (slerror.h)

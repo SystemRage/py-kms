@@ -25,8 +25,11 @@ from pykms_Misc import logger_create, check_logfile
 from pykms_Misc import KmsParser, KmsException
 from pykms_Format import justify, byterize, enco, deco, ShellMessage, pretty_printer
 
-clt_description = 'KMS Client Emulator written in Python'
-clt_version = 'py-kms_2019-05-15'
+clt_version             = "py-kms_2020-02-02"
+__license__             = "The Unlicense"
+__author__              = u"Matteo ℱan <SystemRage@protonmail.com>"
+__url__                 = "https://github.com/SystemRage/py-kms"
+clt_description         = "py-kms: KMS Client Emulator written in Python"
 clt_config = {}
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,7 +61,7 @@ will be generated.', 'def' : None, 'des' : "machineName"},
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
         'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". Type \"STDOUT\" to view \
 log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
-                   'def' : os.path.dirname(os.path.abspath( __file__ )) + "/pykms_logclient.log", 'des' : "logfile"},
+                   'def' : os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pykms_logclient.log'), 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
 

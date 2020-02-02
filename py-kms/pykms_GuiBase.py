@@ -20,12 +20,15 @@ except ImportError:
         from tkinter import filedialog
         import tkinter.font as tkFont
         
-from pykms_Server import srv_options, srv_version, srv_config, srv_terminate, serverqueue, serverthread
+from pykms_Server import srv_options, srv_version, srv_config, server_terminate, serverqueue, serverthread
 from pykms_GuiMisc import ToolTip, TextDoubleScroll, TextRedirect, custom_background
 from pykms_Client import clt_options, clt_version, clt_config, client_thread
 
-gui_description = 'py-kms GUI'
-gui_version = 'v1.0'
+gui_version             = "py-kms_gui_v2.0"
+__license__             = "The Unlicense"
+__author__              = u"Matteo ℱan <SystemRage@protonmail.com>"
+__url__                 = "https://github.com/SystemRage/py-kms"
+gui_description         = "A GUI for py-kms."
 
 ##---------------------------------------------------------------------------------------------------------------------------------------------------------
 def get_ip_address():
@@ -452,7 +455,7 @@ class KmsGui(tk.Tk):
         def srv_actions_stop(self):
                 if serverthread.is_running_server:
                         if serverthread.server is not None:
-                                srv_terminate(exit_server = True)
+                                server_terminate(serverthread, exit_server = True)
                                 # wait for switch.
                                 while serverthread.is_running_server:
                                         pass
@@ -522,10 +525,10 @@ class KmsGui(tk.Tk):
         def on_exit(self):
                 if serverthread.is_running_server:
                         if serverthread.server is not None:
-                                srv_terminate(exit_server = True)
+                                server_terminate(serverthread, exit_server = True)
                         else:
                                 serverthread.is_running_server = False
-                srv_terminate(exit_thread = True)
+                server_terminate(serverthread, exit_thread = True)
                 self.destroy()
 
         def on_clear(self, widgetlist):
