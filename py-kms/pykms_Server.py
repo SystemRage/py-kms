@@ -187,7 +187,11 @@ log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
         }
 
 def server_options():
-        main_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False, allow_abbrev = False)
+        try:
+                main_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False, allow_abbrev = False)
+        except TypeError:
+                main_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False)
+
         main_parser.add_argument("ip", nargs = "?", action = "store", default = srv_options['ip']['def'], help = srv_options['ip']['help'], type = str)
         main_parser.add_argument("port", nargs = "?", action = "store", default = srv_options['port']['def'], help = srv_options['port']['help'], type = int)
         main_parser.add_argument("-e", "--epid", action = "store", dest = srv_options['epid']['des'], default = srv_options['epid']['def'],
@@ -214,16 +218,23 @@ def server_options():
                                  help = srv_options['lsize']['help'], type = float)
         main_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
-        daemon_parser = KmsParser(description = "daemon options inherited from Etrigan", add_help = False, allow_abbrev = False)
+        try:
+                daemon_parser = KmsParser(description = "daemon options inherited from Etrigan", add_help = False, allow_abbrev = False)
+        except TypeError:
+                daemon_parser = KmsParser(description = "daemon options inherited from Etrigan", add_help = False)
+
         daemon_subparser = daemon_parser.add_subparsers(dest = "mode")
-        etrigan_parser = daemon_subparser.add_parser("etrigan", add_help = False, allow_abbrev = False)
+        try:
+                etrigan_parser = daemon_subparser.add_parser("etrigan", add_help = False, allow_abbrev = False)
+        except TypeError:
+                etrigan_parser = daemon_subparser.add_parser("etrigan", add_help = False)
         etrigan_parser.add_argument("-g", "--gui", action = "store_const", dest = 'gui', const = True, default = False,
                                     help = "Enable py-kms GUI usage.")
         etrigan_parser = Etrigan_parser(parser = etrigan_parser)
 
         try:
                 if "-h" in sys.argv[1:]:
-                        KmsHelper().print(parsers = [main_parser, daemon_parser, etrigan_parser])
+                        KmsHelper().printer(parsers = [main_parser, daemon_parser, etrigan_parser])
 
                 # Set defaults for config.
                 # case: python3 pykms_Server.py

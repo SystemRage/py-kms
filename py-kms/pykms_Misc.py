@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from __future__ import print_function
 import sys
 import logging
 import os
@@ -233,7 +234,7 @@ class KmsHelper(object):
                         help_list.append(line)
                 return help_list
 
-        def print(self, parsers):
+        def printer(self, parsers):
                 parser_base, parser_adj, parser_sub = parsers
                 print('\n' + parser_base.description)
                 print(len(parser_base.description) * '-' + '\n')
