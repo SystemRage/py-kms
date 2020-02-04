@@ -188,35 +188,35 @@ log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
 
 def server_options():
         try:
-                main_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False, allow_abbrev = False)
+                server_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False, allow_abbrev = False)
         except TypeError:
-                main_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False)
+                server_parser = KmsParser(description = srv_description, epilog = 'version: ' + srv_version, add_help = False)
 
-        main_parser.add_argument("ip", nargs = "?", action = "store", default = srv_options['ip']['def'], help = srv_options['ip']['help'], type = str)
-        main_parser.add_argument("port", nargs = "?", action = "store", default = srv_options['port']['def'], help = srv_options['port']['help'], type = int)
-        main_parser.add_argument("-e", "--epid", action = "store", dest = srv_options['epid']['des'], default = srv_options['epid']['def'],
-                                 help = srv_options['epid']['help'], type = str)
-        main_parser.add_argument("-l", "--lcid", action = "store", dest = srv_options['lcid']['des'], default = srv_options['lcid']['def'],
-                                 help = srv_options['lcid']['help'], type = int)
-        main_parser.add_argument("-c", "--client-count", action = "store", dest = srv_options['count']['des'] , default = srv_options['count']['def'],
-                                 help = srv_options['count']['help'], type = int)
-        main_parser.add_argument("-a", "--activation-interval", action = "store", dest = srv_options['activation']['des'],
-                                 default = srv_options['activation']['def'], help = srv_options['activation']['help'], type = int)
-        main_parser.add_argument("-r", "--renewal-interval", action = "store", dest = srv_options['renewal']['des'], default = srv_options['renewal']['def'],
-                                 help = srv_options['renewal']['help'], type = int)
-        main_parser.add_argument("-s", "--sqlite", action = "store_const", dest = srv_options['sql']['des'], const = True, default = srv_options['sql']['def'],
-                                 help = srv_options['sql']['help'])
-        main_parser.add_argument("-w", "--hwid", action = "store", dest = srv_options['hwid']['des'], default = srv_options['hwid']['def'],
-                                 help = srv_options['hwid']['help'], type = str)
-        main_parser.add_argument("-t", "--timeout", action = "store", dest = srv_options['time']['des'], default = srv_options['time']['def'],
-                                 help = srv_options['time']['help'], type = int)
-        main_parser.add_argument("-V", "--loglevel", action = "store", dest = srv_options['llevel']['des'], choices = srv_options['llevel']['choi'],
-                                 default = srv_options['llevel']['def'], help = srv_options['llevel']['help'], type = str)
-        main_parser.add_argument("-F", "--logfile", nargs = "+", action = "store", dest = srv_options['lfile']['des'], default = srv_options['lfile']['def'],
-                                 help = srv_options['lfile']['help'], type = str)
-        main_parser.add_argument("-S", "--logsize", action = "store", dest = srv_options['lsize']['des'], default = srv_options['lsize']['def'],
-                                 help = srv_options['lsize']['help'], type = float)
-        main_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
+        server_parser.add_argument("ip", nargs = "?", action = "store", default = srv_options['ip']['def'], help = srv_options['ip']['help'], type = str)
+        server_parser.add_argument("port", nargs = "?", action = "store", default = srv_options['port']['def'], help = srv_options['port']['help'], type = int)
+        server_parser.add_argument("-e", "--epid", action = "store", dest = srv_options['epid']['des'], default = srv_options['epid']['def'],
+                                   help = srv_options['epid']['help'], type = str)
+        server_parser.add_argument("-l", "--lcid", action = "store", dest = srv_options['lcid']['des'], default = srv_options['lcid']['def'],
+                                   help = srv_options['lcid']['help'], type = int)
+        server_parser.add_argument("-c", "--client-count", action = "store", dest = srv_options['count']['des'] , default = srv_options['count']['def'],
+                                   help = srv_options['count']['help'], type = int)
+        server_parser.add_argument("-a", "--activation-interval", action = "store", dest = srv_options['activation']['des'],
+                                   default = srv_options['activation']['def'], help = srv_options['activation']['help'], type = int)
+        server_parser.add_argument("-r", "--renewal-interval", action = "store", dest = srv_options['renewal']['des'], default = srv_options['renewal']['def'],
+                                   help = srv_options['renewal']['help'], type = int)
+        server_parser.add_argument("-s", "--sqlite", action = "store_const", dest = srv_options['sql']['des'], const = True, default = srv_options['sql']['def'],
+                                   help = srv_options['sql']['help'])
+        server_parser.add_argument("-w", "--hwid", action = "store", dest = srv_options['hwid']['des'], default = srv_options['hwid']['def'],
+                                   help = srv_options['hwid']['help'], type = str)
+        server_parser.add_argument("-t", "--timeout", action = "store", dest = srv_options['time']['des'], default = srv_options['time']['def'],
+                                   help = srv_options['time']['help'], type = int)
+        server_parser.add_argument("-V", "--loglevel", action = "store", dest = srv_options['llevel']['des'], choices = srv_options['llevel']['choi'],
+                                   default = srv_options['llevel']['def'], help = srv_options['llevel']['help'], type = str)
+        server_parser.add_argument("-F", "--logfile", nargs = "+", action = "store", dest = srv_options['lfile']['des'], default = srv_options['lfile']['def'],
+                                   help = srv_options['lfile']['help'], type = str)
+        server_parser.add_argument("-S", "--logsize", action = "store", dest = srv_options['lsize']['des'], default = srv_options['lsize']['def'],
+                                   help = srv_options['lsize']['help'], type = float)
+        server_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
         try:
                 daemon_parser = KmsParser(description = "daemon options inherited from Etrigan", add_help = False, allow_abbrev = False)
@@ -234,11 +234,11 @@ def server_options():
 
         try:
                 if "-h" in sys.argv[1:]:
-                        KmsHelper().printer(parsers = [main_parser, daemon_parser, etrigan_parser])
+                        KmsHelper().printer(parsers = [server_parser, daemon_parser, etrigan_parser])
 
                 # Set defaults for config.
                 # case: python3 pykms_Server.py
-                srv_config.update(vars(main_parser.parse_args([])))
+                srv_config.update(vars(server_parser.parse_args([])))
                 # Eventually set daemon values for config.
                 if 'etrigan' in sys.argv[1:]:
                         if 'etrigan' == sys.argv[1]:
@@ -250,7 +250,7 @@ def server_options():
                                 srv_config.update(vars(daemon_parser.parse_args(sys.argv[2:])))
                         else:
                                 # case: python3 pykms_Server.py 1.2.3.4 1234 --main_optionals etrigan start --daemon_optionals
-                                knw_args, knw_extras = main_parser.parse_known_args()
+                                knw_args, knw_extras = server_parser.parse_known_args()
                                 # fix for logfile option (at the end) that catchs etrigan parser options.
                                 if 'etrigan' in knw_args.logfile:
                                         indx = knw_args.logfile.index('etrigan')
@@ -265,7 +265,7 @@ def server_options():
                 else:
                         # Update dict config.
                         # case: python3 pykms_Server.py 1.2.3.4 1234 --main_optionals
-                        knw_args, knw_extras = main_parser.parse_known_args()
+                        knw_args, knw_extras = server_parser.parse_known_args()
                         if knw_extras != []:
                                 raise KmsException("unrecognized arguments: %s" %' '.join(knw_extras))
                         else:

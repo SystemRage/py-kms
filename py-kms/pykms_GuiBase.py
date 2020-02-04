@@ -488,7 +488,7 @@ class KmsGui(tk.Tk):
 
         def clt_on_start(self):
                 self.clt_actions_start()
-                # run thread for disable interrupting server and client, when client running.
+                # run thread for disabling interrupt server and client, when client running.
                 self.clt_eject_thread = threading.Thread(target = self.clt_eject, name = "Thread-CltEjt")
                 self.clt_eject_thread.setDaemon(True)
                 self.clt_eject_thread.start()
@@ -510,14 +510,13 @@ class KmsGui(tk.Tk):
                 clt_config[clt_options['lsize']['des']] = 0
 
                 # run client (in a thread).
-                global clientthread
-                clientthread = client_thread(name = "Thread-Clt")
-                clientthread.setDaemon(True)
-                clientthread.with_gui = True
-                clientthread.start()
+                self.clientthread = client_thread(name = "Thread-Clt")
+                self.clientthread.setDaemon(True)
+                self.clientthread.with_gui = True
+                self.clientthread.start()
 
         def clt_eject(self):
-                while clientthread.is_alive():
+                while self.clientthread.is_alive():
                         sleep(0.1)
                 for widget in self.allopts_clt + [self.runbtnsrv, self.runbtnclt]:
                         widget.configure(state = 'normal')

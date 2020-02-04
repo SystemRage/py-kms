@@ -223,26 +223,34 @@ class KmsParser(argparse.ArgumentParser):
                 raise KmsException(message)
 
 class KmsHelper(object):
-        def replace(self, parser):
+        def replace(self, parser, replace_epilog_with):
                 text = parser.format_help().splitlines()
                 help_list = []
                 for line in text:
                         if line == parser.description:
                                 continue
                         if line == parser.epilog:
-                                line = 80 * '*' + '\n'
+                                line = replace_epilog_with
                         help_list.append(line)
                 return help_list
 
         def printer(self, parsers):
-                parser_base, parser_adj, parser_sub = parsers
+                if len(parsers) == 3:
+                        parser_base, parser_adj, parser_sub = parsers
+                        replace_epilog_with = 80 * '*' + '\n'
+                elif len(parsers) == 1:
+                        parser_base = parsers[0]
+                        replace_epilog_with = ''
                 print('\n' + parser_base.description)
                 print(len(parser_base.description) * '-' + '\n')
-                for line in self.replace(parser_base):
+                for line in self.replace(parser_base, replace_epilog_with):
                         print(line)
-                print(parser_adj.description + '\n')
-                for line in self.replace(parser_sub):
-                        print(line)
+                try:
+                        print(parser_adj.description + '\n')
+                        for line in self.replace(parser_sub, replace_epilog_with):
+                                print(line)
+                except:
+                        pass
                 print('\n' + len(parser_base.epilog) * '-')
                 print(parser_base.epilog + '\n')
                 parser_base.exit()

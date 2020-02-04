@@ -22,7 +22,7 @@ from pykms_RequestV6 import kmsRequestV6
 from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
 from pykms_Misc import logger_create, check_logfile
-from pykms_Misc import KmsParser, KmsException
+from pykms_Misc import KmsParser, KmsException, KmsHelper
 from pykms_Format import justify, byterize, enco, deco, ShellMessage, pretty_printer
 
 clt_version             = "py-kms_2020-02-02"
@@ -66,35 +66,39 @@ log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
         }
 
 def client_options():
-        parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version)
-        parser.add_argument("ip", nargs = "?", action = "store", default = clt_options['ip']['def'], help = clt_options['ip']['help'], type = str)
-        parser.add_argument("port", nargs = "?", action = "store", default = clt_options['port']['def'], help = clt_options['port']['help'], type = int)
-        parser.add_argument("-m", "--mode", dest = clt_options['mode']['des'], default = clt_options['mode']['def'], choices = clt_options['mode']['choi'],
-                            help = clt_options['mode']['help'], type = str)
-        parser.add_argument("-c", "--cmid", dest = clt_options['cmid']['des'], default = clt_options['cmid']['def'], help = clt_options['cmid']['help'], type = str)
-        parser.add_argument("-n", "--name", dest = clt_options['name']['des'] , default = clt_options['name']['def'], help = clt_options['name']['help'], type = str)
-        parser.add_argument("-V", "--loglevel", dest = clt_options['llevel']['des'], action = "store", choices = clt_options['llevel']['choi'],
-                            default = clt_options['llevel']['def'], help = clt_options['llevel']['help'], type = str)
-        parser.add_argument("-F", "--logfile", nargs = "+", action = "store", dest = clt_options['lfile']['des'], default = clt_options['lfile']['def'],
-                            help = clt_options['lfile']['help'], type = str)
-        parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store", default = clt_options['lsize']['def'],
-                            help = clt_options['lsize']['help'], type = float)
+        try:
+                client_parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version, add_help = False, allow_abbrew = False)
+        except TypeError:
+                client_parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version, add_help = False)
+        client_parser.add_argument("ip", nargs = "?", action = "store", default = clt_options['ip']['def'],
+                                   help = clt_options['ip']['help'], type = str)
+        client_parser.add_argument("port", nargs = "?", action = "store", default = clt_options['port']['def'],
+                                   help = clt_options['port']['help'], type = int)
+        client_parser.add_argument("-m", "--mode", dest = clt_options['mode']['des'], default = clt_options['mode']['def'],
+                                   choices = clt_options['mode']['choi'], help = clt_options['mode']['help'], type = str)
+        client_parser.add_argument("-c", "--cmid", dest = clt_options['cmid']['des'], default = clt_options['cmid']['def'],
+                                   help = clt_options['cmid']['help'], type = str)
+        client_parser.add_argument("-n", "--name", dest = clt_options['name']['des'] , default = clt_options['name']['def'],
+                                   help = clt_options['name']['help'], type = str)
+        client_parser.add_argument("-V", "--loglevel", dest = clt_options['llevel']['des'], action = "store",
+                                   choices = clt_options['llevel']['choi'], default = clt_options['llevel']['def'],
+                                   help = clt_options['llevel']['help'], type = str)
+        client_parser.add_argument("-F", "--logfile", nargs = "+", action = "store", dest = clt_options['lfile']['des'],
+                                   default = clt_options['lfile']['def'], help = clt_options['lfile']['help'], type = str)
+        client_parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store",
+                                   default = clt_options['lsize']['def'], help = clt_options['lsize']['help'], type = float)
+        client_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
         try:
-                clt_config.update(vars(parser.parse_args()))
-                # Check logfile.
-                clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], where = "clt")
+                if "-h" in sys.argv[1:]:
+                        KmsHelper().printer(parsers = [client_parser])
+                clt_config.update(vars(client_parser.parse_args()))
         except KmsException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
 def client_check():
-        # Check logfile (only for GUI).
-        try:
-                from pykms_GuiBase import clientthread
-                if clientthread.with_gui:
-                        clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], where = "clt")
-        except ImportError:
-                pass
+        # Check logfile.
+        clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], where = "clt")
 
         # Setup hidden or not messages.
         ShellMessage.view = ( False if any(i in ['STDOUT', 'FILESTDOUT'] for i in clt_config['logfile']) else True )
