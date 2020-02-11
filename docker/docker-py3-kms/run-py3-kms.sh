@@ -1,6 +1,7 @@
 docker stop py3-kms
 docker rm py3-kms
-docker run -it -d --name py3-kms \
+docker run -d --name py3-kms \
+    -t \
     -p 8080:8080 \
     -p 1688:1688 \
     -e IP=0.0.0.0 \
@@ -13,4 +14,3 @@ docker run -it -d --name py3-kms \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
     --restart unless-stopped pykms/pykms:py3-kms
-#    --restart unless-stopped ekonprof18/pykms:py3-kms
