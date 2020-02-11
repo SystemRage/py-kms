@@ -50,7 +50,7 @@ ENV SQLITE		false
 
 # EN: hwid
 # RU: hwid
-ENV HWID		364F463A8863D35F
+ENV HWID		"364F463A8863D35F"
 # Use this flag to specify a HWID. 
 # The HWID must be an 16-character string of hex characters.
 # The default is "364F463A8863D35F" or type "RANDOM" to auto generate the HWID.
@@ -107,7 +107,7 @@ chmod a+x /usr/bin/start.sh && \
 
 # EN: Clear after install software
 # RU: Очистка после установки программного обеспечения
-apk del git py2-pip
+apk del git
 
 # Set Workdir
 WORKDIR /home/py-kms
