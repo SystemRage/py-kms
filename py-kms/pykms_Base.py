@@ -2,8 +2,6 @@
 
 import binascii
 import logging
-import os
-import sys
 import time
 import uuid
 import socket
@@ -13,7 +11,7 @@ from pykms_DB2Dict import kmsDB2Dict
 from pykms_PidGenerator import epidGenerator
 from pykms_Filetimes import filetime_to_dt
 from pykms_Sql import sql_initialize, sql_update, sql_update_epid
-from pykms_Format import justify, byterize, enco, deco, ShellMessage
+from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -111,8 +109,8 @@ class kmsBase:
         def serverLogic(self, kmsRequest):
                 if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
                         self.dbName = sql_initialize()
-                                                                        
-                ShellMessage.Process(15).run()
+
+                pretty_printer(num_text = 15, where = "srv")
                 kmsRequest = byterize(kmsRequest)
                 loggersrv.debug("KMS Request Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(kmsRequest), 'latin-1')), 'latin-1')))                         
                 loggersrv.debug("KMS Request: \n%s\n" % justify(kmsRequest.dump(print_to_stdout = False)))
@@ -130,10 +128,12 @@ class kmsBase:
                                 tz = get_localzone()
                                 local_dt = tz.localize(requestDatetime)
                         except UnknownTimeZoneError:
-                                loggersrv.warning('Unknown time zone ! Request time not localized.')
+                                pretty_printer(log_obj = loggersrv.warning,
+                                               put_text = "{reverse}{yellow}{bold}Unknown time zone ! Request time not localized.{end}")
                                 local_dt = requestDatetime
                 except ImportError:
-                        loggersrv.warning('Module "tzlocal" not available ! Request time not localized.')
+                        pretty_printer(log_obj = loggersrv.warning,
+                                       put_text = "{reverse}{yellow}{bold}Module 'tzlocal' not available ! Request time not localized.{end}")
                         local_dt = requestDatetime
 
                 # Activation threshold.
@@ -144,15 +144,19 @@ class kmsBase:
                         if 0 < self.srv_config["CurrentClientCount"] < MinClients:
                                 # fixed to 6 (product server) or 26 (product desktop)
                                 currentClientCount = MinClients + 1
-                                loggersrv.warning("Not enough clients ! Fixed with %s, but activated client could be detected as not genuine !" %currentClientCount)
+                                pretty_printer(log_obj = loggersrv.warning,
+                                               put_text = "{reverse}{yellow}{bold}Not enough clients ! Fixed with %s, but activated client \
+could be detected as not genuine !{end}" %currentClientCount)
                         elif MinClients <= self.srv_config["CurrentClientCount"] < RequiredClients:
                                 currentClientCount = self.srv_config["CurrentClientCount"]
-                                loggersrv.warning("With count = %s, activated client could be detected as not genuine !" %currentClientCount)
+                                pretty_printer(log_obj = loggersrv.warning,
+                                               put_text = "{reverse}{yellow}{bold}With count = %s, activated client could be detected as not genuine !{end}" %currentClientCount)
                         elif self.srv_config["CurrentClientCount"] >= RequiredClients:
                                 # fixed to 10 (product server) or 50 (product desktop)
                                 currentClientCount = RequiredClients
                                 if self.srv_config["CurrentClientCount"] > RequiredClients:
-                                        loggersrv.warning("Too many clients ! Fixed with %s" %currentClientCount)
+                                        pretty_printer(log_obj = loggersrv.warning,
+                                                       put_text = "{reverse}{yellow}{bold}Too many clients ! Fixed with %s{end}" %currentClientCount)
                 else:
                         # fixed to 10 (product server) or 50 (product desktop)
                         currentClientCount = RequiredClients     
@@ -173,14 +177,16 @@ class kmsBase:
                                                         break
                                         except:
                                                 skuName = skuId
-                                                loggersrv.warning("Can't find a name for this product !!")
+                                                pretty_printer(log_obj = loggersrv.warning,
+                                                               put_text = "{reverse}{yellow}{bold}Can't find a name for this product !{end}")
                                     
                         try:
                                 if uuid.UUID(appitem['Id']) == applicationId:
                                         appName = appitem['DisplayName']
                         except:
                                 appName = applicationId
-                                loggersrv.warning("Can't find a name for this application group !!")
+                                pretty_printer(log_obj = loggersrv.warning,
+                                               put_text = "{reverse}{yellow}{bold}Can't find a name for this application group !{end}")
 
                 infoDict = {
                         "machineName" : kmsRequest.getMachineName(),

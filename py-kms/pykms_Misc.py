@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+from __future__ import print_function
 import sys
 import logging
 import os
+import argparse
 from logging.handlers import RotatingFileHandler
-from pykms_Format import ColorExtraMap, ShellMessage
+from pykms_Format import ColorExtraMap, pretty_printer
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -132,20 +134,25 @@ def logger_create(log_obj, config, mode = 'a'):
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-def check_logfile(optionlog, defaultlog, logger):
+def check_logfile(optionlog, defaultlog, where):
         if not isinstance(optionlog, list):
                 optionlog = [optionlog]
 
         lenopt = len(optionlog)
-        msg_long = "argument logfile: too much arguments"
+        msg_dir  = "{reverse}{red}{bold}argument logfile: invalid directory: '%s'. Exiting...{end}"
+        msg_long = "{reverse}{red}{bold}argument logfile: too much arguments. Exiting...{end}"
+        msg_log = "{reverse}{red}{bold}argument logfile: not a log file, invalid extension: '%s'. Exiting...{end}"
 
         def checkdir(path):
-                msg_path = "argument logfile: No such file or directory: %s" %path
-                if not os.path.isdir(os.path.dirname(path)):
-                        pretty_errors(46, logger, get_text = False, put_text = msg_path, log_text = False)
+                filename = os.path.basename(path)
+                pathname = os.path.dirname(path)
+                if not os.path.isdir(pathname):
+                        pretty_printer(put_text = msg_dir %pathname, where = where, to_exit = True)
+                elif not filename.lower().endswith('.log'):
+                        pretty_printer(put_text = msg_log %filename, where = where, to_exit = True)
 
         if lenopt > 2:
-                pretty_errors(46, logger, get_text = False, put_text = msg_long, log_text = False)
+                pretty_printer(put_text = msg_long, where = where, to_exit = True)
 
         if 'FILESTDOUT' in optionlog:
                 if lenopt == 1:
@@ -156,35 +163,11 @@ def check_logfile(optionlog, defaultlog, logger):
                         checkdir(optionlog[1])
         else:
                 if lenopt == 2:
-                        pretty_errors(46, logger, get_text = False, put_text = msg_long, log_text = False)
+                        pretty_printer(put_text = msg_long, where = where, to_exit = True)
                 elif lenopt == 1 and 'STDOUT' not in optionlog:
                         # check directory path.
                         checkdir(optionlog[0])
         return optionlog
-
-
-def pretty_errors(error_num, logger, **kwargs):
-        """ error_num --> an int or list of int.
-            kwargs:
-                    get_text --> True (default) / False.
-                    put_text  --> string / list of strings/ None. (applied to each "error_num")
-                    log_text --> True (default) / False.
-                    to_exit  --> True (default) / False.
-        """
-        # Set defaults for not defined options.
-        options = {'get_text' : True,
-                   'put_text' : None,
-                   'log_text' : True,
-                   'to_exit'  : True,
-                   }
-        options.update(kwargs)
-        # Process errors.
-        error_msgs = ShellMessage.Process(error_num, get_text = options['get_text'], put_text = options['put_text']).run()
-        if options['log_text']:
-                for err in error_msgs:
-                        logger.error(err)
-        if options['to_exit']:
-                sys.exit(1)
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -210,7 +193,7 @@ ValidLcid = [1025, 1026, 1027, 1028, 1029,
              13313, 13321, 13322, 14337, 14346, 15361, 15370, 16385, 16394, 17418, 18442, 19466, 20490]
 
 # http://stackoverflow.com/questions/3425294/how-to-detect-the-os-default-language-in-python
-def check_lcid(lcid, logger):
+def check_lcid(lcid, log_obj):
         if not lcid or (lcid not in ValidLcid):
                 if hasattr(sys, 'implementation') and sys.implementation.name == 'cpython':
                         fixlcid = 1033
@@ -225,9 +208,52 @@ def check_lcid(lcid, logger):
                                 fixlcid = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
                         except StopIteration:
                                 fixlcid = 1033
-                logger.warning("lcid %s auto-fixed with lcid %s" %(lcid, fixlcid))
+                pretty_printer(log_obj = log_obj,
+                               put_text = "{reverse}{yellow}{bold}LCID %s auto-fixed with LCID %s{end}" %(lcid, fixlcid))
                 return fixlcid
         return lcid
+
+#----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class KmsException(Exception):
+        pass
+
+class KmsParser(argparse.ArgumentParser):
+        def error(self, message):
+                raise KmsException(message)
+
+class KmsHelper(object):
+        def replace(self, parser, replace_epilog_with):
+                text = parser.format_help().splitlines()
+                help_list = []
+                for line in text:
+                        if line == parser.description:
+                                continue
+                        if line == parser.epilog:
+                                line = replace_epilog_with
+                        help_list.append(line)
+                return help_list
+
+        def printer(self, parsers):
+                if len(parsers) == 3:
+                        parser_base, parser_adj, parser_sub = parsers
+                        replace_epilog_with = 80 * '*' + '\n'
+                elif len(parsers) == 1:
+                        parser_base = parsers[0]
+                        replace_epilog_with = ''
+                print('\n' + parser_base.description)
+                print(len(parser_base.description) * '-' + '\n')
+                for line in self.replace(parser_base, replace_epilog_with):
+                        print(line)
+                try:
+                        print(parser_adj.description + '\n')
+                        for line in self.replace(parser_sub, replace_epilog_with):
+                                print(line)
+                except:
+                        pass
+                print('\n' + len(parser_base.epilog) * '-')
+                print(parser_base.epilog + '\n')
+                parser_base.exit()
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 

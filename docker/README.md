@@ -25,7 +25,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 
 # Usage
 ```
-docker run -d --name py3-kms \
+docker run -it -d --name py3-kms \
     -p 8080:8080 \
     -p 1688:1688 \
     -e IP=0.0.0.0 \

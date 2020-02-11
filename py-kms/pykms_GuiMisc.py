@@ -16,7 +16,7 @@ except ImportError:
         from tkinter import ttk
         import tkinter.font as tkFont
                         
-from pykms_Format import unshell_message, MsgMap, pick_MsgMap, unshell_MsgMap
+from pykms_Format import MsgMap, unshell_message, unformat_message
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -122,108 +122,95 @@ class ToolTip(object):
 # https://stackoverflow.com/questions/7217715/threadsafe-printing-across-multiple-processes-python-2-x
 # https://stackoverflow.com/questions/3029816/how-do-i-get-a-thread-safe-print-in-python-2-6
 # https://stackoverflow.com/questions/20303291/issue-with-redirecting-stdout-to-tkinter-text-widget-with-threads
-
-def make_clear(widgetlist):
-        for widget in widgetlist:
-                widget.configure(state = 'normal')
-                widget.delete('1.0', 'end')
-                widget.configure(state = 'disabled')
                                 
 class TextRedirect(object):
         class StdoutRedirect(object):
                 tag_num = 0
-                listwhere = []
-                arrows, clt_msg_nonewline = pick_MsgMap([MsgMap[1], MsgMap[7], MsgMap[12], MsgMap[20]])
-                srv_msg_nonewline, _      = pick_MsgMap([MsgMap[2], MsgMap[5], MsgMap[13], MsgMap[18]])
+
+                grpmsg = unformat_message([MsgMap[1], MsgMap[7], MsgMap[12], MsgMap[20]])
+                arrows = [ item[0] for item in grpmsg  ]
+                clt_msg_nonewline = [ item[1] for item in grpmsg ]
                 arrows = list(set(arrows))
                 lenarrow = len(arrows[0])
-                unMsgMap = unshell_MsgMap(arrows)
-                                
-                def __init__(self, srv_text_space, clt_text_space, customcolors, runclt, str_to_print):
+                srv_msg_nonewline = [ item[0] for item in unformat_message([MsgMap[2], MsgMap[5], MsgMap[13], MsgMap[18]]) ]
+                terminator = unformat_message([MsgMap[21]])[0][0]
+                msg_align = [ msg[0].replace('\t', '').replace('\n', '') for msg in unformat_message([MsgMap[-2], MsgMap[-4]])]
+                newlinecut = [-1, -2, -4, -5]
+
+                def __init__(self, srv_text_space, clt_text_space, customcolors, str_to_print, where):
                         self.srv_text_space = srv_text_space
                         self.clt_text_space = clt_text_space
                         self.customcolors = customcolors
-                        self.runclt = runclt
-                        self.runclt.configure(state = 'disabled')
                         self.str_to_print = str_to_print
+                        self.where = where
                         self.textbox_do()
-                         
+
                 def textbox_finish(self, message):
-                        if all(x == "srv" for x in TextRedirect.StdoutRedirect.listwhere):
-                                terminator = pick_MsgMap([MsgMap[19]])[0]
-                        else:
-                                terminator = pick_MsgMap([MsgMap[21]])[0]
-                                                                   
-                        if message in terminator:
-                                 TextRedirect.StdoutRedirect.tag_num = 0
-                                 self.runclt.configure(state = 'normal')
-   
-                def textbox_clear(self):
-                        if TextRedirect.StdoutRedirect.tag_num == 0:
-                                # Clear "srv" and "clt" textboxs.
-                                make_clear([self.srv_text_space, self.clt_text_space])
+                        if message == self.terminator:
+                                TextRedirect.StdoutRedirect.tag_num = 0
+                                TextRedirect.StdoutRedirect.newlinecut = [-1, -2, -4, -5]
                             
                 def textbox_write(self, tag, message, color, extras):
                         widget = self.textbox_choose(message)
-                        TextRedirect.StdoutRedirect.listwhere.append(self.where)
-                        self.maxchar = widget['width']
-                        self.textbox_color(tag, widget, color, self.customcolors['black'], extras)
+                        self.w_maxpix, self.h_maxpix = widget.winfo_width(), widget.winfo_height()
+                        self.xfont = tkFont.Font(font = widget['font'])
                         widget.configure(state = 'normal')
                         widget.insert('end', self.textbox_format(message), tag)
-                        widget.see('end')
+                        self.textbox_color(tag, widget, color, self.customcolors['black'], extras)
+                        widget.after(100, widget.see('end'))
                         widget.configure(state = 'disabled')
                         self.textbox_finish(message)
                                                                                                                                      
                 def textbox_choose(self, message):
-                        if message not in self.arrows:
-                                self.remind = message
-                                self.where = self.unMsgMap[message]
-                                if self.where == "srv":
-                                        return self.srv_text_space
-                                elif self.where == "clt":
-                                        return self.clt_text_space
-                        else:
-                                if self.remind in self.srv_msg_nonewline:
-                                        self.where = "srv"
-                                        return self.srv_text_space
-                                else:
-                                        self.where = "clt"
-                                        return self.clt_text_space
+                        if self.where == "srv":
+                                self.srv_text_space.focus_set()
+                                return self.srv_text_space
+                        elif self.where == "clt":
+                                self.clt_text_space.focus_set()
+                                return self.clt_text_space
                                                                                         
                 def textbox_color(self, tag, widget, forecolor = 'white', backcolor = 'black', extras = []):
-                        xfont = tkFont.Font(font = widget['font'])
-                        
                         for extra in extras:
                                 if extra == 'bold':
-                                        xfont.configure(weight = "bold")
+                                        self.xfont.configure(weight = "bold")
                                 elif extra == 'italic':
-                                        xfont.configure(slant = "italic")
+                                        self.xfont.configure(slant = "italic")
                                 elif extra == 'underlined':
-                                        xfont.text_font.configure(underline = True)
+                                        self.xfont.text_font.configure(underline = True)
                                 elif extra == 'strike':
-                                        xfont.configure(overstrike = True)
-                                                                
-                        widget.tag_configure(tag, foreground = forecolor, background = backcolor, font = xfont)
+                                        self.xfont.configure(overstrike = True)
+                                elif extra == 'reverse':
+                                        forecolor, backcolor = backcolor, forecolor
+
+                        widget.tag_configure(tag, foreground = forecolor, background = backcolor, font = self.xfont)
+                        widget.tag_add(tag, "insert linestart", "insert lineend")
+
+                def textbox_newline(self, message):
+                        if not message.endswith('\n'):
+                                return message + '\n'
+                        else:
+                                return message
 
                 def textbox_format(self, message):
-                        lenfixed = self.maxchar - len(message.replace('\t', ''))
-                        
-                        if self.where == "srv":
-                                if message in self.srv_msg_nonewline:
-                                        lung = lenfixed - self.lenarrow + 4
-                                else:
-                                        lung = lenfixed + self.lenarrow + 10
-                                        if not message.endswith('\n'):
-                                                message += '\n'
-                        elif self.where == "clt":                                        
+                        # vertical align.
+                        self.w_maxpix = self.w_maxpix - 5 # pixel reduction for distance from border.
+                        w_fontpix, h_fontpix = (self.xfont.measure('0'), self.xfont.metrics('linespace'))
+                        msg_unformat = message.replace('\t', '').replace('\n', '')
+                        lenfixed_chars = int((self.w_maxpix / w_fontpix) - len(msg_unformat))
+
+                        if message in self.srv_msg_nonewline + self.clt_msg_nonewline:
+                                lung = lenfixed_chars - self.lenarrow
                                 if message in self.clt_msg_nonewline:
-                                        lung = lenfixed - self.lenarrow
-                                        if not message.endswith('\n'):
-                                                message += '\n'
-                                else:
-                                        lung = lenfixed + 10
-                                        if not message.endswith('\n') and message not in self.arrows:
-                                                message += '\n'
+                                        message = self.textbox_newline(message)
+                        else:
+                                lung = lenfixed_chars
+                                if (self.where == "srv") or (self.where == "clt" and message not in self.arrows):
+                                         message = self.textbox_newline(message)
+                                # horizontal align.
+                                if msg_unformat in self.msg_align:
+                                        msg_strip = message.lstrip('\n')
+                                        message = '\n' * (len(message) - len(msg_strip) + TextRedirect.StdoutRedirect.newlinecut[0]) + msg_strip
+                                        TextRedirect.StdoutRedirect.newlinecut.pop(0)
 
                         count = Counter(message)
                         countab = (count['\t'] if count['\t'] != 0 else 1)
@@ -231,7 +218,6 @@ class TextRedirect(object):
                         return message
 
                 def textbox_do(self):
-                        self.textbox_clear()
                         msgs, TextRedirect.StdoutRedirect.tag_num = unshell_message(self.str_to_print, TextRedirect.StdoutRedirect.tag_num)
                         for tag in msgs:
                                 self.textbox_write(tag, msgs[tag]['text'], self.customcolors[msgs[tag]['color']], msgs[tag]['extra'])
@@ -242,9 +228,9 @@ class TextRedirect(object):
                         self.clt_text_space = clt_text_space
                         self.customcolors = customcolors
                         self.tag_err = 'STDERR'
+                        self.xfont = tkFont.Font(font = self.srv_text_space['font'])
                                                 
                 def write(self, string):
-                        self.textbox_clear()                                
                         self.textbox_color(self.tag_err, self.srv_text_space, self.customcolors['red'], self.customcolors['black'])
                         self.srv_text_space.configure(state = 'normal')
                         self.srv_text_space.insert('end', string, self.tag_err)
@@ -327,7 +313,7 @@ def custom_background(window):
                         widget.configure(background = window.customcolors['lavender'])
 
         # Hide client.
-        window.clt_showhide(force = True)
+        window.clt_on_show(force = True)
         # Show Gui.
         window.deiconify()
         

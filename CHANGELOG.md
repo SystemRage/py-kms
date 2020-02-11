@@ -1,3 +1,10 @@
+### py-kms_2020-02-02
+- Optimized pretty-print messages process.
+- Added -F FILESTDOUT option.
+- Added deamonization options (via [Etrigan](https://github.com/SystemRage/Etrigan) project).
+- py-kms GUI resurrected (and improved).
+- Cleaned, cleaned, cleaned.
+
 ### py-kms_2019-05-15
 - Merging for Python2 / Python3 compatibility all-in-one.
 - Added new options: 

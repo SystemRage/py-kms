@@ -1,5 +1,9 @@
 # App files
 pykms_logserver.log*
+pykms_logclient.log*
+pykms_newlines.txt*
+pykms_config.pickle*
+etrigan.log*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

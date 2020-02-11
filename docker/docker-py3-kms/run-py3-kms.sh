@@ -14,4 +14,3 @@ docker run -d --name py3-kms \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
     --restart unless-stopped pykms/pykms:py3-kms
-#    --restart unless-stopped ekonprof18/pykms:py3-kms
