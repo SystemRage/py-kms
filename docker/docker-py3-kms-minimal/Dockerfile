@@ -1,4 +1,4 @@
-# This is a minimized version from docker/docker-py3-kms/Dockerfile without sqllite support to reduce image size
+# This is a minimized version from docker/docker-py3-kms/Dockerfile without SQLLite support to further reduce image size
 
 FROM alpine:3.8
 
@@ -24,7 +24,9 @@ RUN apk add --no-cache --update \
 	sqlite-libs \
 	py3-pip && \
     pip3 install peewee tzlocal && \
-    git clone https://github.com/SystemRage/py-kms/ /home/ && \
+    git clone https://github.com/SystemRage/py-kms/ /tmp/py-kms && \
+    mv /tmp/py-kms/py-kms /home/ && \
+    rm -rf /tmp/py-kms && \
     apk del git
 
 WORKDIR /home/py-kms
