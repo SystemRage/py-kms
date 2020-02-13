@@ -9,8 +9,8 @@ ENV LCID		1033
 ENV CLIENT_COUNT	26
 ENV ACTIVATION_INTERVAL	120
 ENV RENEWAL_INTERVAL	10080
-ENV HWID		"364F463A8863D35F"
-ENV LOGLEVEL	ERROR
+ENV HWID		"RANDOM"
+ENV LOGLEVEL	INFO
 ENV LOGFILE		/var/log/pykms_logserver.log
 ENV LOGSIZE		""
 
@@ -24,13 +24,10 @@ RUN apk add --no-cache --update \
 	sqlite-libs \
 	py3-pip && \
     pip3 install peewee tzlocal && \
+    git clone https://github.com/SystemRage/py-kms/ /home/ && \
     apk del git
 
 WORKDIR /home/py-kms
-
-COPY ./py-kms/ /home/py-kms/
-COPY ./docker/docker-py3-kms/start.sh /usr/bin/start.sh
-RUN chmod a+x /usr/bin/start.sh
 
 EXPOSE ${PORT}/tcp
 
