@@ -37,8 +37,9 @@ docker run -it -d --name py3-kms \
     -e LOGFILE=/var/log/py3-kms.log \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
-    --restart unless-stopped ekonprof18/pykms:py3-kms
+    --restart unless-stopped pykmsorg/py-kms:[TAG]
 ```
+_Make sure to insert at `[TAG]` your wanted edition! The default is `latest`, which does not include SQLLite support. For all available tag check [this](https://hub.docker.com/r/pykmsorg/py-kms) out._
 
 # Sqlite-web
 A web-based SQLite database browser written in Python.

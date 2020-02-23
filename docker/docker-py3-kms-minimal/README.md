@@ -11,5 +11,5 @@ docker run -it -d --name py3-kms \
     -e LOGFILE=/var/log/py3-kms.log \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
-    --restart unless-stopped realsimonmicro/py-kms:minimal
+    --restart unless-stopped pykmsorg/py-kms:minimal
 ```
