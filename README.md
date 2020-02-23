@@ -56,11 +56,11 @@ and stop the GUI with the same precedent command (or interact with EXIT button).
 # Docker
 This projects has docker image support. You can find all available image configurations inside the docker folder.
 There are three tags of the images available:
-* `latest`, wich is based on the python3 minimal configuration of py-kms. _This image does NOT include SQLLite support!_
-* `minimal`, currently the same like latest...
+* `latest`, currently the same like minimal...
+* `minimal`, wich is based on the python3 minimal configuration of py-kms. _This image does NOT include SQLLite support!_
 * `python2`, which is fully configurable and equiped with SQLLite support and web interface.
 * `python3`, which is like the `python2` tag - just with Python 3...
-If you just want to use the image and don't want to build them yourself, you could use the image from @Simonmicro at the docker hub (`realsimonmicro/py-kms`).
+If you just want to use the image and don't want to build them yourself, you can use the official image at the docker hub (`pykmsorg/py-kms`).
 To ensure that the image is always up-to-date you should check [watchtower](https://github.com/containrrr/watchtower) out!
 
 # Other Important Stuff
