@@ -54,6 +54,9 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 and stop the GUI with the same precedent command (or interact with EXIT button).
 
 # Docker
+![auto-docker](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
+![status-docker](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
+
 This projects has docker image support. You can find all available image configurations inside the docker folder.
 There are three tags of the images available:
 * `latest`, currently the same like minimal...
