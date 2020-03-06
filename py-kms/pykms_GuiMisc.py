@@ -4,6 +4,8 @@ import os
 import re
 import sys
 from collections import Counter
+from time import sleep
+import threading
 
 try:
         # Python 2.x imports
@@ -18,7 +20,7 @@ except ImportError:
                         
 from pykms_Format import MsgMap, unshell_message, unformat_message
 
-#---------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # https://stackoverflow.com/questions/3221956/how-do-i-display-tooltips-in-tkinter
 class ToolTip(object):
@@ -117,7 +119,7 @@ class ToolTip(object):
                     tw.destroy()
                 self.tw = None
 
-##--------------------------------------------------------------------------------------------------------------------------------------------------------
+##-----------------------------------------------------------------------------------------------------------------------------------------------------------
 # https://stackoverflow.com/questions/2914603/segmentation-fault-while-redirecting-sys-stdout-to-tkinter-text-widget
 # https://stackoverflow.com/questions/7217715/threadsafe-printing-across-multiple-processes-python-2-x
 # https://stackoverflow.com/questions/3029816/how-do-i-get-a-thread-safe-print-in-python-2-6
@@ -237,7 +239,7 @@ class TextRedirect(object):
                         self.srv_text_space.see('end')
                         self.srv_text_space.configure(state = 'disabled')
                 
-##-------------------------------------------------------------------------------------------------------------------------------------------------------
+##-----------------------------------------------------------------------------------------------------------------------------------------------------------
 class TextDoubleScroll(tk.Frame): 
         def __init__(self, master, **kwargs):
                 """ Initialize.
@@ -245,8 +247,8 @@ class TextDoubleScroll(tk.Frame):
                         - vertical scrollbar
                         - text widget
                 """
-                self.master = master
                 tk.Frame.__init__(self, master)
+                self.master = master
                 
                 self.textbox = tk.Text(self.master, **kwargs)
                 self.sizegrip = ttk.Sizegrip(self.master)
@@ -278,43 +280,232 @@ class TextDoubleScroll(tk.Frame):
                 """ Return the "frame" useful to place inner controls. """
                 return self.textbox
 
-##--------------------------------------------------------------------------------------------------------------------------------------------------
+##-----------------------------------------------------------------------------------------------------------------------------------------------------------
 def custom_background(window):
+        # first level canvas.
         allwidgets = window.grid_slaves(0,0)[0].grid_slaves() + window.grid_slaves(0,0)[0].place_slaves()
-        widgets = [ widget for widget in allwidgets if widget.winfo_class() == 'Canvas']
+        widgets_alphalow = [ widget for widget in allwidgets if widget.winfo_class() == 'Canvas']
+        widgets_alphahigh = []
+        # sub-level canvas.
+        for side in ["Srv", "Clt"]:
+                widgets_alphahigh.append(window.pagewidgets[side]["BtnWin"])
+                for position in ["Left", "Right"]:
+                        widgets_alphahigh.append(window.pagewidgets[side]["AniWin"][position])
+                for pagename in window.pagewidgets[side]["PageWin"].keys():
+                        widgets_alphalow.append(window.pagewidgets[side]["PageWin"][pagename])
         
         try:
                 from PIL import Image, ImageTk
 
                 # Open Image.
-                img = Image.open(os.path.dirname(os.path.abspath( __file__ )) + "/pykms_Keys.gif")
+                img = Image.open(os.path.dirname(os.path.abspath( __file__ )) + "/graphics/pykms_Keys.gif")
+                img = img.convert('RGBA')
                 # Resize image.
                 img.resize((window.winfo_width(), window.winfo_height()), Image.ANTIALIAS)
                 # Put semi-transparent background chunks.
-                window.backcrops = []
-                   
-                for widget in widgets:
-                        x, y, w, h = window.get_position(widget)
-                        cropped = img.crop((x, y, x + w, y + h))
-                        cropped.putalpha(24)
-                        window.backcrops.append(ImageTk.PhotoImage(cropped))
-                                
-                # Not in same loop to prevent reference garbage.
-                for crop, widget in zip(window.backcrops, widgets):
-                        widget.create_image(1, 1, image = crop, anchor = 'nw')
+                window.backcrops_alphalow, window.backcrops_alphahigh = ([] for _ in range(2))
+
+                def cutter(master, image, widgets, crops, alpha):
+                        for widget in widgets:
+                                x, y, w, h = master.get_position(widget)
+                                cropped = image.crop((x, y, x + w, y + h))
+                                cropped.putalpha(alpha)
+                                crops.append(ImageTk.PhotoImage(cropped))
+                        # Not in same loop to prevent reference garbage.
+                        for crop, widget in zip(crops, widgets):
+                                widget.create_image(1, 1, image = crop, anchor = 'nw')
+
+                cutter(window, img, widgets_alphalow, window.backcrops_alphalow, 36)
+                cutter(window, img, widgets_alphahigh, window.backcrops_alphahigh, 96)
                         
                 # Put semi-transparent background overall.
-                img.putalpha(96)
+                img.putalpha(128)
                 window.backimg = ImageTk.PhotoImage(img)
                 window.masterwin.create_image(1, 1, image = window.backimg, anchor = 'nw')
                 
         except ImportError:
-                for widget in widgets:
+                for widget in widgets_alphalow + widgets_alphahigh:
                         widget.configure(background = window.customcolors['lavender'])
 
         # Hide client.
         window.clt_on_show(force = True)
         # Show Gui.
         window.deiconify()
+
+##-----------------------------------------------------------------------------------------------------------------------------------------------------------
+class Animation(object):
+        def __init__(self, gifpath, master, widget, loop = False):
+                from PIL import Image, ImageTk, ImageSequence
+
+                self.master = master
+                self.widget = widget
+                self.loop = loop
+                self.cancelid = None
+                self.flagstop = False
+                self.index = 0
+                self.frames = []
+
+                img = Image.open(gifpath)
+                size = img.size
+                for frame in ImageSequence.Iterator(img):
+                        static_img = ImageTk.PhotoImage(frame.convert('RGBA'))
+                        try:
+                                static_img.delay = int(frame.info['duration'])
+                        except KeyError:
+                                static_img.delay = 100
+                        self.frames.append(static_img)
+
+                self.widget.configure(width = size[0], height = size[1])
+                self.initialize()
+
+        def initialize(self):
+                self.widget.configure(image = self.frames[0])
+                self.widget.image = self.frames[0]
+
+        def deanimate(self):
+                while not self.flagstop:
+                        pass
+                self.flagstop = False
+                self.index = 0
+                self.widget.configure(relief = "raised")
+
+        def animate(self):
+                frame = self.frames[self.index]
+                self.widget.configure(image = frame, relief = "sunken")
+                self.index += 1
+                self.cancelid = self.master.after(frame.delay, self.animate)
+                if self.index == len(self.frames):
+                        if self.loop:
+                                self.index = 0
+                        else:
+                                self.stop()
+
+        def start(self, event = None):
+                if str(self.widget['state']) != 'disabled':
+                        if self.cancelid is None:
+                                if not self.loop:
+                                        self.btnani_thread = threading.Thread(target = self.deanimate, name = "Thread-BtnAni")
+                                        self.btnani_thread.setDaemon(True)
+                                        self.btnani_thread.start()
+                                self.cancelid = self.master.after(self.frames[0].delay, self.animate)
+
+        def stop(self, event = None):
+                if self.cancelid:
+                        self.master.after_cancel(self.cancelid)
+                        self.cancelid = None
+                        self.flagstop = True
+                        self.initialize()
+
+
+def custom_pages(window, side):
+        buttons = window.pagewidgets[side]["BtnAni"]
+        labels = window.pagewidgets[side]["LblAni"]
         
-##---------------------------------------------------------------------------------------------------------------------------------------------------------
+        for position in buttons.keys():
+                buttons[position].config(anchor = "center",
+                                         font = window.btnwinfont,
+                                         background = window.customcolors['white'],
+                                         activebackground = window.customcolors['white'],
+                                         borderwidth = 2)
+
+                try:
+                        anibtn = Animation(os.path.dirname(os.path.abspath( __file__ )) + "/graphics/pykms_Keyhole_%s.gif" %position,
+                                           window, buttons[position], loop = False)
+                        anilbl = Animation(os.path.dirname(os.path.abspath( __file__ )) + "/graphics/pykms_Arrow_%s.gif" %position,
+                                           window, labels[position], loop = True)
+
+                        def animationwait(master, button, btn_animation, lbl_animation):
+                                while btn_animation.cancelid:
+                                        pass
+                                sleep(1)
+                                x, y = master.winfo_pointerxy()
+                                if master.winfo_containing(x, y) == button:
+                                        lbl_animation.start()
+
+                        def animationcombo(master, button, btn_animation, lbl_animation):
+                                wait_thread = threading.Thread(target = animationwait,
+                                                               args = (master, button, btn_animation, lbl_animation),
+                                                               name = "Thread-WaitAni")
+                                wait_thread.setDaemon(True)
+                                wait_thread.start()
+                                lbl_animation.stop()
+                                btn_animation.start()
+
+                        buttons[position].bind("<ButtonPress>", lambda event, anim1 = anibtn, anim2 = anilbl,
+                                               bt = buttons[position], win = window:
+                                               animationcombo(win, bt, anim1, anim2))
+                        buttons[position].bind("<Enter>", anilbl.start)
+                        buttons[position].bind("<Leave>", anilbl.stop)
+
+                except ImportError:
+                        buttons[position].config(activebackground = window.customcolors['blue'],
+                                                 foreground = window.customcolors['blue'])
+                        labels[position].config(background = window.customcolors['lavender'])
+
+                        if position == "Left":
+                                buttons[position].config(text = '<<')
+                        elif position == "Right":
+                                buttons[position].config(text = '>>')
+
+##-----------------------------------------------------------------------------------------------------------------------------------------------------------
+class ListboxOfRadiobuttons(tk.Frame):
+        def __init__(self, master, radios, font, changed, **kwargs):
+                tk.Frame.__init__(self, master)
+
+                self.master = master
+                self.radios = radios
+                self.font = font
+                self.changed = changed
+
+                self.scrollv = tk.Scrollbar(self, orient = "vertical")
+                self.textbox = tk.Text(self, yscrollcommand = self.scrollv.set, **kwargs)
+                self.scrollv.config(command = self.textbox.yview)
+                # layout.
+                self.scrollv.pack(side = "right", fill = "y")
+                self.textbox.pack(side = "left", fill = "both", expand = True)
+                # create radiobuttons.
+                self.radiovar = tk.StringVar()
+                self.radiovar.set('FILE')
+                self.create()
+
+        def create(self):
+                self.rdbtns = []
+                for n, nameradio in enumerate(self.radios):
+                        rdbtn = tk.Radiobutton(self, text = nameradio, value = nameradio, variable = self.radiovar,
+                                               font = self.font, indicatoron = 0, width = 15,
+                                               borderwidth = 3, selectcolor = 'yellow', command = self.change)
+                        self.textbox.window_create("end", window = rdbtn)
+                        # to force one checkbox per line
+                        if n != len(self.radios) - 1:
+                                self.textbox.insert("end", "\n")
+                        self.rdbtns.append(rdbtn)
+                self.textbox.configure(state = "disabled")
+
+        def change(self):
+                st = self.state()
+                for widget, default in self.changed:
+                        wclass = widget.winfo_class()
+                        if st in ['STDOUT', 'FILEOFF']:
+                                if wclass == 'Entry':
+                                        widget.delete(0, 'end')
+                                elif wclass == 'TCombobox':
+                                        widget.set('')
+                                widget.configure(state = "disabled")
+                        elif st in ['FILE', 'FILESTDOUT', 'STDOUTOFF']:
+                                if wclass == 'Entry':
+                                        widget.configure(state = "normal")
+                                        widget.delete(0, 'end')
+                                        widget.insert('end', default)
+                                        widget.xview_moveto(1)
+                                elif wclass == 'TCombobox':
+                                        widget.configure(state = "readonly")
+                                        widget.set(default)
+                                elif wclass == 'Button':
+                                        widget.configure(state = "normal")
+
+        def configure(self, state):
+                for rb in self.rdbtns:
+                        rb.configure(state = state)
+
+        def state(self):
+                return self.radiovar.get()

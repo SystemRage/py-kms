@@ -6,9 +6,9 @@ import logging
 import os
 import argparse
 from logging.handlers import RotatingFileHandler
-from pykms_Format import ColorExtraMap, pretty_printer
+from pykms_Format import ColorExtraMap, ShellMessage, pretty_printer
 
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # https://stackoverflow.com/questions/2183233/how-to-add-a-custom-loglevel-to-pythons-logging-facility
 # https://stackoverflow.com/questions/17558552/how-do-i-add-custom-field-to-python-log-format-string
@@ -93,14 +93,19 @@ def logger_create(log_obj, config, mode = 'a'):
 
         # Configure visualization.
         log_handlers = []
-        if any(i in ['STDOUT', 'FILESTDOUT'] for i in config['logfile']):
-                # (Only STDOUT) or (logfile and STDOUT)
-                log_handlers.append(logging.StreamHandler(sys.stdout))
-                if 'FILESTDOUT' in config['logfile']:
+        if any(opt in ['STDOUT', 'FILESTDOUT', 'STDOUTOFF'] for opt in config['logfile']):
+                if 'STDOUTOFF' not in config['logfile']:
+                        # STDOUT.
+                        log_handlers.append(logging.StreamHandler(sys.stdout))
+                if any(opt in ['STDOUTOFF', 'FILESTDOUT'] for opt in config['logfile']):
+                        # FILESTDOUT or STDOUTOFF.
                         log_handlers.append(RotatingFileHandler(filename = config['logfile'][1], mode = mode, maxBytes = int(config['logsize'] * 1024 * 512),
                                                                 backupCount = 1, encoding = None, delay = 0))
+        elif 'FILEOFF' in config['logfile']:
+                config['loglevel'] = 'ERROR' # for py-kms GUI: set a recognized level never used.
+                log_handlers.append(logging.FileHandler(os.devnull))
         else:
-                # Only logfile.
+                # FILE.
                 log_handlers.append(RotatingFileHandler(filename = config['logfile'][0], mode = mode, maxBytes = int(config['logsize'] * 1024 * 512),
                                                         backupCount = 1, encoding = None, delay = 0))
 
@@ -132,7 +137,7 @@ def logger_create(log_obj, config, mode = 'a'):
         log_obj.setLevel(config['loglevel'])
         [ log_obj.addHandler(log_handler) for log_handler in log_handlers ]
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def check_logfile(optionlog, defaultlog, where):
         if not isinstance(optionlog, list):
@@ -154,7 +159,8 @@ def check_logfile(optionlog, defaultlog, where):
         if lenopt > 2:
                 pretty_printer(put_text = msg_long, where = where, to_exit = True)
 
-        if 'FILESTDOUT' in optionlog:
+
+        if (any(opt in ['FILESTDOUT', 'STDOUTOFF'] for opt in optionlog)):
                 if lenopt == 1:
                         # add default logfile.
                         optionlog.append(defaultlog)
@@ -164,12 +170,13 @@ def check_logfile(optionlog, defaultlog, where):
         else:
                 if lenopt == 2:
                         pretty_printer(put_text = msg_long, where = where, to_exit = True)
-                elif lenopt == 1 and 'STDOUT' not in optionlog:
+                elif lenopt == 1 and (any(opt not in ['STDOUT', 'FILEOFF'] for opt in optionlog)):
                         # check directory path.
                         checkdir(optionlog[0])
+
         return optionlog
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Valid language identifiers to be used in the EPID (see "kms.c" in vlmcsd)
 ValidLcid = [1025, 1026, 1027, 1028, 1029,
@@ -213,16 +220,16 @@ def check_lcid(lcid, log_obj):
                 return fixlcid
         return lcid
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class KmsException(Exception):
+class KmsParserException(Exception):
         pass
 
 class KmsParser(argparse.ArgumentParser):
         def error(self, message):
-                raise KmsException(message)
+                raise KmsParserException(message)
 
-class KmsHelper(object):
+class KmsParserHelp(object):
         def replace(self, parser, replace_epilog_with):
                 text = parser.format_help().splitlines()
                 help_list = []
@@ -255,7 +262,31 @@ class KmsHelper(object):
                 print(parser_base.epilog + '\n')
                 parser_base.exit()
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
+def proper_none(dictionary):
+        for key in dictionary.keys():
+                dictionary[key] = None if dictionary[key] == 'None' else dictionary[key]
+
+def check_setup(config, options, logger, where):
+        # Check logfile.
+        config['logfile'] = check_logfile(config['logfile'], options['lfile']['def'], where = where)
+
+        # Setup hidden or not messages.
+        hidden = ['STDOUT', 'FILESTDOUT', 'STDOUTOFF']
+        ShellMessage.view = (False if any(opt in hidden for opt in config['logfile']) else True)
+
+        # Create log.
+        logger_create(logger, config, mode = 'a')
+
+        # 'None'--> None.
+        proper_none(config)
+
+        # Check port.
+        if not 1 <= config['port'] <= 65535:
+                pretty_printer(log_obj = logger.error, to_exit = True,
+                               put_text = "{reverse}{red}{bold}Port number '%s' is invalid. Enter between 1 - 65535. Exiting...{end}" %config['port'])
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # http://joshpoley.blogspot.com/2011/09/hresults-user-0x004.html  (slerror.h)
 ErrorCodes = {

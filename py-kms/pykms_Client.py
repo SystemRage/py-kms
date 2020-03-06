@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import re
 import binascii
@@ -21,9 +22,9 @@ from pykms_RequestV5 import kmsRequestV5
 from pykms_RequestV6 import kmsRequestV6
 from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
-from pykms_Misc import logger_create, check_logfile
-from pykms_Misc import KmsParser, KmsException, KmsHelper
-from pykms_Format import justify, byterize, enco, deco, ShellMessage, pretty_printer
+from pykms_Misc import check_setup
+from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
+from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 clt_version             = "py-kms_2020-02-02"
 __license__             = "The Unlicense"
@@ -91,20 +92,14 @@ def client_options():
 
         try:
                 if "-h" in sys.argv[1:]:
-                        KmsHelper().printer(parsers = [client_parser])
+                        KmsParserHelp().printer(parsers = [client_parser])
                 clt_config.update(vars(client_parser.parse_args()))
-        except KmsException as e:
+        except KmsParserException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
 def client_check():
-        # Check logfile.
-        clt_config['logfile'] = check_logfile(clt_config['logfile'], clt_options['lfile']['def'], where = "clt")
-
-        # Setup hidden or not messages.
-        ShellMessage.view = ( False if any(i in ['STDOUT', 'FILESTDOUT'] for i in clt_config['logfile']) else True )
-
-        # Create log.
-        logger_create(loggerclt, clt_config, mode = 'a')
+        # Setup and some checks.
+        check_setup(clt_config, clt_options, loggerclt, where = "clt")
 
         # Check cmid.
         if clt_config['cmid'] is not None:
@@ -115,6 +110,12 @@ def client_check():
                                        put_text = "{reverse}{red}{bold}Bad CMID. Exiting...{end}")
         # Check machineName.
         if clt_config['machineName'] is not None:
+                try:
+                        clt_config['machineName'].encode('utf-16le')
+                except UnicodeEncodeError:
+                        pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
+                                       put_text = "{reverse}{red}{bold}Bad machineName. Exiting...{end}")
+
                 if len(clt_config['machineName']) < 2 or len(clt_config['machineName']) > 63:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                        put_text = "{reverse}{red}{bold}machineName must be between 2 and 63 characters in length. Exiting...{end}")
