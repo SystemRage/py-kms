@@ -15,7 +15,7 @@ docker run -it -d --name py3-kms \
     --restart unless-stopped pykmsorg/py-kms:[TAG]
 ```
 _Make sure to insert at `[TAG]` your wanted edition! The default is `latest`, which does not include SQLLite support. For all available tag check [this](https://hub.docker.com/r/pykmsorg/py-kms/tags) out._
-Please note you can omit the `SQLITE` option if you plan to use the minimal ot `latest` image
+Therefore you can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image.
 
 # Sqlite-web
 A web-based SQLite database browser written in Python.
