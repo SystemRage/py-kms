@@ -61,7 +61,7 @@ will be generated.', 'def' : None, 'des' : "machineName"},
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
         'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". Type \"STDOUT\" to view \
 log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
-                   'def' : os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pykms_logclient.log'), 'des' : "logfile"},
+                   'def' : os.path.join('.', 'pykms_logclient.log'), 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
 

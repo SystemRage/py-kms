@@ -182,7 +182,7 @@ The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
         'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logserver.log\". Type \"STDOUT\" to view \
 log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
-                   'def' : os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pykms_logserver.log'), 'des' : "logfile"},
+                   'def' : os.path.join('.', 'pykms_logserver.log'), 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }
 
