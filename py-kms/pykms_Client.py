@@ -24,6 +24,7 @@ from pykms_RpcBase import rpcBase
 from pykms_DB2Dict import kmsDB2Dict
 from pykms_Misc import check_setup
 from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
+from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals
 from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 clt_version             = "py-kms_2020-02-02"
@@ -56,8 +57,10 @@ clt_options = {
                   'choi' : ["WindowsVista","Windows7","Windows8","Windows8.1","Windows10","Office2010","Office2013","Office2016","Office2019"]},
         'cmid' : {'help' : 'Use this flag to manually specify a CMID to use. If no CMID is specified, a random CMID will be generated.',
                   'def' : None, 'des' : "cmid"},
-        'name' : {'help' : 'Use this flag to manually specify an ASCII machineName to use. If no machineName is specified a random machineName \
-will be generated.', 'def' : None, 'des' : "machineName"},
+        'name' : {'help' : 'Use this flag to manually specify an ASCII machine name to use. If no machine name is specified a random one \
+will be generated.', 'def' : None, 'des' : "machine"},
+        'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Desactivated by default.',
+                      'def' : False, 'des' : "asyncmsg"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
         'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". Type \"STDOUT\" to view \
@@ -67,10 +70,7 @@ log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
         }
 
 def client_options():
-        try:
-                client_parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version, add_help = False, allow_abbrew = False)
-        except TypeError:
-                client_parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version, add_help = False)
+        client_parser = KmsParser(description = clt_description, epilog = 'version: ' + clt_version, add_help = False)
         client_parser.add_argument("ip", nargs = "?", action = "store", default = clt_options['ip']['def'],
                                    help = clt_options['ip']['help'], type = str)
         client_parser.add_argument("port", nargs = "?", action = "store", default = clt_options['port']['def'],
@@ -81,6 +81,8 @@ def client_options():
                                    help = clt_options['cmid']['help'], type = str)
         client_parser.add_argument("-n", "--name", dest = clt_options['name']['des'] , default = clt_options['name']['def'],
                                    help = clt_options['name']['help'], type = str)
+        client_parser.add_argument("-y", "--async-msg", action = "store_true", dest = clt_options['asyncmsg']['des'],
+                                   default = clt_options['asyncmsg']['def'], help = clt_options['asyncmsg']['help'])
         client_parser.add_argument("-V", "--loglevel", dest = clt_options['llevel']['des'], action = "store",
                                    choices = clt_options['llevel']['choi'], default = clt_options['llevel']['def'],
                                    help = clt_options['llevel']['help'], type = str)
@@ -88,14 +90,25 @@ def client_options():
                                    default = clt_options['lfile']['def'], help = clt_options['lfile']['help'], type = str)
         client_parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store",
                                    default = clt_options['lsize']['def'], help = clt_options['lsize']['help'], type = float)
+
         client_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
         try:
-                if "-h" in sys.argv[1:]:
+                userarg = sys.argv[1:]
+
+                # Run help.
+                if any(arg in ["-h", "--help"] for arg in userarg):
                         KmsParserHelp().printer(parsers = [client_parser])
-                clt_config.update(vars(client_parser.parse_args()))
+
+                # Get stored arguments.
+                pykmsclt_zeroarg, pykmsclt_onearg = kms_parser_get(client_parser)
+                # Update pykms options for dict client config.
+                kms_parser_check_optionals(userarg, pykmsclt_zeroarg, pykmsclt_onearg, msg = 'optional py-kms client',
+                                           exclude_opt_len = ['-F', '--logfile'])
+                kms_parser_check_positionals(clt_config, client_parser.parse_args, msg = 'positional py-kms client')
+
         except KmsParserException as e:
-                pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
+                pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True, where = "clt")
 
 def client_check():
         # Setup and some checks.
@@ -107,18 +120,22 @@ def client_check():
                         uuid.UUID(clt_config['cmid'])
                 except ValueError:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
-                                       put_text = "{reverse}{red}{bold}Bad CMID. Exiting...{end}")
-        # Check machineName.
-        if clt_config['machineName'] is not None:
+                                       put_text = "{reverse}{red}{bold}argument `-c/--cmid`: invalid with: '%s'. Exiting...{end}" %clt_config['cmid'])
+
+        # Check machine name.
+        if clt_config['machine'] is not None:
                 try:
-                        clt_config['machineName'].encode('utf-16le')
+                        clt_config['machine'].encode('utf-16le')
+
+                        if len(clt_config['machine']) < 2:
+                                pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
+                                               put_text = "{reverse}{red}{bold}argument `-n/--name`: too short (required 2 - 63 chars). Exiting...{end}")
+                        elif len(clt_config['machine']) > 63:
+                                pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
+                                               put_text = "{reverse}{red}{bold}argument `-n/--name`: too long (required 2 - 63 chars). Exiting...{end}")
                 except UnicodeEncodeError:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
-                                       put_text = "{reverse}{red}{bold}Bad machineName. Exiting...{end}")
-
-                if len(clt_config['machineName']) < 2 or len(clt_config['machineName']) > 63:
-                        pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
-                                       put_text = "{reverse}{red}{bold}machineName must be between 2 and 63 characters in length. Exiting...{end}")
+                                       put_text = "{reverse}{red}{bold}argument `-n/--name`: invalid with: '%s'. Exiting...{end}" %clt_config['machine'])
                         
         clt_config['call_id'] = 1
 
@@ -149,8 +166,14 @@ def client_update():
         
 def client_create():
         loggerclt.info("Connecting to %s on port %d..." % (clt_config['ip'], clt_config['port']))
-        s = socket.create_connection((clt_config['ip'], clt_config['port']))
-        loggerclt.info("Connection successful !")
+        try:
+                s = socket.create_connection((clt_config['ip'], clt_config['port']))
+                loggerclt.info("Connection successful !")
+        except (socket.gaierror, socket.error) as e:
+                pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
+                               put_text = "{reverse}{red}{bold}Connection failed '%s:%d': %s. Exiting...{end}" %(clt_config['ip'],
+                                                                                                                 clt_config['port'],
+                                                                                                                 str(e)))
         binder = pykms_RpcBind.handler(None, clt_config)
         RPC_Bind = enco(str(binder.generateRequest()), 'latin-1')
 
@@ -248,7 +271,7 @@ def createKmsRequestBase():
         requestDict['previousClientMachineId'] = '\0' * 16 # I'm pretty sure this is supposed to be a null UUID.
         requestDict['requiredClientCount'] = clt_config['RequiredClientCount']
         requestDict['requestTime'] = dt_to_filetime(datetime.datetime.utcnow())
-        requestDict['machineName'] = (clt_config['machineName'] if (clt_config['machineName'] is not None) else
+        requestDict['machineName'] = (clt_config['machine'] if (clt_config['machine'] is not None) else
                                       ''.join(random.choice(string.ascii_letters + string.digits) for i in range(random.randint(2,63)))).encode('utf-16le')
         requestDict['mnPad'] = '\0'.encode('utf-16le') * (63 - len(requestDict['machineName'].decode('utf-16le')))
         

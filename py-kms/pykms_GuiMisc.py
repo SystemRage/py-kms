@@ -120,38 +120,22 @@ class ToolTip(object):
                 self.tw = None
 
 ##-----------------------------------------------------------------------------------------------------------------------------------------------------------
-# https://stackoverflow.com/questions/2914603/segmentation-fault-while-redirecting-sys-stdout-to-tkinter-text-widget
-# https://stackoverflow.com/questions/7217715/threadsafe-printing-across-multiple-processes-python-2-x
-# https://stackoverflow.com/questions/3029816/how-do-i-get-a-thread-safe-print-in-python-2-6
-# https://stackoverflow.com/questions/20303291/issue-with-redirecting-stdout-to-tkinter-text-widget-with-threads
-                                
-class TextRedirect(object):
-        class StdoutRedirect(object):
-                tag_num = 0
 
+class TextRedirect(object):
+        class Pretty(object):
                 grpmsg = unformat_message([MsgMap[1], MsgMap[7], MsgMap[12], MsgMap[20]])
                 arrows = [ item[0] for item in grpmsg  ]
                 clt_msg_nonewline = [ item[1] for item in grpmsg ]
                 arrows = list(set(arrows))
                 lenarrow = len(arrows[0])
                 srv_msg_nonewline = [ item[0] for item in unformat_message([MsgMap[2], MsgMap[5], MsgMap[13], MsgMap[18]]) ]
-                terminator = unformat_message([MsgMap[21]])[0][0]
-                msg_align = [ msg[0].replace('\t', '').replace('\n', '') for msg in unformat_message([MsgMap[-2], MsgMap[-4]])]
-                newlinecut = [-1, -2, -4, -5]
+                msg_align = [ msg[0].replace('\t', '').replace('\n', '') for msg in unformat_message([MsgMap[-2], MsgMap[-4]]) ]
 
-                def __init__(self, srv_text_space, clt_text_space, customcolors, str_to_print, where):
+                def __init__(self, srv_text_space, clt_text_space, customcolors):
                         self.srv_text_space = srv_text_space
                         self.clt_text_space = clt_text_space
                         self.customcolors = customcolors
-                        self.str_to_print = str_to_print
-                        self.where = where
-                        self.textbox_do()
 
-                def textbox_finish(self, message):
-                        if message == self.terminator:
-                                TextRedirect.StdoutRedirect.tag_num = 0
-                                TextRedirect.StdoutRedirect.newlinecut = [-1, -2, -4, -5]
-                            
                 def textbox_write(self, tag, message, color, extras):
                         widget = self.textbox_choose(message)
                         self.w_maxpix, self.h_maxpix = widget.winfo_width(), widget.winfo_height()
@@ -161,16 +145,17 @@ class TextRedirect(object):
                         self.textbox_color(tag, widget, color, self.customcolors['black'], extras)
                         widget.after(100, widget.see('end'))
                         widget.configure(state = 'disabled')
-                        self.textbox_finish(message)
-                                                                                                                                     
+
                 def textbox_choose(self, message):
-                        if self.where == "srv":
+                        if any(item.startswith('logsrv') for item in [message, self.str_to_print]):
                                 self.srv_text_space.focus_set()
+                                self.where = "srv"
                                 return self.srv_text_space
-                        elif self.where == "clt":
+                        elif any(item.startswith('logclt') for item in [message, self.str_to_print]):
                                 self.clt_text_space.focus_set()
+                                self.where = "clt"
                                 return self.clt_text_space
-                                                                                        
+
                 def textbox_color(self, tag, widget, forecolor = 'white', backcolor = 'black', extras = []):
                         for extra in extras:
                                 if extra == 'bold':
@@ -211,8 +196,8 @@ class TextRedirect(object):
                                 # horizontal align.
                                 if msg_unformat in self.msg_align:
                                         msg_strip = message.lstrip('\n')
-                                        message = '\n' * (len(message) - len(msg_strip) + TextRedirect.StdoutRedirect.newlinecut[0]) + msg_strip
-                                        TextRedirect.StdoutRedirect.newlinecut.pop(0)
+                                        message = '\n' * (len(message) - len(msg_strip) + TextRedirect.Pretty.newlinecut[0]) + msg_strip
+                                        TextRedirect.Pretty.newlinecut.pop(0)
 
                         count = Counter(message)
                         countab = (count['\t'] if count['\t'] != 0 else 1)
@@ -220,24 +205,48 @@ class TextRedirect(object):
                         return message
 
                 def textbox_do(self):
-                        msgs, TextRedirect.StdoutRedirect.tag_num = unshell_message(self.str_to_print, TextRedirect.StdoutRedirect.tag_num)
+                        msgs, TextRedirect.Pretty.tag_num = unshell_message(self.str_to_print, TextRedirect.Pretty.tag_num)
                         for tag in msgs:
                                 self.textbox_write(tag, msgs[tag]['text'], self.customcolors[msgs[tag]['color']], msgs[tag]['extra'])
-                                
-        class StderrRedirect(StdoutRedirect):                
-                def __init__(self, srv_text_space, clt_text_space, customcolors):
+
+                def flush(self):
+                        pass
+
+                def write(self, string):
+                        if string != '\n':
+                                self.str_to_print = string
+                                self.textbox_do()
+
+        class Stderr(Pretty):
+                def __init__(self, srv_text_space, clt_text_space, customcolors, side):
                         self.srv_text_space = srv_text_space
                         self.clt_text_space = clt_text_space
                         self.customcolors = customcolors
+                        self.side = side
                         self.tag_err = 'STDERR'
                         self.xfont = tkFont.Font(font = self.srv_text_space['font'])
+
+                def textbox_choose(self, message):
+                        if self.side == "srv":
+                                return self.srv_text_space
+                        elif self.side == "clt":
+                                return self.clt_text_space
                                                 
                 def write(self, string):
-                        self.textbox_color(self.tag_err, self.srv_text_space, self.customcolors['red'], self.customcolors['black'])
+                        widget = self.textbox_choose(string)
+                        self.textbox_color(self.tag_err, widget, self.customcolors['red'], self.customcolors['black'])
                         self.srv_text_space.configure(state = 'normal')
                         self.srv_text_space.insert('end', string, self.tag_err)
                         self.srv_text_space.see('end')
                         self.srv_text_space.configure(state = 'disabled')
+
+        class Log(Pretty):
+                def textbox_format(self, message):
+                        if message.startswith('logsrv'):
+                                message = message.replace('logsrv ', '')
+                        if message.startswith('logclt'):
+                                message = message.replace('logclt ', '')
+                        return message + '\n'
                 
 ##-----------------------------------------------------------------------------------------------------------------------------------------------------------
 class TextDoubleScroll(tk.Frame): 
@@ -328,7 +337,7 @@ def custom_background(window):
                         widget.configure(background = window.customcolors['lavender'])
 
         # Hide client.
-        window.clt_on_show(force = True)
+        window.clt_on_show(force_remove = True)
         # Show Gui.
         window.deiconify()
 
@@ -488,9 +497,14 @@ class ListboxOfRadiobuttons(tk.Frame):
                         if st in ['STDOUT', 'FILEOFF']:
                                 if wclass == 'Entry':
                                         widget.delete(0, 'end')
+                                        widget.configure(state = "disabled")
                                 elif wclass == 'TCombobox':
-                                        widget.set('')
-                                widget.configure(state = "disabled")
+                                        if st == 'STDOUT':
+                                                widget.set(default)
+                                                widget.configure(state = "readonly")
+                                        elif st == 'FILEOFF':
+                                                widget.set('')
+                                                widget.configure(state = "disabled")
                         elif st in ['FILE', 'FILESTDOUT', 'STDOUTOFF']:
                                 if wclass == 'Entry':
                                         widget.configure(state = "normal")

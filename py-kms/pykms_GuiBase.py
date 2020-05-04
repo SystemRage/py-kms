@@ -48,25 +48,36 @@ def get_ip_address():
         else:
                 ip = 'Unknown'
         return ip
-        
-def gui_redirect(str_to_print, where):
-        global txsrv, txclt, txcol
 
+def gui_redirector(stream, redirect_to = TextRedirect.Pretty, redirect_conditio = True, stderr_side = "srv"):
+        global txsrv, txclt, txcol
+        if redirect_conditio:
+                if stream == 'stdout':
+                        sys.stdout = redirect_to(txsrv, txclt, txcol)
+                elif stream == 'stderr':
+                        sys.stderr = redirect_to(txsrv, txclt, txcol, stderr_side)
+                else:
+                        stream = redirect_to(txsrv, txclt, txcol)
+                        return stream
+
+def gui_redirector_setup():
+        TextRedirect.Pretty.tag_num = 0
+        TextRedirect.Pretty.newlinecut = [-1, -2, -4, -5]
+
+def gui_redirector_clear():
+        global txsrv, oysrv
         try:
-                TextRedirect.StdoutRedirect(txsrv, txclt, txcol, str_to_print, where)
+                if oysrv:
+                        txsrv.configure(state = 'normal')
+                        txsrv.delete('1.0', 'end')
+                        txsrv.configure(state = 'disabled')
         except:
-                print(str_to_print)
+                # self.onlysrv not defined (menu not used)
+                pass
 
 ##-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class KmsGui(tk.Tk):        
-        def browse(self, entrywidget, options):
-                path = filedialog.askdirectory()
-                if os.path.isdir(path):
-                        entrywidget.delete('0', 'end')
-                        entrywidget.insert('end', path + os.sep + os.path.basename(options['lfile']['def']))
-                        
-                        
+class KmsGui(tk.Tk):
         def __init__(self, *args, **kwargs):
                 tk.Tk.__init__(self, *args, **kwargs)
                 self.wraplength = 200
@@ -96,19 +107,76 @@ class KmsGui(tk.Tk):
                 self.option_add('*TCombobox*Listbox.font', self.optfontredux)
 
                 self.gui_create()
+
+        def browse(self, entrywidget, options):
+                path = filedialog.askdirectory()
+                if os.path.isdir(path):
+                        entrywidget.delete('0', 'end')
+                        entrywidget.insert('end', path + os.sep + os.path.basename(options['lfile']['def']))
+
+        def invert(self, widgets = []):
+                for widget in widgets:
+                        if widget['state'] == 'normal':
+                                widget.configure(state = 'disabled')
+                        elif widget['state'] == 'disabled':
+                                widget.configure(state = 'normal')
+
+        def gui_menu(self):
+                self.onlysrv, self.onlyclt = (False for _ in range(2))
+                menubar = tk.Menu(self)
+                prefmenu = tk.Menu(menubar, tearoff = 0, font = ("Noto Sans Regular", 10), borderwidth = 3, relief = 'ridge')
+                menubar.add_cascade(label = 'Preferences', menu = prefmenu)
+                prefmenu.add_command(label = 'Enable server-side mode', command = lambda: self.pref_onlysrv(prefmenu))
+                prefmenu.add_command(label = 'Enable client-side mode', command = lambda: self.pref_onlyclt(prefmenu))
+                self.config(menu = menubar)
                 
+        def pref_onlysrv(self, menu):
+                global oysrv
+
+                if self.onlyclt or serverthread.is_running_server:
+                        return
+                self.onlysrv = not self.onlysrv
+                if self.onlysrv:
+                        menu.entryconfigure(0, label = 'Disable server-side mode')
+                        self.clt_on_show(force_remove = True)
+                else:
+                        menu.entryconfigure(0, label = 'Enable server-side mode')
+                self.invert(widgets = [self.shbtnclt])
+                oysrv = self.onlysrv
+
+        def pref_onlyclt(self, menu):
+                if self.onlysrv or serverthread.is_running_server:
+                        return
+                self.onlyclt = not self.onlyclt
+                if self.onlyclt:
+                        menu.entryconfigure(1, label = 'Disable client-side mode')
+                        if self.shbtnclt['text'] == 'SHOW\nCLIENT':
+                                self.clt_on_show(force_view = True)
+                        self.optsrvwin.grid_remove()
+                        self.msgsrvwin.grid_remove()
+                        gui_redirector('stderr', redirect_to = TextRedirect.Stderr, stderr_side = "clt")
+                else:
+                        menu.entryconfigure(1, label = 'Enable client-side mode')
+                        self.optsrvwin.grid()
+                        self.msgsrvwin.grid()
+                        gui_redirector('stderr', redirect_to = TextRedirect.Stderr)
+
+                self.invert(widgets = [self.runbtnsrv, self.shbtnclt, self.runbtnclt])
+
         def gui_create(self):
                 ## Create server gui
                 self.gui_srv()
                 ## Create client gui + other operations.
                 self.gui_complete()
+                ## Create menu.
+                self.gui_menu()
                 ## Create globals for printing process (redirect stdout).
                 global txsrv, txclt, txcol
                 txsrv = self.textboxsrv.get()
                 txclt = self.textboxclt.get()
                 txcol = self.customcolors
                 ## Redirect stderr.
-                sys.stderr = TextRedirect.StderrRedirect(txsrv, txclt, txcol)
+                gui_redirector('stderr', redirect_to = TextRedirect.Stderr)
 
         def gui_pages_show(self, pagename, side):
                 # https://stackoverflow.com/questions/7546050/switch-between-two-frames-in-tkinter
@@ -162,7 +230,7 @@ class KmsGui(tk.Tk):
                         btnani = tk.Button(aniwin)
                         btnani.grid(row = 0, column = col[2], padx = 2, pady = 2, sticky = stick)
                         self.pagewidgets[side]["BtnAni"][position] = btnani
-                # customize buttons.
+                ## Customize buttons.
                 custom_pages(self, side)
 
         def gui_pages_create(self, parent, side, create = {}):
@@ -199,7 +267,7 @@ class KmsGui(tk.Tk):
                 self.btnsrvwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
                 self.optsrvwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
                 self.msgsrvwin = tk.Frame(self.masterwin, background = self.customcolors['black'], relief = 'ridge', width = 300, height = 200)
-               
+
                 ## Layout main containers.
                 self.masterwin.grid(row = 0, column = 0, sticky = 'nsew')
                 self.btnsrvwin.grid(row = 0, column = 1, padx = 2, pady = 2, sticky = 'nw')
@@ -209,11 +277,11 @@ class KmsGui(tk.Tk):
 
                 self.pagewidgets = {}
 
-                ## subpages of optsrvwin.
+                ## Subpages of "optsrvwin".
                 self.gui_pages_create(parent = self.optsrvwin, side = "Srv", create = {"PageStart": None,
                                                                                        "PageEnd": None})
 
-                ## continue to grid.
+                ## Continue to grid.
                 self.msgsrvwin.grid(row = 1, column = 2, padx = 1, pady = 1, sticky = 'nsew')
                 self.msgsrvwin.grid_propagate(False)
                 self.msgsrvwin.grid_columnconfigure(0, weight = 1)
@@ -285,7 +353,7 @@ class KmsGui(tk.Tk):
                 self.activ.insert('end', str(srv_options['activation']['def']))
                 ToolTip(self.activ, text = srv_options['activation']['help'], wraplength = self.wraplength)
                 # Renewal Interval.
-                renewlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Activation Interval: ', font = self.optfont)
+                renewlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Renewal Interval: ', font = self.optfont)
                 self.renew = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
                                       validatecommand = self.validation_int)
                 self.renew.insert('end', str(srv_options['renewal']['def']))
@@ -298,28 +366,34 @@ class KmsGui(tk.Tk):
                 ToolTip(self.srvfile, text = srv_options['lfile']['help'], wraplength = self.wraplength)
                 srvfilebtnwin = tk.Button(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Browse',
                                        command = lambda: self.browse(self.srvfile, srv_options))
-
                 # Loglevel.
                 srvlevellbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Loglevel: ', font = self.optfont)
                 self.srvlevel = ttk.Combobox(self.pagewidgets["Srv"]["PageWin"]["PageStart"], values = tuple(srv_options['llevel']['choi']),
                                              width = 10, height = 10, font = self.optfontredux, state = "readonly")
                 self.srvlevel.set(srv_options['llevel']['def'])
                 ToolTip(self.srvlevel, text = srv_options['llevel']['help'], wraplength = self.wraplength)
-
-                self.chksrvfile = ListboxOfRadiobuttons(self.pagewidgets["Srv"]["PageWin"]["PageStart"],
-                                                        ['FILE', 'FILEOFF', 'STDOUT', 'STDOUTOFF', 'FILESTDOUT'],
-                                                        self.optfontredux,
-                                                        changed = [(self.srvfile, srv_options['lfile']['def']),
-                                                                   (srvfilebtnwin, ''),
-                                                                   (self.srvlevel, srv_options['llevel']['def'])],
-                                                        width = 10, height = 1, borderwidth = 2, relief = 'ridge')
-
                 # Logsize.
                 srvsizelbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Logsize: ', font = self.optfont)
                 self.srvsize = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
                                         validatecommand = self.validation_float)
                 self.srvsize.insert('end', srv_options['lsize']['def'])
                 ToolTip(self.srvsize, text = srv_options['lsize']['help'], wraplength = self.wraplength)
+                # Asynchronous messages.
+                self.chkvalsrvasy = tk.BooleanVar()
+                self.chkvalsrvasy.set(srv_options['asyncmsg']['def'])
+                chksrvasy = tk.Checkbutton(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Async\nMsg',
+                                           font = self.optfontredux, var = self.chkvalsrvasy, relief = 'groove')
+                ToolTip(chksrvasy, text = srv_options['asyncmsg']['help'], wraplength = self.wraplength)
+
+                # Listbox radiobuttons server.
+                self.chksrvfile = ListboxOfRadiobuttons(self.pagewidgets["Srv"]["PageWin"]["PageStart"],
+                                                        ['FILE', 'FILEOFF', 'STDOUT', 'STDOUTOFF', 'FILESTDOUT'],
+                                                        self.optfontredux,
+                                                        changed = [(self.srvfile, srv_options['lfile']['def']),
+                                                                   (srvfilebtnwin, ''),
+                                                                   (self.srvsize, srv_options['lsize']['def']),
+                                                                   (self.srvlevel, srv_options['llevel']['def'])],
+                                                        width = 10, height = 1, borderwidth = 2, relief = 'ridge')
 
                 ## Layout widgets (optsrvwin:Srv:PageWin:PageStart)
                 ver.grid(row = 0, column = 0, columnspan = 3, padx = 5, pady = 5, sticky = 'ew')
@@ -344,6 +418,7 @@ class KmsGui(tk.Tk):
                 self.srvfile.grid(row = 10, column = 1, padx = 5, pady = 5, sticky = 'ew')
                 srvfilebtnwin.grid(row = 10, column = 2, padx = 5, pady = 5, sticky = 'ew')
                 self.chksrvfile.grid(row = 11, column = 1, padx = 5, pady = 5, sticky = 'ew')
+                chksrvasy.grid(row = 11, column = 2, padx = 5, pady = 5, sticky = 'ew')
                 srvlevellbl.grid(row = 12, column = 0, padx = 5, pady = 5, sticky = 'e')
                 self.srvlevel.grid(row = 12, column = 1, padx = 5, pady = 5, sticky = 'ew')
                 srvsizelbl.grid(row = 13, column = 0, padx = 5, pady = 5, sticky = 'e')
@@ -352,23 +427,25 @@ class KmsGui(tk.Tk):
                 ## Create widgets (optsrvwin:Srv:PageWin:PageEnd)-------------------------------------------------------------------------------------------
                 # Timeout connection.
                 timeout0lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.optfont)
-                self.timeout0 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 10, font = self.optfont)
+                self.timeout0 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
                 self.timeout0.insert('end', str(srv_options['time0']['def']))
                 ToolTip(self.timeout0, text = srv_options['time0']['help'], wraplength = self.wraplength)
                 # Sqlite database.
                 self.chkvalsql = tk.BooleanVar()
                 self.chkvalsql.set(srv_options['sql']['def'])
                 chksql = tk.Checkbutton(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Create Sqlite\nDatabase',
-                                        font = self.optfont, var = self.chkvalsql)
+                                        font = self.optfontredux, var = self.chkvalsql, relief = 'groove')
                 ToolTip(chksql, text = srv_options['sql']['help'], wraplength = self.wraplength)
 
                 ## Layout widgets (optsrvwin:Srv:PageWin:PageEnd)
-                tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 0, height = 0).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = 'nw')
+                # a label for vertical aligning with PageStart
+                tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 0,
+                         height = 0, bg = self.customcolors['lavender']).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = 'nw')
                 timeout0lbl.grid(row = 1, column = 0, padx = 5, pady = 5, sticky = 'e')
-                self.timeout0.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = 'ew')
-                chksql.grid(row = 2, column = 1, padx = 5, pady = 5, sticky = 'ew')
+                self.timeout0.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = 'w')
+                chksql.grid(row = 2, column = 1, padx = 5, pady = 5, sticky = 'w')
 
-                # Store Srv widgets.
+                # Store server-side widgets.
                 self.storewidgets_srv = self.gui_store(side = "Srv", typewidgets = ['Button', 'Entry', 'TCombobox', 'Checkbutton'])
                 self.storewidgets_srv.append(self.chksrvfile)
 
@@ -377,28 +454,52 @@ class KmsGui(tk.Tk):
                                                    relief = 'ridge', font = self.msgfont)
                 self.textboxsrv.put()
 
+        def always_centered(self, geo, centered, refs):
+                x = (self.winfo_screenwidth() // 2) - (self.winfo_width() // 2)
+                y = (self.winfo_screenheight() // 2) - (self.winfo_height() // 2)
+                w, h, dx, dy = geo.split('+')[0].split('x') + geo.split('+')[1:]
+
+                if w == refs[1]:
+                        if centered:
+                                self.geometry('+%d+%d' %(x, y))
+                                centered = False
+                elif w == refs[0]:
+                        if not centered:
+                                self.geometry('+%d+%d' %(x, y))
+                                centered = True
+
+                if dx != str(x) or dy != str(y):
+                        self.geometry('+%d+%d' %(x, 0))
+
+                self.after(200, self.always_centered, self.geometry(), centered, refs)
+
         def gui_complete(self):
                 ## Create client widgets (optcltwin, msgcltwin, btncltwin)
                 self.update_idletasks()   # update Gui to get btnsrvwin values --> btncltwin.
+                minw, minh = self.winfo_width(), self.winfo_height()
                 self.iconify()  
                 self.gui_clt()
-                minw, minh = self.winfo_width(), self.winfo_height()
-                # Main window custom background.
+                maxw, minh = self.winfo_width(), self.winfo_height()
+                ## Main window custom background.
                 self.update_idletasks()   # update Gui for custom background
                 self.iconify()
                 custom_background(self)
-                # Main window other modifications.
+                ## Main window other modifications.
+                self.eval('tk::PlaceWindow %s center' %self.winfo_pathname(self.winfo_id()))
                 self.wm_attributes("-topmost", True)
-                self.protocol("WM_DELETE_WINDOW", lambda:0) 
-                self.minsize(minw, minh)
-                self.resizable(True, False)
-                
-        def get_position(self, genericwidget):
-                x, y = (genericwidget.winfo_x(), genericwidget.winfo_y())
-                w, h = (genericwidget.winfo_width(), genericwidget.winfo_height())
+                self.protocol("WM_DELETE_WINDOW", lambda: 0)
+                ## Disable maximize button.
+                self.resizable(False, False)
+                ## Centered window.
+                self.always_centered(self.geometry(), False, [minw, maxw])
+
+        def get_position(self, widget):
+                x, y = (widget.winfo_x(), widget.winfo_y())
+                w, h = (widget.winfo_width(), widget.winfo_height())
                 return x, y, w, h
                 
-        def gui_clt(self):                
+        def gui_clt(self):
+                self.count_clear = 0
                 self.optcltwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
                 self.msgcltwin = tk.Frame(self.masterwin, background = self.customcolors['black'], relief = 'ridge', width = 300, height = 200)
                 self.btncltwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
@@ -411,29 +512,25 @@ class KmsGui(tk.Tk):
                 self.optcltwin.grid_rowconfigure(0, weight = 1)
                 self.optcltwin.grid_columnconfigure(1, weight = 1)
 
-                # subpages of optcltwin.
+                ## Subpages of "optcltwin".
                 self.gui_pages_create(parent = self.optcltwin, side = "Clt", create = {"PageStart": None,
                                                                                        "PageEnd": None})
 
-                # continue to grid.
+                ## Continue to grid.
                 self.msgcltwin.grid(row = 1, column = 4, padx = 1, pady = 1, sticky = 'nsew')
                 self.msgcltwin.grid_propagate(False)
                 self.msgcltwin.grid_columnconfigure(0, weight = 1)
                 self.msgcltwin.grid_rowconfigure(0, weight = 1)
 
-                # Create widgets (btncltwin) ----------------------------------------------------------------------------------------------------------------
+                ## Create widgets (btncltwin) ----------------------------------------------------------------------------------------------------------------
                 self.runbtnclt = tk.Button(self.btncltwin, text = 'START\nCLIENT', background = self.customcolors['blue'],
                                            foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont,
                                            state = 'disabled', command = self.clt_on_start)
-                
-##                self.othbutt = tk.Button(self.btncltwin, text = 'Botton\n2', background = self.customcolors['green'],
-##                                         foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont)
-                
-                # Layout widgets (btncltwin)
+
+                ## Layout widgets (btncltwin)
                 self.runbtnclt.grid(row = 0, column = 0, padx = 2, pady = 2, sticky = 'ew')
-##                self.othbutt.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'ew')
                 
-                # Create widgets (optcltwin:Clt:PageWin:PageStart) ------------------------------------------------------------------------------------------
+                ## Create widgets (optcltwin:Clt:PageWin:PageStart) ------------------------------------------------------------------------------------------
                 # Version.
                 cltver = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'You are running client version: ' + clt_version,
                                   foreground = self.customcolors['red'], font = self.othfont)
@@ -479,21 +576,30 @@ class KmsGui(tk.Tk):
                 self.cltlevel.set(clt_options['llevel']['def'])
                 ToolTip(self.cltlevel, text = clt_options['llevel']['help'], wraplength = self.wraplength)
 
-                self.chkcltfile = ListboxOfRadiobuttons(self.pagewidgets["Clt"]["PageWin"]["PageStart"],
-                                                        ['FILE', 'FILEOFF', 'STDOUT', 'STDOUTOFF', 'FILESTDOUT'],
-                                                        self.optfontredux,
-                                                        changed = [(self.cltfile, clt_options['lfile']['def']),
-                                                                   (cltfilebtnwin, ''),
-                                                                   (self.cltlevel, clt_options['llevel']['def'])],
-                                                        width = 10, height = 1, borderwidth = 2, relief = 'ridge')
                 # Logsize.
                 cltsizelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Logsize: ', font = self.optfont)
                 self.cltsize = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
                                         validatecommand = self.validation_float)
                 self.cltsize.insert('end', clt_options['lsize']['def'])
                 ToolTip(self.cltsize, text = clt_options['lsize']['help'], wraplength = self.wraplength)
+                # Asynchronous messages.
+                self.chkvalcltasy = tk.BooleanVar()
+                self.chkvalcltasy.set(clt_options['asyncmsg']['def'])
+                chkcltasy = tk.Checkbutton(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Async\nMsg',
+                                           font = self.optfontredux, var = self.chkvalcltasy, relief = 'groove')
+                ToolTip(chkcltasy, text = clt_options['asyncmsg']['help'], wraplength = self.wraplength)
+
+                # Listbox radiobuttons client.
+                self.chkcltfile = ListboxOfRadiobuttons(self.pagewidgets["Clt"]["PageWin"]["PageStart"],
+                                                        ['FILE', 'FILEOFF', 'STDOUT', 'STDOUTOFF', 'FILESTDOUT'],
+                                                        self.optfontredux,
+                                                        changed = [(self.cltfile, clt_options['lfile']['def']),
+                                                                   (cltfilebtnwin, ''),
+                                                                   (self.cltsize, clt_options['lsize']['def']),
+                                                                   (self.cltlevel, clt_options['llevel']['def'])],
+                                                        width = 10, height = 1, borderwidth = 2, relief = 'ridge')
                
-                # Layout widgets (optcltwin:Clt:PageWin:PageStart)
+                ## Layout widgets (optcltwin:Clt:PageWin:PageStart)
                 cltver.grid(row = 0, column = 0, columnspan = 3, padx = 5, pady = 5, sticky = 'ew')
                 cltipaddlbl.grid(row = 1, column = 0, padx = 5, pady = 5, sticky = 'e')
                 self.cltipadd.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = 'ew')
@@ -509,21 +615,29 @@ class KmsGui(tk.Tk):
                 self.cltfile.grid(row = 6, column = 1, padx = 5, pady = 5, sticky = 'ew')
                 cltfilebtnwin.grid(row = 6, column = 2, padx = 5, pady = 5, sticky = 'ew')
                 self.chkcltfile.grid(row = 7, column = 1, padx = 5, pady = 5, sticky = 'ew')
+                chkcltasy.grid(row = 7, column = 2, padx = 5, pady = 5, sticky = 'ew')
                 cltlevellbl.grid(row = 8, column = 0, padx = 5, pady = 5, sticky = 'e')
                 self.cltlevel.grid(row = 8, column = 1, padx = 5, pady = 5, sticky = 'ew')
                 cltsizelbl.grid(row = 9, column = 0, padx = 5, pady = 5, sticky = 'e')
                 self.cltsize.grid(row = 9, column = 1, padx = 5, pady = 5, sticky = 'ew')
 
+                # ugly fix when client-side mode is activated.
+                templbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"],
+                                   bg = self.customcolors['lavender']).grid(row = 10, column = 0,
+                                                                            padx = 35, pady = 54, sticky = 'e')
+
                 ## Create widgets (optcltwin:Clt:PageWin:PageEnd) -------------------------------------------------------------------------------------------
 
                 ## Layout widgets (optcltwin:Clt:PageWin:PageEnd)
-                tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 0, height = 0).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = 'nw')
+                # a label for vertical aligning with PageStart
+                tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 0,
+                         height = 0, bg = self.customcolors['lavender']).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = 'nw')
 
-                # Store Clt widgets.
-                self.storewidgets_clt = self.gui_store(side = "Clt", typewidgets = ['Button', 'Entry', 'TCombobox'])
+                ## Store client-side widgets.
+                self.storewidgets_clt = self.gui_store(side = "Clt", typewidgets = ['Button', 'Entry', 'TCombobox', 'Checkbutton'])
                 self.storewidgets_clt.append(self.chkcltfile)
                 
-                # Create widgets and layout (msgcltwin) -----------------------------------------------------------------------------------------------------
+                ## Create widgets and layout (msgcltwin) -----------------------------------------------------------------------------------------------------
                 self.textboxclt = TextDoubleScroll(self.msgcltwin, background = self.customcolors['black'], wrap = 'none', state = 'disabled',
                                                    relief = 'ridge', font = self.msgfont)
                 self.textboxclt.put()
@@ -540,22 +654,22 @@ class KmsGui(tk.Tk):
                                 # is a STRING.
                                 return value
 
-        def prep_logfile(self, filepath):
+        def prep_logfile(self, filepath, status):
                 # FILE       (pretty on,  log view off, logfile yes)
                 # FILEOFF    (pretty on,  log view off, no logfile)
                 # STDOUT     (pretty off, log view on,  no logfile)
                 # STDOUTOFF  (pretty off, log view off, logfile yes)
                 # FILESTDOUT (pretty off, log view on,  logfile yes)
-                st = self.chksrvfile.state()
-                if st == 'FILE':
+
+                if status == 'FILE':
                         return filepath
-                elif st in ['FILESTDOUT', 'STDOUTOFF']:
-                        return [st, filepath]
-                elif st in ['STDOUT', 'FILEOFF']:
-                        return st
+                elif status in ['FILESTDOUT', 'STDOUTOFF']:
+                        return [status, filepath]
+                elif status in ['STDOUT', 'FILEOFF']:
+                        return status
 
         def validate_int(self, value):
-                return value == '' or value.isdigit()
+                return value == "" or value.isdigit()
 
         def validate_float(self, value):
                 if value == "":
@@ -566,13 +680,13 @@ class KmsGui(tk.Tk):
                 except ValueError:
                         return False
 
-        def clt_on_show(self, force = False):
-                if self.optcltwin.winfo_ismapped() or force:
+        def clt_on_show(self, force_remove = False, force_view = False):
+                if self.optcltwin.winfo_ismapped() or force_remove:
                         self.shbtnclt['text'] = 'SHOW\nCLIENT'
                         self.optcltwin.grid_remove()
                         self.msgcltwin.grid_remove()
                         self.btncltwin.place_forget()
-                else:
+                elif not self.optcltwin.winfo_ismapped() or force_view:
                         self.shbtnclt['text'] = 'HIDE\nCLIENT'
                         self.optcltwin.grid()
                         self.msgcltwin.grid()
@@ -580,12 +694,12 @@ class KmsGui(tk.Tk):
 
         def srv_on_start(self):
                 if self.runbtnsrv['text'] == 'START\nSERVER':
+                        self.on_clear([txsrv, txclt])
                         self.srv_actions_start()
                         # wait for switch.
                         while not serverthread.is_running_server:
                                 pass
 
-                        self.on_clear([txsrv, txclt])
                         self.srv_toggle_all(on_start = True)
                         # run thread for interrupting server when an error happens.
                         self.srv_eject_thread = threading.Thread(target = self.srv_eject, name = "Thread-SrvEjt")
@@ -609,12 +723,18 @@ class KmsGui(tk.Tk):
                 srv_config[srv_options['count']['des']] = self.prep_option(self.count.get())
                 srv_config[srv_options['activation']['des']] = self.prep_option(self.activ.get())
                 srv_config[srv_options['renewal']['des']] = self.prep_option(self.renew.get())
-                srv_config[srv_options['lfile']['des']] = self.prep_logfile(self.srvfile.get())
+                srv_config[srv_options['lfile']['des']] = self.prep_logfile(self.srvfile.get(), self.chksrvfile.state())
+                srv_config[srv_options['asyncmsg']['des']] = self.chkvalsrvasy.get()
                 srv_config[srv_options['llevel']['des']] = self.srvlevel.get()
-                srv_config[srv_options['sql']['des']] = self.chkvalsql.get()
                 srv_config[srv_options['lsize']['des']] = self.prep_option(self.srvsize.get())
-                srv_config[srv_options['time0']['des']] = self.prep_option(self.timeout0.get())
 
+                srv_config[srv_options['time0']['des']] = self.prep_option(self.timeout0.get())
+                srv_config[srv_options['sql']['des']] = self.chkvalsql.get()
+
+                ## Redirect stdout.
+                gui_redirector('stdout', redirect_to = TextRedirect.Log,
+                               redirect_conditio = (srv_config[srv_options['lfile']['des']] in ['STDOUT', 'FILESTDOUT']))
+                gui_redirector_setup()
                 serverqueue.put('start')
 
         def srv_actions_stop(self):
@@ -641,6 +761,8 @@ class KmsGui(tk.Tk):
                                          foreground = self.customcolors['white'])
                         for widget in self.storewidgets_srv:
                                 widget.configure(state = 'normal')
+                                if isinstance(widget, ListboxOfRadiobuttons):
+                                        widget.change()
                         self.runbtnclt.configure(state = 'disabled')
 
         def srv_toggle_state(self):
@@ -652,13 +774,18 @@ class KmsGui(tk.Tk):
                 self.statesrv.configure(text = txt, foreground = color)
 
         def clt_on_start(self):
+                if self.onlyclt:
+                        self.on_clear([txclt])
+                else:
+                        rng, add_newline = self.on_clear_setup()
+                        self.on_clear([txsrv, txclt], clear_range = [rng, None], newline_list = [add_newline, False])
+
                 self.clt_actions_start()
                 # run thread for disabling interrupt server and client, when client running.
                 self.clt_eject_thread = threading.Thread(target = self.clt_eject, name = "Thread-CltEjt")
                 self.clt_eject_thread.setDaemon(True)
                 self.clt_eject_thread.start()
 
-                self.on_clear([txsrv, txclt])
                 for widget in self.storewidgets_clt + [self.runbtnsrv, self.runbtnclt]:
                         widget.configure(state = 'disabled')
 
@@ -668,9 +795,15 @@ class KmsGui(tk.Tk):
                 clt_config[clt_options['mode']['des']] = self.cltmode.get()
                 clt_config[clt_options['cmid']['des']] = self.cltcmid.get()
                 clt_config[clt_options['name']['des']] = self.cltname.get()
+                clt_config[clt_options['lfile']['des']] = self.prep_logfile(self.cltfile.get(), self.chkcltfile.state())
+                clt_config[clt_options['asyncmsg']['des']] = self.chkvalcltasy.get()
                 clt_config[clt_options['llevel']['des']] = self.cltlevel.get()
-                clt_config[clt_options['lfile']['des']] = self.prep_logfile(self.cltfile.get())
                 clt_config[clt_options['lsize']['des']] = self.prep_option(self.cltsize.get())
+
+                ## Redirect stdout.
+                gui_redirector('stdout', redirect_to = TextRedirect.Log,
+                               redirect_conditio = (clt_config[clt_options['lfile']['des']] in ['STDOUT', 'FILESTDOUT']))
+                gui_redirector_setup()
 
                 # run client (in a thread).
                 self.clientthread = client_thread(name = "Thread-Clt")
@@ -681,8 +814,18 @@ class KmsGui(tk.Tk):
         def clt_eject(self):
                 while self.clientthread.is_alive():
                         sleep(0.1)
-                for widget in self.storewidgets_clt + [self.runbtnsrv, self.runbtnclt]:
-                        widget.configure(state = 'normal')
+
+                widgets = self.storewidgets_clt + [self.runbtnclt]
+                if not self.onlyclt:
+                        widgets += [self.runbtnsrv]
+
+                for widget in widgets:
+                        if isinstance(widget, ttk.Combobox):
+                                widget.configure(state = 'readonly')
+                        else:
+                                widget.configure(state = 'normal')
+                                if isinstance(widget, ListboxOfRadiobuttons):
+                                        widget.change()
 
         def on_exit(self):
                 if serverthread.is_running_server:
@@ -693,8 +836,38 @@ class KmsGui(tk.Tk):
                 server_terminate(serverthread, exit_thread = True)
                 self.destroy()
 
-        def on_clear(self, widgetlist):
-                for widget in widgetlist:
+        def on_clear_setup(self):
+                if any(opt in ['STDOUT', 'FILESTDOUT'] for opt in srv_config[srv_options['lfile']['des']]):
+                        if self.count_clear == 0:
+                                self.ini = txsrv.index('end')
+                                add_newline = False
+                        else:
+                                if self.count_clear == 1:
+                                        self.ini = '%s.0' %(int(self.ini[0]) - 1)
+                                else:
+                                        self.ini = '%s.0' %(int(self.ini[0]))
+                                add_newline = True
+                        rng = [self.ini, 'end']
+                        self.count_clear += 1
+                else:
+                        rng, add_newline = None, False
+                        self.count_clear = 0
+
+                return rng, add_newline
+
+        def on_clear(self, widget_list, clear_range = None, newline_list = []):
+                if newline_list == []:
+                        newline_list = len(widget_list) * [False]
+
+                for num, couple in enumerate(zip(widget_list, newline_list)):
+                        widget, add_n = couple
+                        try:
+                                ini, fin = clear_range[num]
+                        except TypeError:
+                                ini, fin = '1.0', 'end'
+
                         widget.configure(state = 'normal')
-                        widget.delete('1.0', 'end')
+                        widget.delete(ini, fin)
+                        if add_n:
+                                widget.insert('end', '\n')
                         widget.configure(state = 'disabled')
