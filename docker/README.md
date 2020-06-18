@@ -87,5 +87,5 @@ ENV LOGFILE		/var/log/pykms_logserver.log
 # EN: log file size in MB
 # RU: Максимальный размер Лог-файл в мегабайтах
 ENV LOGSIZE             ""
-# Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+# Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 ```
