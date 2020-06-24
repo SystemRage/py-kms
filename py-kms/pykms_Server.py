@@ -45,6 +45,7 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         allow_reuse_address = True
 
         def __init__(self, server_address, RequestHandlerClass):
+                self.address_family = socket.AF_INET6 # This call make sure the server creates an IPv6 socket and NOT an IPv4 by default
                 socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
                 self.__shutdown_request = False
                 self.r_service, self.w_service = os.pipe()
