@@ -4,18 +4,9 @@ import os
 import re
 import sys
 from collections import Counter
-
-try:
-        # Python 2.x imports
-        import Tkinter as tk
-        import ttk
-        import tkFont
-except ImportError:
-        # Python 3.x imports
-        import tkinter as tk
-        from tkinter import ttk
-        import tkinter.font as tkFont
-                        
+import tkinter as tk
+from tkinter import ttk
+import tkinter.font as tkFont
 from pykms_Format import MsgMap, unshell_message, unformat_message
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------

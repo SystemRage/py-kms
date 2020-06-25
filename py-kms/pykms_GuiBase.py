@@ -4,22 +4,11 @@ import os
 import sys
 import threading
 from time import sleep
-
-try:
-        # Python 2.x imports
-        import Tkinter as tk
-        import ttk
-        import tkMessageBox as messagebox
-        import tkFileDialog as filedialog
-        import tkFont
-except ImportError:
-        # Python 3.x imports
-        import tkinter as tk
-        from tkinter import ttk
-        from tkinter import messagebox
-        from tkinter import filedialog
-        import tkinter.font as tkFont
-        
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+from tkinter import filedialog
+import tkinter.font as tkFont
 from pykms_Server import srv_options, srv_version, srv_config, server_terminate, serverqueue, serverthread
 from pykms_GuiMisc import ToolTip, TextDoubleScroll, TextRedirect, custom_background
 from pykms_Client import clt_options, clt_version, clt_config, client_thread
