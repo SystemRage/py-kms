@@ -6,9 +6,9 @@ import logging
 import os
 import argparse
 from logging.handlers import RotatingFileHandler
-from pykms_Format import ColorExtraMap, pretty_printer
+from pykms_Format import ColorExtraMap, ShellMessage, pretty_printer
 
-#-----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # https://stackoverflow.com/questions/2183233/how-to-add-a-custom-loglevel-to-pythons-logging-facility
 # https://stackoverflow.com/questions/17558552/how-do-i-add-custom-field-to-python-log-format-string
@@ -86,23 +86,104 @@ class LevelFormatter(logging.Formatter):
                 formatter = self.formatters.get(record.levelno, self.default_fmt)
                 return formatter.format(record)
 
+# based on https://github.com/jruere/multiprocessing-logging (license LGPL-3.0)
+from multiprocessing import Queue as MPQueue
+try:
+    # Python 2.x imports
+    import Queue as Queue
+except ImportError:
+    # Python 3.x imports
+    import queue as Queue
+import threading
+
+class MultiProcessingLogHandler(logging.Handler):
+        def __init__(self, name, handler = None):
+                super(MultiProcessingLogHandler, self).__init__()
+                self.queue = MPQueue(-1)
+                if handler is None:
+                        handler = logging.StreamHandler()
+                self.handler = handler
+                self.name = handler.name
+
+                self.setLevel(self.handler.level)
+                self.setFormatter(self.handler.formatter)
+                self.filters = self.handler.filters
+
+                self.is_closed = False
+                self.receive_thread = threading.Thread(target = self.receive, name = name)
+                self.receive_thread.daemon = True
+                self.receive_thread.start()
+
+        def setFormatter(self, fmt):
+                super(MultiProcessingLogHandler, self).setFormatter(fmt)
+                self.handler.setFormatter(fmt)
+
+        def emit(self, record):
+                try:
+                        if record.args:
+                                record.msg = record.msg %record.args
+                                record.args = None
+                        if record.exc_info:
+                                dummy = self.format(record)
+                                record.exc_info = None
+                        self.queue.put_nowait(record)
+                except (KeyboardInterrupt, SystemExit):
+                        raise
+                except:
+                        self.handleError(record)
+
+        def receive(self):
+                while not (self.is_closed and self.queue.empty()):
+                        try:
+                                record = self.queue.get(timeout = 0.2)
+                                self.handler.emit(record)
+                        except (KeyboardInterrupt, SystemExit):
+                                raise
+                        except EOFError:
+                                break
+                        except Queue.Empty:
+                                pass
+                        except:
+                                logging.exception('Error in log handler.')
+                self.queue.close()
+                self.queue.join_thread()
+
+        def close(self):
+                if not self.is_closed:
+                        self.is_closed = True
+                        self.receive_thread.join(5.0)
+                        self.handler.close()
+                        super(MultiProcessingLogHandler, self).close()
+
 
 def logger_create(log_obj, config, mode = 'a'):
         # Create new level.
         add_logging_level('MINI', logging.CRITICAL + 10)
+        log_handlers = []
 
         # Configure visualization.
-        log_handlers = []
-        if any(i in ['STDOUT', 'FILESTDOUT'] for i in config['logfile']):
-                # (Only STDOUT) or (logfile and STDOUT)
-                log_handlers.append(logging.StreamHandler(sys.stdout))
-                if 'FILESTDOUT' in config['logfile']:
-                        log_handlers.append(RotatingFileHandler(filename = config['logfile'][1], mode = mode, maxBytes = int(config['logsize'] * 1024 * 512),
-                                                                backupCount = 1, encoding = None, delay = 0))
+        if any(opt in ['STDOUT', 'FILESTDOUT', 'STDOUTOFF'] for opt in config['logfile']):
+                if any(opt in ['STDOUT', 'FILESTDOUT'] for opt in config['logfile']):
+                        # STDOUT or FILESTDOUT.
+                        hand_stdout = logging.StreamHandler(sys.stdout)
+                        hand_stdout.name = 'LogStdout'
+                        log_handlers.append(hand_stdout)
+                if any(opt in ['STDOUTOFF', 'FILESTDOUT'] for opt in config['logfile']):
+                        # STDOUTOFF or FILESTDOUT.
+                        hand_rotate = RotatingFileHandler(filename = config['logfile'][1], mode = mode, maxBytes = int(config['logsize'] * 1024 * 512),
+                                                          backupCount = 1, encoding = None, delay = 0)
+                        hand_rotate.name = 'LogRotate'
+                        log_handlers.append(hand_rotate)
+        elif 'FILEOFF' in config['logfile']:
+                hand_null = logging.FileHandler(os.devnull)
+                hand_null.name = 'LogNull'
+                log_handlers.append(hand_null)
         else:
-                # Only logfile.
-                log_handlers.append(RotatingFileHandler(filename = config['logfile'][0], mode = mode, maxBytes = int(config['logsize'] * 1024 * 512),
-                                                        backupCount = 1, encoding = None, delay = 0))
+                # FILE.
+                hand_rotate = RotatingFileHandler(filename = config['logfile'][0], mode = mode, maxBytes = int(config['logsize'] * 1024 * 512),
+                                                  backupCount = 1, encoding = None, delay = 0)
+                hand_rotate.name = 'LogRotate'
+                log_handlers.append(hand_rotate)
 
         # Configure formattation.
         try:
@@ -110,43 +191,56 @@ def logger_create(log_obj, config, mode = 'a'):
         except AttributeError:
                 levelnames = logging._levelNames
         levelnum = [k for k in levelnames if k != 0]
-        frmt0 = '%(asctime)s %(levelname)-8s %(message)s'
-        frmt1 = '[%(asctime)s] [%(levelname)-8s]   %(host)s   %(status)s   %(product)s   %(message)s'
-        levelformdict = {}
-        for num in levelnum:
-                if num != logging.CRITICAL + 10:
-                        levelformdict[num] = frmt0
-                else:
-                        levelformdict[num] = frmt1
 
-        # Set level and format.
-        levelformdictcopy = levelformdict.copy()
+        frmt_gen = '%(asctime)s %(levelname)-8s %(message)s'
+        frmt_std = '%(name)s %(asctime)s %(levelname)-8s %(message)s'
+        frmt_min = '[%(asctime)s] [%(levelname)-8s]   %(host)s   %(status)s   %(product)s   %(message)s'
+
+        def apply_formatter(levelnum, formats, handler, color = False):
+                levelformdict = {}
+                for num in levelnum:
+                        if num != logging.CRITICAL + 10:
+                                levelformdict[num] = formats[0]
+                        else:
+                                levelformdict[num] = formats[1]
+                handler.setFormatter(LevelFormatter(levelformdict, color = color))
+                return handler
+
+        # Clear old handlers.
+        if log_obj.handlers:
+                log_obj.handlers = []
+
         for log_handler in log_handlers:
                 log_handler.setLevel(config['loglevel'])
-                if log_handler.__class__.__name__ == 'StreamHandler':
-                        log_handler.setFormatter(LevelFormatter(levelformdict, color = True))
-                elif log_handler.__class__.__name__ == 'RotatingFileHandler':
-                        log_handler.setFormatter(LevelFormatter(levelformdictcopy, color = False))
+                if log_handler.name in ['LogStdout']:
+                        log_handler = apply_formatter(levelnum, (frmt_std, frmt_min), log_handler, color = True)
+                elif log_handler.name in ['LogRotate']:
+                        log_handler = apply_formatter(levelnum, (frmt_gen, frmt_min), log_handler)
+                # Attach.
+                if config['asyncmsg']:
+                        log_obj.addHandler(MultiProcessingLogHandler('Thread-AsyncMsg{0}'.format(log_handler.name), handler = log_handler))
+                else:
+                        log_obj.addHandler(log_handler)
 
-        # Attach.
         log_obj.setLevel(config['loglevel'])
-        [ log_obj.addHandler(log_handler) for log_handler in log_handlers ]
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def check_logfile(optionlog, defaultlog, where):
         if not isinstance(optionlog, list):
                 optionlog = [optionlog]
 
         lenopt = len(optionlog)
-        msg_dir  = "{reverse}{red}{bold}argument logfile: invalid directory: '%s'. Exiting...{end}"
-        msg_long = "{reverse}{red}{bold}argument logfile: too much arguments. Exiting...{end}"
-        msg_log = "{reverse}{red}{bold}argument logfile: not a log file, invalid extension: '%s'. Exiting...{end}"
+        msg_dir  = "{reverse}{red}{bold}argument `-F/--logfile`: invalid directory: '%s'. Exiting...{end}"
+        msg_long = "{reverse}{red}{bold}argument `-F/--logfile`: too much arguments. Exiting...{end}"
+        msg_log = "{reverse}{red}{bold}argument `-F/--logfile`: not a log file, invalid extension: '%s'. Exiting...{end}"
 
         def checkdir(path):
                 filename = os.path.basename(path)
                 pathname = os.path.dirname(path)
                 if not os.path.isdir(pathname):
+                        if path.count('/') == 0:
+                                pathname = filename
                         pretty_printer(put_text = msg_dir %pathname, where = where, to_exit = True)
                 elif not filename.lower().endswith('.log'):
                         pretty_printer(put_text = msg_log %filename, where = where, to_exit = True)
@@ -154,7 +248,7 @@ def check_logfile(optionlog, defaultlog, where):
         if lenopt > 2:
                 pretty_printer(put_text = msg_long, where = where, to_exit = True)
 
-        if 'FILESTDOUT' in optionlog:
+        if (any(opt in ['FILESTDOUT', 'STDOUTOFF'] for opt in optionlog)):
                 if lenopt == 1:
                         # add default logfile.
                         optionlog.append(defaultlog)
@@ -164,12 +258,13 @@ def check_logfile(optionlog, defaultlog, where):
         else:
                 if lenopt == 2:
                         pretty_printer(put_text = msg_long, where = where, to_exit = True)
-                elif lenopt == 1 and 'STDOUT' not in optionlog:
+                elif lenopt == 1 and (any(opt not in ['STDOUT', 'FILEOFF'] for opt in optionlog)):
                         # check directory path.
                         checkdir(optionlog[0])
+
         return optionlog
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Valid language identifiers to be used in the EPID (see "kms.c" in vlmcsd)
 ValidLcid = [1025, 1026, 1027, 1028, 1029,
@@ -208,21 +303,20 @@ def check_lcid(lcid, log_obj):
                                 fixlcid = next(k for k, v in locale.windows_locale.items() if v == locale.getdefaultlocale()[0])
                         except StopIteration:
                                 fixlcid = 1033
-                pretty_printer(log_obj = log_obj,
-                               put_text = "{reverse}{yellow}{bold}LCID %s auto-fixed with LCID %s{end}" %(lcid, fixlcid))
+                pretty_printer(log_obj = log_obj, put_text = "{reverse}{yellow}{bold}LCID '%s' auto-fixed with LCID '%s'{end}" %(lcid, fixlcid))
                 return fixlcid
         return lcid
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class KmsException(Exception):
+class KmsParserException(Exception):
         pass
 
 class KmsParser(argparse.ArgumentParser):
         def error(self, message):
-                raise KmsException(message)
+                raise KmsParserException(message)
 
-class KmsHelper(object):
+class KmsParserHelp(object):
         def replace(self, parser, replace_epilog_with):
                 text = parser.format_help().splitlines()
                 help_list = []
@@ -255,7 +349,126 @@ class KmsHelper(object):
                 print(parser_base.epilog + '\n')
                 parser_base.exit()
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------------
+def kms_parser_get(parser):
+        zeroarg, onearg = ([] for _ in range(2))
+        act = vars(parser)['_actions']
+        for i in range(len(act)):
+                if act[i].option_strings not in ([], ['-h', '--help']):
+                        if isinstance(act[i], argparse._StoreAction):
+                                onearg.append(act[i].option_strings)
+                        else:
+                                zeroarg.append(act[i].option_strings)
+        return zeroarg, onearg
+
+def kms_parser_check_optionals(userarg, zeroarg, onearg, msg = 'optional py-kms server', exclude_opt_len = []):
+        """
+        For optionals arguments:
+        Don't allow duplicates,
+        Don't allow abbreviations,
+        Don't allow joining and not existing arguments,
+        Checks length values passed to arguments.
+        """
+        zeroarg = [item for sublist in zeroarg for item in sublist]
+        onearg = [item for sublist in onearg for item in sublist]
+        allarg = zeroarg + onearg
+
+        def is_abbrev(allarg, arg_to_check):
+                for opt in allarg:
+                        if len(opt) > 2 and opt[2] == arg_to_check[2]:
+                                for indx in range(-1, -len(opt), -1):
+                                        if opt[:indx] == arg_to_check:
+                                                raise KmsParserException("%s argument `%s` abbreviation not allowed for `%s`" %(msg, arg_to_check, opt))
+                return False
+
+        # Check abbreviations, joining, not existing.
+        for arg in userarg:
+                if arg not in allarg:
+                        if arg.startswith('-'):
+                                if arg == '--' or arg[:2] != '--' or not is_abbrev(allarg, arg):
+                                        raise KmsParserException("unrecognized %s arguments: `%s`" %(msg, arg))
+
+        # Check duplicates.
+        founds = [i for i in userarg if i in allarg]
+        dup = [item for item in set(founds) if founds.count(item) > 1]
+        if dup != []:
+                raise KmsParserException("%s argument `%s` appears several times" %(msg, ', '.join(dup)))
+
+        # Check length.
+        elem = None
+        for found in founds:
+                if found not in exclude_opt_len:
+                        pos = userarg.index(found)
+                        try:
+                                if found in zeroarg:
+                                        elem = userarg[pos + 1]
+                                        num = "zero arguments,"
+                                elif found in onearg:
+                                        elem = userarg[pos + 2]
+                                        num = "one argument,"
+                        except IndexError:
+                                pass
+
+                        if elem and elem not in allarg:
+                                raise KmsParserException("%s argument `" %msg + found + "`:" + " expected " + num + " unrecognized: '%s'" %elem)
+
+def kms_parser_check_positionals(config, parse_method, arguments = None, msg = 'positional py-kms server'):
+        try:
+                if arguments:
+                        config.update(vars(parse_method(arguments)))
+                else:
+                        config.update(vars(parse_method()))
+        except KmsParserException as e:
+                e = str(e)
+                if e.startswith('argument'):
+                        raise
+                else:
+                        raise KmsParserException("unrecognized %s arguments: '%s'" %(msg, e.split(': ')[1]))
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
+def proper_none(dictionary):
+        for key in dictionary.keys():
+                dictionary[key] = None if dictionary[key] == 'None' else dictionary[key]
+
+def check_setup(config, options, logger, where):
+        # 'None'--> None.
+        proper_none(config)
+
+        # Check logfile.
+        config['logfile'] = check_logfile(config['logfile'], options['lfile']['def'], where = where)
+
+        # Check logsize (py-kms Gui).
+        if config['logsize'] == "":
+                if any(opt in ['STDOUT', 'FILEOFF'] for opt in config['logfile']):
+                        # set a recognized size never used.
+                        config['logsize'] = 0
+                else:
+                        pretty_printer(put_text = "{reverse}{red}{bold}argument `-S/--logsize`: invalid with: '%s'. Exiting...{end}" %config['logsize'],
+                                       where = where, to_exit = True)
+
+        # Check loglevel (py-kms Gui).
+        if config['loglevel'] == "":
+                # set a recognized level never used.
+                config['loglevel'] = 'ERROR'
+
+        # Setup hidden / asynchronous messages.
+        hidden = ['STDOUT', 'FILESTDOUT', 'STDOUTOFF']
+        view_flag = (False if any(opt in hidden for opt in config['logfile']) else True)
+        if where == 'srv':
+                ShellMessage.viewsrv = view_flag
+                ShellMessage.asyncmsgsrv = config['asyncmsg']
+        elif where == 'clt':
+                ShellMessage.viewclt = view_flag
+                ShellMessage.asyncmsgclt = config['asyncmsg']
+
+        # Create log.
+        logger_create(logger, config, mode = 'a')
+
+        # Check port.
+        if (config['port'] == "") or (not 1 <= config['port'] <= 65535):
+                pretty_printer(log_obj = logger.error, where = where, to_exit = True,
+                               put_text = "{reverse}{red}{bold}Port number '%s' is invalid. Enter between 1 - 65535. Exiting...{end}" %config['port'])
+
+#------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # http://joshpoley.blogspot.com/2011/09/hresults-user-0x004.html  (slerror.h)
 ErrorCodes = {

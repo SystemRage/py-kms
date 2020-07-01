@@ -140,21 +140,21 @@ class kmsBase:
                 # https://docs.microsoft.com/en-us/windows/deployment/volume-activation/activate-windows-10-clients-vamt                
                 MinClients = kmsRequest['requiredClientCount'] 
                 RequiredClients = MinClients * 2
-                if self.srv_config["CurrentClientCount"] != None:
-                        if 0 < self.srv_config["CurrentClientCount"] < MinClients:
+                if self.srv_config["clientcount"] != None:
+                        if 0 < self.srv_config["clientcount"] < MinClients:
                                 # fixed to 6 (product server) or 26 (product desktop)
                                 currentClientCount = MinClients + 1
                                 pretty_printer(log_obj = loggersrv.warning,
                                                put_text = "{reverse}{yellow}{bold}Not enough clients ! Fixed with %s, but activated client \
 could be detected as not genuine !{end}" %currentClientCount)
-                        elif MinClients <= self.srv_config["CurrentClientCount"] < RequiredClients:
-                                currentClientCount = self.srv_config["CurrentClientCount"]
+                        elif MinClients <= self.srv_config["clientcount"] < RequiredClients:
+                                currentClientCount = self.srv_config["clientcount"]
                                 pretty_printer(log_obj = loggersrv.warning,
                                                put_text = "{reverse}{yellow}{bold}With count = %s, activated client could be detected as not genuine !{end}" %currentClientCount)
-                        elif self.srv_config["CurrentClientCount"] >= RequiredClients:
+                        elif self.srv_config["clientcount"] >= RequiredClients:
                                 # fixed to 10 (product server) or 50 (product desktop)
                                 currentClientCount = RequiredClients
-                                if self.srv_config["CurrentClientCount"] > RequiredClients:
+                                if self.srv_config["clientcount"] > RequiredClients:
                                         pretty_printer(log_obj = loggersrv.warning,
                                                        put_text = "{reverse}{yellow}{bold}Too many clients ! Fixed with %s{end}" %currentClientCount)
                 else:
@@ -230,8 +230,8 @@ could be detected as not genuine !{end}" %currentClientCount)
                 # rule: timeserver - 4h <= timeclient <= timeserver + 4h, check if is satisfied.
                 response['responseTime'] = kmsRequest['requestTime'] 
                 response['currentClientCount'] = currentClientCount
-                response['vLActivationInterval'] = self.srv_config["VLActivationInterval"]
-                response['vLRenewalInterval'] = self.srv_config["VLRenewalInterval"]
+                response['vLActivationInterval'] = self.srv_config["activation"]
+                response['vLRenewalInterval'] = self.srv_config["renewal"]
 
                 if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
                         response = sql_update_epid(self.dbName, kmsRequest, response)

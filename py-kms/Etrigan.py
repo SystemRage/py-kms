@@ -592,8 +592,8 @@ def main():
         parser = Etrigan_parser()
         args = vars(parser.parse_args())
         # Check arguments.
-        Etrigan_check().checkfile(args['etriganpid'], 'pidfile', '.pid')
-        Etrigan_check().checkfile(args['etriganlog'], 'pidfile', '.log')
+        Etrigan_check().checkfile(args['etriganpid'], '--etrigan-pid', '.pid')
+        Etrigan_check().checkfile(args['etriganlog'], '--etrigan-log', '.log')
 
         # Setup daemon.
         jasonblood_1 = Etrigan(pidfile = args['etriganpid'], logfile = args['etriganlog'], loglevel = args['etriganlev'],
