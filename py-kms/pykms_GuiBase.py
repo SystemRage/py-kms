@@ -26,9 +26,10 @@ from pykms_GuiMisc import ToolTip, TextDoubleScroll, TextRedirect, ListboxOfRadi
 from pykms_GuiMisc import custom_background, custom_pages
 from pykms_Client import clt_options, clt_version, clt_config, client_thread
 
-gui_version             = "py-kms_gui_v2.0"
-__license__             = "The Unlicense"
+gui_version             = "py-kms_gui_v3.0"
+__license__             = "MIT License"
 __author__              = u"Matteo ℱan <SystemRage@protonmail.com>"
+__copyright__           = "© Copyright 2020"
 __url__                 = "https://github.com/SystemRage/py-kms"
 gui_description         = "A GUI for py-kms."
 

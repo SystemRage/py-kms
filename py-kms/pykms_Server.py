@@ -33,7 +33,7 @@ from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_ch
 from pykms_Format import enco, deco, pretty_printer
 from Etrigan import Etrigan, Etrigan_parser, Etrigan_check, Etrigan_job
 
-srv_version             = "py-kms_2020-02-02"
+srv_version             = "py-kms_2020-07-01"
 __license__             = "The Unlicense"
 __author__              = u"Matteo ℱan <SystemRage@protonmail.com>"
 __url__                 = "https://github.com/SystemRage/py-kms"

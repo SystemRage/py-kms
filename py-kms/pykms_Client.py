@@ -27,7 +27,7 @@ from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
 from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals
 from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
-clt_version             = "py-kms_2020-02-02"
+clt_version             = "py-kms_2020-07-01"
 __license__             = "The Unlicense"
 __author__              = u"Matteo ℱan <SystemRage@protonmail.com>"
 __url__                 = "https://github.com/SystemRage/py-kms"
