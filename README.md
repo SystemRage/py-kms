@@ -64,7 +64,7 @@ and stop the GUI with `python pykms_Server.py etrigan stop` (or interact with th
 ![auto-docker](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
 ![status-docker](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
 
-This projects has docker image support. You can find all available image configurations inside the docker folder.
+This project has docker image support. You can find all available image configurations inside the docker folder.
 There are three tags of the images available:
 * `latest`, currently the same like minimal...
 * `minimal`, wich is based on the python3 minimal configuration of py-kms. _This image does NOT include SQLLite support!_
