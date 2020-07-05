@@ -353,7 +353,11 @@ def server_check():
                 srv_config['hwid'] = randomhwid[:16]
            
         # Sanitize HWID.
-        hexstr = srv_config['hwid'].strip('0x')
+        hexstr = srv_config['hwid']
+        # Strip 0x from the start of hexstr
+        if hexstr.startswith("0x"):
+            hexstr = hexstr[2:]
+
         hexsub = re.sub(r'[^0-9a-fA-F]', '', hexstr)
         diff = set(hexstr).symmetric_difference(set(hexsub))
 
