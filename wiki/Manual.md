@@ -1,6 +1,6 @@
 ## Understanding Key Management Service
-KMS activates Microsoft products on a local network, eliminating the need for individual computers to connect to Microsoft. To do this, KMS uses a client–server topology. KMS client locate KMS server by using DNS or a static configuration, then contact it by using Remote Procedure Call ( RPC ) and tries to activate against it.
-KMS can activate both physical computers and virtual machines, but a network must meet or exceed the activation threshold ( minimum number of computers that KMS requires ). For activation, KMS clients on the network need to install a KMS client key ( General Volume License Key, GVLK ), so the product no longer asks Microsoft server but a user–defined server ( the KMS server ) which usually resides in a company’s intranet.
+KMS activates Microsoft products on a local network, eliminating the need for individual computers to connect to Microsoft. To do this, KMS uses a client–server topology. KMS client locate KMS server by using DNS or a static configuration, then contact it by using Remote Procedure Call (RPC) and tries to activate against it.
+KMS can activate both physical computers and virtual machines, but a network must meet or exceed the activation threshold (minimum number of computers that KMS requires). For activation, KMS clients on the network need to install a KMS client key (General Volume License Key, GVLK), so the product no longer asks Microsoft server but a user–defined server (the KMS server) which usually resides in a company’s intranet.
 	
 _py-kms_ is a free open source KMS server emulator written in python, while Microsoft gives their KMS server only to corporations that signed a Select contract. Furthermore _py-kms_ never refuses activation since is without 	restrictions, while the Microsoft KMS server only activates the products the customer has paid for.
 
@@ -9,16 +9,16 @@ Although _py-kms_ does neither require an activation key nor any payment, it is 
 e.g. if you buy a new computer or motherboard and your key will be refused activation from Microsoft servers due to hardware changes.
 
 Activation with _py-kms_ is achieved with the following steps:
-1. Run _py-kms_ on a computer in the network ( this is KMS server or local host ).
-2. Install the product on client ( or said remote host, which is the computer sending data to local host ) and enter the GVLK.
+1. Run _py-kms_ on a computer in the network (this is KMS server or local host).
+2. Install the product on client (or said remote host, which is the computer sending data to local host) and enter the GVLK.
 3. Configure the client to use the KMS server.
 	
 Note that KMS activations are valid for 180 days, the activation validity interval, or 30 / 45 days with    	consumer-only products. To remain activated, KMS client computers must renew their activation by connecting to the KMS server at least once every 180 days.
 For this to work, should be to guarantee that a KMS server is always reachable for the clients on the network.
-To remember you can't activate Windows 8.1 ( and above ) on a KMS server hosted on the same machine ( the KMS server must be a different computer than the client ).
+To remember you can't activate Windows 8.1 (and above) on a KMS server hosted on the same machine (the KMS server must be a different computer than the client).
 
 ## About GVLK keys
-The GVLK keys for products sold via volume license contracts ( renewal every 180 days ) are published on 	Microsoft’s Technet web site.
+The GVLK keys for products sold via volume license contracts (renewal every 180 days) are published on 	Microsoft’s Technet web site.
 
 * Windows:     https://technet.microsoft.com/en-us/library/jj612867.aspx
 
@@ -29,16 +29,16 @@ The GVLK keys for products sold via volume license contracts ( renewal every 180
 * Office 2016: https://technet.microsoft.com/it-it/library/dn385360(v=office.16).aspx
 
 There are also not official keys for consumer-only versions of Windows that require 
-activation renewal every 45 days ( Windows 8.1 ) or 30 days ( Windows 8 ).
+activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8).
 More complete and well defined lists are available [here](https://github.com/SystemRage/py-kms/wiki/Windows-GVLK-Keys) and [here](https://github.com/SystemRage/py-kms/wiki/Office-GVLK-Keys).
 
 ## SLMGR and OSPP commands
-The software License Manager ( ```slmgr.vbs``` ) is a Visual Basic script used to configure and retrieve Volume 	Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script host ( ```wscript.exe``` ) or the command-based script host ( ```cscript.exe``` ), and administrators can specify which script engine to use. If no script engine is specified, SLMGR runs using the default script engine ( note: it's recommended the cscript.exe script engine that resides in the system32 directory ).
-The Software Licensing Service must be restarted for any changes to take effect. To restart it, can be used the Microsoft Management Console ( MMC ) Services or running the following command:
+The software License Manager (```slmgr.vbs```) is a Visual Basic script used to configure and retrieve Volume 	Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script host (```wscript.exe```) or the command-based script host (```cscript.exe```), and administrators can specify which script engine to use. If no script engine is specified, SLMGR runs using the default script engine (note: it's recommended the cscript.exe script engine that resides in the system32 directory).
+The Software Licensing Service must be restarted for any changes to take effect. To restart it, can be used the Microsoft Management Console (MMC) Services or running the following command:
 
 ```net stop sppsvc && net start sppsvc```
 
-The _SLMGR_ requires at least one parameter. If the script is run without any parameters, it displays Help 	information. The general syntax of ```slmgr.vbs``` is as follows ( using the ```cscript.exe``` as the script engine ):
+The _SLMGR_ requires at least one parameter. If the script is run without any parameters, it displays Help 	information. The general syntax of ```slmgr.vbs``` is as follows (using the ```cscript.exe``` as the script engine):
 
 ```
 cscript slmgr.vbs /parameter
@@ -46,7 +46,7 @@ cscript slmgr.vbs [ComputerName] [User] [Password] [Option]
 ```
 where command line options are:
 ```
-[ComputerName]  Name of a remote computer ( default is local computer ).
+[ComputerName]  Name of a remote computer (default is local computer).
 [User]          Account with the required privilege on the remote computer.
 [Password]      Password for the account with required privileges on the remote compute.
 [Option]        Options are shown in the table below.
@@ -93,7 +93,7 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
     <tbody>
          <tr>
             <td>/cpky</td>
-            <td>Some servicing operations require the product key to be available in the registry during Out-of-Box Experience ( OOBE ) operations. So this option removes the product key from the registry to prevent from being stolen by malicious code.</td>
+            <td>Some servicing operations require the product key to be available in the registry during Out-of-Box Experience (OOBE) operations. So this option removes the product key from the registry to prevent from being stolen by malicious code.</td>
          </tr>
          <tr>
             <td>/ilc <<i>LicenseFile</i>></td>
@@ -121,7 +121,7 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
          </tr>
          <tr>
             <td>/dti [<i>ActivationID</i>]</td>
-            <td>Displays installation ID for offline activation of the KMS host for Windows ( default ) or the application that is identified when its <i>ActivationID</i> is provided.</td>
+            <td>Displays installation ID for offline activation of the KMS host for Windows (default) or the application that is identified when its <i>ActivationID</i> is provided.</td>
          </tr>
          <tr>
             <td>/atp [<i>ConfirmationID</i>][<i>ActivationID</i>]</td>
@@ -151,11 +151,11 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
          </tr>
          <tr>
             <td>/skhc</td>
-            <td>Enables KMS host caching ( default ), which blocks the use of DNS priority and weight after the initial discovery of a working KMS host. If the system can no longer contact the working KMS host, discovery will be attempted again.</td>
+            <td>Enables KMS host caching (default), which blocks the use of DNS priority and weight after the initial discovery of a working KMS host. If the system can no longer contact the working KMS host, discovery will be attempted again.</td>
          </tr>
          <tr>
             <td>/ckhc</td>
-            <td>Disables KMS host caching. This setting instructs the client to use DNS auto-discovery each time it attempts KMS activation ( recommended when using priority and weight ).</td>
+            <td>Disables KMS host caching. This setting instructs the client to use DNS auto-discovery each time it attempts KMS activation (recommended when using priority and weight).</td>
          </tr>
          <tr>
             <td>/sai <<i>ActivationInterval</i>></td>
@@ -163,7 +163,7 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
          </tr>
          <tr>
             <td>/sri <<i>RenewalInterval</i>></td>
-            <td>Changes how often a KMS client attempts to renew its activation by contacting a KMS host. Replace <i>RenewalInterval</i> with a number of minutes between 15 minutes an 30 days. The default setting is 10080 ( 7 days ).</td>
+            <td>Changes how often a KMS client attempts to renew its activation by contacting a KMS host. Replace <i>RenewalInterval</i> with a number of minutes between 15 minutes an 30 days. The default setting is 10080 (7 days).</td>
          </tr>
          <tr>
             <td>/sprt <<i>PortNumber</i>></td>
@@ -192,8 +192,8 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
     </tbody>
 </table>
 
-The Office Software Protection Platform script ( ```ospp.vbs``` ) can help you to configure and test volume license editions of Office client products.
-You must open a command prompt by using administrator permissions and navigate to the folder that contains the 	script. The script is located in the folder of Office installation ( ```\Office14``` for Office 2010, ```\Office15``` for Office 2013, ```\Office16``` for Office 2016 ):
+The Office Software Protection Platform script (```ospp.vbs```) can help you to configure and test volume license editions of Office client products.
+You must open a command prompt by using administrator permissions and navigate to the folder that contains the 	script. The script is located in the folder of Office installation (```\Office14``` for Office 2010, ```\Office15``` for Office 2013, ```\Office16``` for Office 2016):
 
 ```%installdir%\Program Files\Microsoft Office\Office15```.
 
@@ -230,11 +230,11 @@ where command line options are:
          </tr>
          <tr>
             <td>/inpkey:<<i>ProductKey</i>></td>
-            <td>Installs a <i>ProductKey</i> ( replaces existing key ) with a user-provided <i>ProductKey</i>.</td>
+            <td>Installs a <i>ProductKey</i> (replaces existing key) with a user-provided <i>ProductKey</i>.</td>
          </tr>
          <tr>
             <td>/unpkey:<<i>ProductKey</i>></td>
-            <td>Uninstalls an installed <i>ProductKey</i> with the last five digits of the <i>ProductKey</i> to uninstall ( as displayed by the /dstatus option ).</td>
+            <td>Uninstalls an installed <i>ProductKey</i> with the last five digits of the <i>ProductKey</i> to uninstall (as displayed by the /dstatus option).</td>
          </tr>
          <tr>
             <td>/inslic:<<i>LicenseFile</i>></td>
@@ -288,7 +288,7 @@ where command line options are:
          </tr>
          <tr>
             <td>/dcmid</td>
-            <td>Displays KMS client computer ID ( CMID )</td>
+            <td>Displays KMS client computer ID (CMID)</td>
          </tr>
          <tr>
             <td>/sethst:<<i>HostName</i>></td>
@@ -300,7 +300,7 @@ where command line options are:
          </tr>
          <tr>
             <td>/remhst</td>
-            <td>Removes KMS hostname ( sets port to default ).</td>
+            <td>Removes KMS hostname (sets port to default).</td>
          </tr>
          <tr>
             <td>/cachst:<<i>Value</i>></td>
@@ -308,15 +308,15 @@ where command line options are:
          </tr>
          <tr>
             <td>/actype:<<i>Value</i>></td>
-            <td>( Windows 8 and later only ) Sets volume activation type. Parameter <i>Value</i> can be: 1 ( for Active Directory-based ), 2 ( for KMS ), 0 ( for both ).</td>
+            <td>(Windows 8 and later only) Sets volume activation type. Parameter <i>Value</i> can be: 1 (for Active Directory-based), 2 (for KMS), 0 (for both).</td>
          </tr>
          <tr>
             <td>/skms-domain:<<i>Value</i>></td>
-            <td>( Windows 8 and later only ) Sets the specific DNS domain in which all KMS SRV records can be found. This setting has no effect if the specific single KMS host is set by the /sethst option. Parameter <i>Value</i> is the Fully Qualified Domain Name ( FQDN ).</td>
+            <td>(Windows 8 and later only) Sets the specific DNS domain in which all KMS SRV records can be found. This setting has no effect if the specific single KMS host is set by the /sethst option. Parameter <i>Value</i> is the Fully Qualified Domain Name (FQDN).</td>
          </tr>
          <tr>
             <td>/ckms-domain</td>
-            <td>( Windows 8 and later only ) Clears the specific DNS domain in which all KMS SRV records can be found. The specific KMS host is used if it is set by the /sethst option. Otherwise, auto-discovery of the KMS host is used.</td>
+            <td>(Windows 8 and later only) Clears the specific DNS domain in which all KMS SRV records can be found. The specific KMS host is used if it is set by the /sethst option. Otherwise, auto-discovery of the KMS host is used.</td>
          </tr>
     </tbody>
 </table>
@@ -325,7 +325,7 @@ where command line options are:
 
 #### _How to run pykms_Server.py manually_.
 ***
-A Linux user with ```ifconfig``` command can get his KMS IP ( Windows users can try ```ipconfig /all```).
+A Linux user with ```ifconfig``` command can get his KMS IP (Windows users can try ```ipconfig /all```).
 ```
 user@user ~ $ ifconfig
 eth0    Link encap: Ethernet HWaddr xx:xx:xx:xx.....
@@ -344,45 +344,65 @@ lo      Link encap: Local Loopback
 ```
 In the example above is 192.168.1.102, so is valid:
 
-```user@user ~/path/to/folder/py-kms $ python pykms_Server.py 192.168.1.102 1688```
+```user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688```
 
 To stop _pykms_Server.py_, in the same bash window where code running, simply press CTRL+C.
-Alternatively, in a new bash window, use ```kill <pid>``` command ( you can type ```ps aux``` first and have the process <pid> ) or ```killall <name_of_server>```.
+Alternatively, in a new bash window, use ```kill <pid>``` command (you can type ```ps aux``` first and have the process <pid>) or ```killall <name_of_server>```.
 
 #### _How to run pykms_Server.py automatically at start_.
 ***
-If you are running a Linux distro that is using ```upstart```, you can simply manage a daemon that runs as a background process.
+You can simply manage a daemon that runs as a background process.
 
-```sudo nano /etc/init/py-kms.conf```
-
-Then add the following ( changing where necessary ) and save file:
+If you are running a Linux distro using ```upstart``` (deprecated),
+create the file: ```sudo nano /etc/init/py3-kms.conf```,
+then add the following (changing where needed) and save:
 ```
-description "py-kms"
+description "py3-kms"
 author "SystemRage"
-env PYTHON_HOME=/<dir>
-env PATH=$PYTHON_HOME:$PATH
+env PYTHONPATH=/usr/bin
+env PYKMSPATH=</path/to/your/pykms/files/folder>/py-kms
+env LOGPATH=</path/to/your/log/files/folder>/pykms_logserver.log
 start on runlevel [2345]
 stop on runlevel [016]
-chdir /home/user/path/to/py-kms
-exec $PYTHON_HOME/bin/python pykms_Server.py <server address> <server port> -v DEBUG --logfile /var/log/pykms_logserver.log
+exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F $LOGPATH
 respawn
 ```
-Confirm that it looks ok with: ```init-checkconf /etc/init/py-kms.conf``` and reload configuration: ```initctl reload-configuration```
+Check syntax with: ```sudo init-checkconf -d /etc/init/py3-kms.conf```, then
+reload upstart to recognise this process: ```sudo initctl reload-configuration```.
+Now start the service: ```sudo start py3-kms```, and 
+you can see the logfile stating that your daemon is running: ```cat  </path/to/your/log/files/folder>/pykms_logserver.log```.
 
-Now reboot the machine ```sudo reboot``` and when you boot up your system, you can see the log file stating that your daemon is running :
+If you are running a Linux distro using ```systemd```,
+create the file: ```sudo nano /etc/systemd/system/py3-kms.service```,
+then add the following (changing where needed) and save:
+```
+[Unit]
+Description=py3-kms
+After=network.target
+StartLimitIntervalSec=0
 
-```cat  /var/log/pykms_logserver.log```.
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+KillMode=process
+User=root
+ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F </path/to/your/log/files/folder>/pykms_logserver.log
 
-Finally a few commands useful for the status of your daemon:
-* restart --> this will stop, then start a service: ```sudo service py-kms restart```
-* start   --> this will start a service, if it's not running: ```sudo service py-kms start```
-* stop    --> this will stop a service, if it's running: ```sudo service py-kms stop```
-* status  --> this will display the status of a service: ```sudo service py-kms status```
+[Install]
+WantedBy=multi-user.target
+```
+Check syntax with: ```sudo systemd-analyze verify py3-kms.service```,
+give file permission (if needed): ```sudo chmod 644 /etc/systemd/system/py3-kms.service```,
+then reload systemd manager configuration: ```sudo systemctl daemon-reload```,
+start daemon: ```sudo systemctl start py3-kms.service``` and view status: ```sudo systemctl status py3-kms.service```.
+Check if daemon is correctly running: ```cat  </path/to/your/log/files/folder>/pykms_logserver.log```.
 
-According to OS that you are running, you can also create a daemon with ```systemd``` or ```SysV```.
+You can also create a daemon with ```SysV``` (obsolete).
+Finally a few generic commands useful for interact with your daemon: [here](https://eopio.com/linux-upstart-process-manager/) and [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/)
 
-If you are using Windows, to run _pykms_Server.py_ as service you need to install [pywin32](https://sourceforge.net/projects/pywin32/) then you can create a file for example named _kms-winservice.py_ and put into it this code:
-
+If you are using Windows, to run _pykms_Server.py_ as service you need to install [pywin32](https://sourceforge.net/projects/pywin32/),
+then you can create a file for example named _kms-winservice.py_ and put into it this code:
 ```
 import win32serviceutil
 import win32service
@@ -424,147 +444,159 @@ if __name__ == '__main__':
     win32serviceutil.HandleCommandLine(AppServerSvc)
 ```
 Now in a command prompt type ```C:\Windows\Python27\python.exe kms-winservice.py install``` to install the service.
-Display all the services with ```services.msc``` and find the service associated with _py-kms_, changing startup type from "manual" to "auto". Finally "Start" the service.
-If this approach fails, you can try to use the [Non-Sucking Service Manager](https://nssm.cc/) or Task Scheduler as described [here](https://blogs.esri.com/esri/arcgis/2013/07/30/scheduling-a-scrip/).
+Display all the services with ```services.msc``` and find the service associated with _py-kms_, changing startup type from "manual" to "auto". 
+Finally "Start" the service.
+If this approach fails, you can try to use [Non-Sucking Service Manager](https://nssm.cc/) or Task Scheduler as described [here](https://blogs.esri.com/esri/arcgis/2013/07/30/scheduling-a-scrip/).
 
 #### _pykms_Server.py Options_.
 ***
 Follows a list of usable parameters:
 
-        ip <IPADDRESS>	
-                Instructs py-kms to listen on IPADDRESS ( can be an hostname too ). If this option is 
-                not specified, IPADDRESS 0.0.0.0 is used.
+ip <IPADDRESS>
+: Instructs py-kms to listen on _IPADDRESS_ (can be an hostname too). If this option is not specified, _IPADDRESS_ 0.0.0.0 is used.
 
-        port <PORT>
-                Define TCP PORT the KMS service is listening on. Default is 1688.
+port <PORT>
+: Define TCP _PORT_ the KMS service is listening on. Default is 1688.
 
-        -e or --epid <EPID>
-                Use EPID as Windows EPID. 
-                Enhanced Privacy ID ( EPID ) is a cryptographic scheme for providing anonymous signatures. 
-                If no EPID is specified, a random EPID will be generated.
+-e or --epid <EPID>
+: Enhanced Privacy ID (_EPID_) is a cryptographic scheme for providing anonymous signatures.
+Use _EPID_ as Windows _EPID_. If no _EPID_ is specified, a random one will be generated.
 
-        -l or --lcid <LCID>
-                Do not randomize the locale ID part of the EPID and use LCID instead.
-                The Language Code Identifier ( LCID ) describes localizable information in Windows.
-                This structure is used to identify specific languages for the purpose of customizing 
-                software for particular languages and cultures. For example, it can specify the way dates, 
-                times, and numbers are formatted as strings. It can also specify paper sizes and
-                preferred sort order based on language elements.
-                The LCID must be specified as a decimal number ( example: 1049 for "Russian - Russia" ). 
-                By default py-kms generates a valid locale ID but this may lead to a value which is 
-                unlikely to occur in your country. You may want to select the locale ID of your country instead. 
-                See
-			https://msdn.microsoft.com/en-us/library/cc233982.aspx 
-                for a list of valid LCIDs. Note that some of them are not recognized by .NET Framework 4.0. 
-                If an EPID is manually specified, this setting is ignored. 
-                Default is a fixed LCID of 1033 ( English - US ). 
+-l or --lcid <LCID>
+: Do not randomize the locale ID part of the _EPID_ and use _LCID_ instead.
+The Language Code Identifier (_LCID_) describes localizable information in Windows.
+This structure is used to identify specific languages for the purpose of customizing 
+software for particular languages and cultures. For example, it can specify the way dates, 
+times, and numbers are formatted as strings. It can also specify paper sizes and preferred sort order based on language elements.
+The _LCID_ must be specified as a decimal number (example: 1049 for "Russian - Russia"). 
+By default py-kms generates a valid locale ID but this may lead to a value which is unlikely to occur in your country. 
+You may want to select the locale ID of your country instead. 
+See [here](https://msdn.microsoft.com/en-us/library/cc233982.aspx) for a list of valid _LCIDs_.
 
-        -w or --hwid <HWID>
-                Use specified HWID for all products. 
-                Hardware Identification is a security measure used by Microsoft upon the activation of 
-                the Windows operating system. As part of the Product Activation system, a unique
-                HWID number is generated when the operating system is first installed. The HWID identifies 
-                the hardware components that the system is utilizing, and this number is communicated to Microsoft.
-                Every 10 days and at every reboot the operating system will generate another HWID number and 
-                compare it to the original to make sure that the operating system is still running on the same device.
-                If the two HWID numbers differ too much then the operating system will shut down until Microsoft
-                reactivates the product. The theory behind HWID is to ensure that the operating system is not being 
-                used on any device other than the one for which it was purchased and registered. 
+: If an _EPID_ is manually specified, this setting is ignored. Default is a fixed _LCID_ of 1033 (English - US). 
 
-                HWID must be an 16-character string of hex characters that are interpreted as a series of 8 bytes 
-                ( big endian ). Default is "364F463A8863D35F". To auto generate the HWID, type "random".
+-w or --hwid <HWID>
+: Use specified _HWID_ for all products. 
+Hardware Identification is a security measure used by Microsoft upon the activation of 
+the Windows operating system. As part of the Product Activation system, a unique
+HWID number is generated when the operating system is first installed. The _HWID_ identifies the hardware components that the system 
+is utilizing, and this number is communicated to Microsoft.
+Every 10 days and at every reboot the operating system will generate another _HWID_ number and compare it to the original 
+to make sure that the operating system is still running on the same device.
+If the two _HWID_ numbers differ too much then the operating system will shut down until Microsoft reactivates the product.
+The theory behind _HWID_ is to ensure that the operating system is not being used on any device other than the one
+for which it was purchased and registered.
+HWID must be an 16-character string of hex characters that are interpreted as a series of 8 bytes (big endian). 
+Default is _364F463A8863D35F_. To auto generate the _HWID_, type ```-w RANDOM```.
 
-        -c or --client-count <CLIENTCOUNT>
-                Use this flag to specify the current CLIENTCOUNT. Default is None. Remember that a number >=25 is 
-                required to enable activation of client OSes while for server OSes and Office >=5.
+-c or --client-count <CLIENTCOUNT>
+: Use this flag to specify the current _CLIENTCOUNT_. Default is None. Remember that a number >=25 is 
+required to enable activation of client OSes while for server OSes and Office >=5.
 
-        -a or --activation-interval <ACTIVATIONINTERVAL>
-                Instructs clients to retry activation every ACTIVATIONINTERVAL minutes if it was unsuccessful, 
-                e.g. because it could not reach the server. The default is 120 minutes ( 2 hours ). 
+-a or --activation-interval <ACTIVATIONINTERVAL>
+: Instructs clients to retry activation every _ACTIVATIONINTERVAL_ minutes if it was unsuccessful,
+e.g. because it could not reach the server. The default is 120 minutes (2 hours). 
 
-        -r or --renewal-interval <RENEWALINTERVAL>
-                Instructs clients to renew activation every RENEWALINTERVAL minutes. 
-                The default is 10080 minutes ( 7 days ).
+-r or --renewal-interval <RENEWALINTERVAL>
+: Instructs clients to renew activation every _RENEWALINTERVAL_ minutes. The default is 10080 minutes (7 days).
 
-        -s or --sqlite
-                Use this option to store request information from unique clients in an SQLite database.
+-s or --sqlite
+: Use this option to store request information from unique clients in an SQLite database.
 
-        -t or --timeout <TIMEOUT>
-                Disconnect clients after time of inactivity ( in seconds ). The default is 30 seconds.
+-t0 or --timeout-idle <TIMEOUT>
+: Maximum inactivity time (in seconds) after which the connection with the client is closed. 
+Default setting is serve forever (no timeout).
 
-        -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
-                Activate verbose logging. Use this flag to set a loglevel. The default is ERROR.
+-y or --async-msg
+: With high levels of logging (e.g hundreds of log statements), in a traditional synchronous log model, 
+the overhead involved becomes more expensive, so using this option you enable printing (pretty / logging) messages 
+asynchronously reducing time-consuming. Desactivated by default.
 
-                ( example: user@user ~/path/to/folder/py-kms $ python pykms_Server.py -V INFO 
-                  produces in "pykms_logserver.log" these initial messages:
-                        Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 0.0.0.0 on port 1688.
-                        Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F )
+-V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
+: Use this flag to set a logging loglevel. The default is _ERROR_.
+example: 
+user@user ~/path/to/folder/py-kms $ ```python3 pykms_Server.py -V INFO```
+creates _pykms_logserver.log_ with these initial messages:
+  ```
+  Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 0.0.0.0 on port 1688.
+  Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
+  ```
+-F or --logfile <LOGFILE>
+: Create a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
+example: 
+user@user ~/path/to/folder/py-kms $ ```python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM```
+creates _newlogfile.log_ with these initial messages:
+  ```
+  Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 8080.
+  Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
+  ```
 
-        -F or --logfile <LOGFILE>
-                Create a "LOGFILE.log" logging file. The default is named "pykms_logserver.log".
+  You can also enable other suboptions of ```-F``` doing what is reported in the following table:
+  |         command               | pretty msg | logging msg | logfile |
+  |-------------------------------|:----------:|:-----------:|:-------:|
+  | ```-F <logfile>```            | ON         | OFF         | ON      |
+  | ```-F STDOUT```               | OFF        | ON          | OFF     |
+  | ```-F FILESTDOUT <logfile>``` | OFF        | ON          | ON      |
+  | ```-F STDOUTOFF <logfile>```  | OFF        | OFF         | ON      |
+  | ```-F FILEOFF```              | ON         | OFF         | OFF     |
 
-                ( example: user@user ~/path/to/folder/py-kms $ python pykms_Server.py 192.168.1.102 8080 
-                  -F ~/path/to/folder/py-kms/newfile.log -V INFO -w random     
-                  produces in "newfile.log" these initial messages:
-			  Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 8080.
-			  Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224 )
-
-        -S or --logsize <MAXSIZE>
-                Use this flag to set a maximum size ( in MB ) to the output log file. Desactivated by default.
+-S or --logsize <MAXSIZE>
+: Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 #### _pykms_Client.py Options_.
 ***
-If something does not work, it may have the cause that _py-kms_ server does not work correctly. You can test this with the KMS client _pykms_Client.py_, running on the same machine where you started _pykms_Server.py_. 
-For example ( in separated bash windows ) run these commands:
+If _py-kms_ server doesn't works correctly, you can test it with the KMS client _pykms_Client.py_, 
+running on the same machine where you started _pykms_Server.py_. 
+For example (in separated bash windows) run these commands:
 ```
-user@user ~/path/to/folder/py-kms $ python pykms_Server.py -V DEBUG
-user@user ~/path/to/folder/py-kms $ python pykms_Client.py 0.0.0.0 1688 -V DEBUG
+user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG
+user@user ~/path/to/folder/py-kms $ python3 pykms_Client.py 0.0.0.0 1688 -V DEBUG
 ```
 or if you want better specify:
 ```
-user@user ~/path/to/folder/py-kms $ python pykms_Server.py YOUR_IPADDRESS 1688 -V DEBUG
-user@user ~/path/to/folder/py-kms $ python pykms_Client.py YOUR_IPADDRESS 1688 -V DEBUG
+user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py <YOUR_IPADDRESS> 1688 -V DEBUG
+user@user ~/path/to/folder/py-kms $ python3 pykms_Client.py <YOUR_IPADDRESS> 1688 -V DEBUG
 ```
 You can also put further parameters as defined below:
 
-        ip <IPADDRESS>
-                Define IPADDRESS ( or hostname ) of py-kms' KMS Server. This parameter is always required.
+ip <IPADDRESS>
+: Define _IPADDRESS_ (or hostname) of py-kms' KMS Server. This parameter is always required.
 
-        port <PORT>
-                Define TCP PORT the KMS service is listening on. Default is 1688.
+port <PORT>
+: Define TCP _PORT_ the KMS service is listening on. Default is 1688.
 
-        -m or --mode <PRODUCTNAME>
-                Use this flag to manually specify a Microsoft PRODUCTNAME for testing the KMS server. 
-                The default is Windows81.
+-m or --mode <{WindowsVista, Windows7, Windows8, Windows8.1, Windows10, Office2010, Office2013, Office2016, Office2019}>
+: Use this flag to manually specify a Microsoft _PRODUCTNAME_ for testing the KMS server. Default is Windows8.1.
 
-        -c or --cmid <CMID>
-                Use this flag to manually specify a CMID to use. If no CMID is specified, a random one 
-                will be generated.
-                The Microsoft KMS host machine identifies KMS clients with a unique Client Machine ID 
-                ( CMID,   example: ae3a27d1-b73a-4734-9878-70c949815218 ). For a KMS client to successfully 
-                activate, the KMS server needs to meet a threshold, which is a minimum count for KMS clients.
-                Once a KMS server records a count which meets or exceeds threshold, KMS clients will begin to 
-                activate successfully. Each unique CMID recorded by KMS server adds towards the count threshold
-                for KMS clients. This are retained by the KMS server for a maximum of 30 days after the 
-                last activation request with that CMID. Note that duplicate CMID only impacts on KMS server 
-                machine count of client machines. Once KMS server meets minimum threshold, KMS clients will 
-                activate regardless of CMID being unique for a subset of specific machines or not.
+-c or --cmid <CMID>
+: Use this flag to manually specify a CMID to use. If no CMID is specified, a random one will be generated.
+The Microsoft KMS host machine identifies KMS clients with a unique Client Machine ID 
+(CMID,   example: ae3a27d1-b73a-4734-9878-70c949815218). For a KMS client to successfully activate, the KMS server 
+needs to meet a threshold, which is a minimum count for KMS clients.
+Once a KMS server records a count which meets or exceeds threshold, KMS clients will begin to activate successfully.
+Each unique CMID recorded by KMS server adds towards the count threshold for KMS clients. This are retained by the KMS server 
+for a maximum of 30 days after the last activation request with that CMID. Note that duplicate CMID only impacts on KMS server 
+machine count of client machines. Once KMS server meets minimum threshold, KMS clients will 
+activate regardless of CMID being unique for a subset of specific machines or not.
 
-        -n or --name <MACHINENAME>
-                Use this flag to manually specify an ASCII MACHINENAME to use. If no MACHINENAME is specified 
-                a random one will be generated.
+-n or --name <MACHINENAME>
+: Use this flag to manually specify an ASCII _MACHINENAME_ to use. If no _MACHINENAME_ is specified a random one will be generated.
 
-        -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
-                Activate verbose logging. Use this flag to set a loglevel. The default is ERROR.
+-y or --async-msg
+: Prints pretty / logging messages asynchronously. Desactivated by default.
 
-        -F of --logfile <LOGFILE>
-                Create a "LOGFILE.log" logging file. The default is named "pykms_logclient.log".
+-V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
+: Use this flag to set a logging loglevel. The default is _ERROR_.
 
-        -S or --logsize <MAXSIZE>
-                Use this flag to set a maximum size ( in MB ) to the output log file. Desactivated by default.
+-F or --logfile <LOGFILE>
+: Create a _LOGFILE.log_ logging file. The default is named _pykms_logclient.log_.
+You can enable same _pykms_Server.py_ suboptions of ```-F```. 
+
+-S or --logsize <MAXSIZE>
+: Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 ## Activation Procedure
-Briefly the product asks for a key during installation, so it needs to enter the GVLK. Then user can set connection parameters, while KMS server must already be running on server machine. Finally with specific commands activation occurs automatically and can be extended later every time for another 180 ( or 45 ) days.
+Briefly the product asks for a key during installation, so it needs to enter the GVLK. Then user can set connection parameters, while KMS server must already be running on server machine. Finally with specific commands activation occurs automatically and can be extended later every time for another 180 (or 45) days.
 
 #### _Windows_
 ***
@@ -572,7 +604,7 @@ Briefly the product asks for a key during installation, so it needs to enter the
 
 ![win2](https://user-images.githubusercontent.com/25354386/36871704-5f62dda6-1da3-11e8-91f7-a7bc71670926.png)
 
-0. Run a Command Prompt as Administrator ( you are directly in ```C:\Windows\System32``` path ).
+0. Run a Command Prompt as Administrator (you are directly in ```C:\Windows\System32``` path).
 
 ```//nologo``` option of ```cscript``` needs only to hide startup logo.
 
@@ -580,13 +612,13 @@ Briefly the product asks for a key during installation, so it needs to enter the
 2. Then put your product's GVLK.
 3. Set connection parameters.
 4. Try online activation, but... if that fails with error ```0xC004F074``` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688.
-So for Linux users ( server-side with pykms_Server.py running ): ```sudo ufw allow 1688``` ( to remove this rule ```sudo ufw delete allow 1688``` )
-5. Attempt online activation  ( with now traffic on 1688 enabled ). 
-6. View license informations ( facoltative ).
+So for Linux users (server-side with _pykms_Server.py_ running): ```sudo ufw allow 1688``` (to remove this rule ```sudo ufw delete allow 1688```)
+5. Attempt online activation  (with now traffic on 1688 enabled). 
+6. View license informations (facoltative).
 
 #### _Office_
 ***
-Note that you’ll have to install a volume license ( VL ) version of Office. Office versions downloaded from MSDN and / or Technet are non-VL.
+Note that you’ll have to install a volume license (VL) version of Office. Office versions downloaded from MSDN and / or Technet are non-VL.
 
 ![off1](https://user-images.githubusercontent.com/25354386/36871724-6e9e5958-1da3-11e8-8c09-8fd693b20c52.png)
 
@@ -597,17 +629,17 @@ Note that you’ll have to install a volume license ( VL ) version of Office. Of
 ![off4](https://user-images.githubusercontent.com/25354386/36871764-8e179e2a-1da3-11e8-8e37-eb138a988dea.png)
 
 0. Run a Command Prompt as Administrator and navigate to Office folder ```cd C:\ProgramFiles\Microsoft Office\OfficeXX``` (64-bit path) or ```cd C:\ProgramFiles(x86)\Microsoft Office\OfficeXX``` (32-bit path), where XX = 14 for Office 2010, 15 for Office 2013, 16 for Office 2016 or Office 2019.
-1. As you can see, running ```/dstatus```, my Office is expiring ( 14 days remaining ).
+1. As you can see, running ```/dstatus```, my Office is expiring (14 days remaining).
 2. Only for example, let's go to uninstall this product.
 3. This is confirmed running ```/dstatus``` again.
-4. Now i put my product's GVLK ( and you your key ).
+4. Now i put my product's GVLK (and you your key).
 5. Set the connection parameter KMS server address.
 6. Set the connection parameter KMS server port.
 7. Activate installed Office product key.
-8. View license informations ( in my case product is now licensed and remaining grace 180 days as expected ).
+8. View license informations (in my case product is now licensed and remaining grace 180 days as expected).
 
 ## Supported Products
-Note that it is possible to activate all versions in the VL ( Volume License ) channel, so long as you provide the proper key to let Windows know that it should be activating against a KMS server. KMS activation can't be used for Retail channel products, however you can install a VL product key specific to your edition of Windows even if it was installed as Retail. This effectively converts Retail installation to VL channel and will allow you to activate from a KMS server. This is not valid for Office's products, so Office, Project and Visio must be volume license 	versions. Newer version may work as long as the KMS protocol does not change. 
+Note that it is possible to activate all versions in the VL (Volume License) channel, so long as you provide the proper key to let Windows know that it should be activating against a KMS server. KMS activation can't be used for Retail channel products, however you can install a VL product key specific to your edition of Windows even if it was installed as Retail. This effectively converts Retail installation to VL channel and will allow you to activate from a KMS server. This is not valid for Office's products, so Office, Project and Visio must be volume license 	versions. Newer version may work as long as the KMS protocol does not change. 
 
 ## Documentation
 * <sup>[1]</sup> https://forums.mydigitallife.net/threads/emulated-kms-servers-on-non-windows-platforms.50234

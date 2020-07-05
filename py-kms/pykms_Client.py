@@ -63,8 +63,9 @@ will be generated.', 'def' : None, 'des' : "machine"},
                       'def' : False, 'des' : "asyncmsg"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
-        'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". Type \"STDOUT\" to view \
-log info on stdout. Type \"FILESTDOUT\" to combine previous actions.',
+        'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". \
+Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previous actions. \
+Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
                    'def' : os.path.join('.', 'pykms_logclient.log'), 'des' : "logfile"},
         'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
         }

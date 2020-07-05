@@ -81,5 +81,5 @@ To ensure that the image is always up-to-date you should check [watchtower](http
 Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more information about activation with _py-kms_ and to get GVLK keys.
 
 # License
-   _py-kms_ is [![License0](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
-   _py-kms GUI_ is [![License1](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE.gui.md) © Matteo ℱan
+   - _py-kms_ is [![License0](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
+   - _py-kms GUI_ is [![License1](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE.gui.md) © Matteo ℱan
