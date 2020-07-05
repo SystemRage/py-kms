@@ -452,18 +452,18 @@ If this approach fails, you can try to use [Non-Sucking Service Manager](https:/
 ***
 Follows a list of usable parameters:
 
-ip <IPADDRESS>
-: Instructs py-kms to listen on _IPADDRESS_ (can be an hostname too). If this option is not specified, _IPADDRESS_ 0.0.0.0 is used.
+    ip <IPADDRESS>
+> Instructs py-kms to listen on _IPADDRESS_ (can be an hostname too). If this option is not specified, _IPADDRESS_ 0.0.0.0 is used.
 
-port <PORT>
-: Define TCP _PORT_ the KMS service is listening on. Default is 1688.
+    port <PORT>
+> Define TCP _PORT_ the KMS service is listening on. Default is 1688.
 
--e or --epid <EPID>
-: Enhanced Privacy ID (_EPID_) is a cryptographic scheme for providing anonymous signatures.
+    -e or --epid <EPID>
+> Enhanced Privacy ID (_EPID_) is a cryptographic scheme for providing anonymous signatures.
 Use _EPID_ as Windows _EPID_. If no _EPID_ is specified, a random one will be generated.
 
--l or --lcid <LCID>
-: Do not randomize the locale ID part of the _EPID_ and use _LCID_ instead.
+    -l or --lcid <LCID>
+> Do not randomize the locale ID part of the _EPID_ and use _LCID_ instead.
 The Language Code Identifier (_LCID_) describes localizable information in Windows.
 This structure is used to identify specific languages for the purpose of customizing 
 software for particular languages and cultures. For example, it can specify the way dates, 
@@ -472,11 +472,10 @@ The _LCID_ must be specified as a decimal number (example: 1049 for "Russian - R
 By default py-kms generates a valid locale ID but this may lead to a value which is unlikely to occur in your country. 
 You may want to select the locale ID of your country instead. 
 See [here](https://msdn.microsoft.com/en-us/library/cc233982.aspx) for a list of valid _LCIDs_.
+If an _EPID_ is manually specified, this setting is ignored. Default is a fixed _LCID_ of 1033 (English - US). 
 
-: If an _EPID_ is manually specified, this setting is ignored. Default is a fixed _LCID_ of 1033 (English - US). 
-
--w or --hwid <HWID>
-: Use specified _HWID_ for all products. 
+    -w or --hwid <HWID>
+> Use specified _HWID_ for all products. 
 Hardware Identification is a security measure used by Microsoft upon the activation of 
 the Windows operating system. As part of the Product Activation system, a unique
 HWID number is generated when the operating system is first installed. The _HWID_ identifies the hardware components that the system 
@@ -489,31 +488,31 @@ for which it was purchased and registered.
 HWID must be an 16-character string of hex characters that are interpreted as a series of 8 bytes (big endian). 
 Default is _364F463A8863D35F_. To auto generate the _HWID_, type ```-w RANDOM```.
 
--c or --client-count <CLIENTCOUNT>
-: Use this flag to specify the current _CLIENTCOUNT_. Default is None. Remember that a number >=25 is 
+    -c or --client-count <CLIENTCOUNT>
+> Use this flag to specify the current _CLIENTCOUNT_. Default is None. Remember that a number >=25 is 
 required to enable activation of client OSes while for server OSes and Office >=5.
 
--a or --activation-interval <ACTIVATIONINTERVAL>
-: Instructs clients to retry activation every _ACTIVATIONINTERVAL_ minutes if it was unsuccessful,
+    -a or --activation-interval <ACTIVATIONINTERVAL>
+> Instructs clients to retry activation every _ACTIVATIONINTERVAL_ minutes if it was unsuccessful,
 e.g. because it could not reach the server. The default is 120 minutes (2 hours). 
 
--r or --renewal-interval <RENEWALINTERVAL>
-: Instructs clients to renew activation every _RENEWALINTERVAL_ minutes. The default is 10080 minutes (7 days).
+    -r or --renewal-interval <RENEWALINTERVAL>
+> Instructs clients to renew activation every _RENEWALINTERVAL_ minutes. The default is 10080 minutes (7 days).
 
--s or --sqlite
-: Use this option to store request information from unique clients in an SQLite database.
+    -s or --sqlite
+> Use this option to store request information from unique clients in an SQLite database.
 
--t0 or --timeout-idle <TIMEOUT>
-: Maximum inactivity time (in seconds) after which the connection with the client is closed. 
+    -t0 or --timeout-idle <TIMEOUT>
+> Maximum inactivity time (in seconds) after which the connection with the client is closed. 
 Default setting is serve forever (no timeout).
 
--y or --async-msg
-: With high levels of logging (e.g hundreds of log statements), in a traditional synchronous log model, 
+    -y or --async-msg
+> With high levels of logging (e.g hundreds of log statements), in a traditional synchronous log model, 
 the overhead involved becomes more expensive, so using this option you enable printing (pretty / logging) messages 
 asynchronously reducing time-consuming. Desactivated by default.
 
--V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
-: Use this flag to set a logging loglevel. The default is _ERROR_.
+    -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
+> Use this flag to set a logging loglevel. The default is _ERROR_.
 example: 
 user@user ~/path/to/folder/py-kms $ ```python3 pykms_Server.py -V INFO```
 creates _pykms_logserver.log_ with these initial messages:
@@ -521,8 +520,8 @@ creates _pykms_logserver.log_ with these initial messages:
   Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 0.0.0.0 on port 1688.
   Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
   ```
--F or --logfile <LOGFILE>
-: Create a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
+    -F or --logfile <LOGFILE>
+> Creates a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
 example: 
 user@user ~/path/to/folder/py-kms $ ```python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM```
 creates _newlogfile.log_ with these initial messages:
@@ -540,8 +539,8 @@ creates _newlogfile.log_ with these initial messages:
   | ```-F STDOUTOFF <logfile>```  | OFF        | OFF         | ON      |
   | ```-F FILEOFF```              | ON         | OFF         | OFF     |
 
--S or --logsize <MAXSIZE>
-: Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+    -S or --logsize <MAXSIZE>
+> Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 #### _pykms_Client.py Options_.
 ***
@@ -559,17 +558,17 @@ user@user ~/path/to/folder/py-kms $ python3 pykms_Client.py <YOUR_IPADDRESS> 168
 ```
 You can also put further parameters as defined below:
 
-ip <IPADDRESS>
-: Define _IPADDRESS_ (or hostname) of py-kms' KMS Server. This parameter is always required.
+    ip <IPADDRESS>
+> Define _IPADDRESS_ (or hostname) of py-kms' KMS Server. This parameter is always required.
 
-port <PORT>
-: Define TCP _PORT_ the KMS service is listening on. Default is 1688.
+    port <PORT>
+> Define TCP _PORT_ the KMS service is listening on. Default is 1688.
 
--m or --mode <{WindowsVista, Windows7, Windows8, Windows8.1, Windows10, Office2010, Office2013, Office2016, Office2019}>
-: Use this flag to manually specify a Microsoft _PRODUCTNAME_ for testing the KMS server. Default is Windows8.1.
+    -m or --mode <{WindowsVista, Windows7, Windows8, Windows8.1, Windows10, Office2010, Office2013, Office2016, Office2019}>
+> Use this flag to manually specify a Microsoft _PRODUCTNAME_ for testing the KMS server. Default is Windows8.1.
 
--c or --cmid <CMID>
-: Use this flag to manually specify a CMID to use. If no CMID is specified, a random one will be generated.
+   -c or --cmid <CMID>
+> Use this flag to manually specify a CMID to use. If no CMID is specified, a random one will be generated.
 The Microsoft KMS host machine identifies KMS clients with a unique Client Machine ID 
 (CMID,   example: ae3a27d1-b73a-4734-9878-70c949815218). For a KMS client to successfully activate, the KMS server 
 needs to meet a threshold, which is a minimum count for KMS clients.
@@ -579,21 +578,21 @@ for a maximum of 30 days after the last activation request with that CMID. Note 
 machine count of client machines. Once KMS server meets minimum threshold, KMS clients will 
 activate regardless of CMID being unique for a subset of specific machines or not.
 
--n or --name <MACHINENAME>
-: Use this flag to manually specify an ASCII _MACHINENAME_ to use. If no _MACHINENAME_ is specified a random one will be generated.
+    -n or --name <MACHINENAME>
+> Use this flag to manually specify an ASCII _MACHINENAME_ to use. If no _MACHINENAME_ is specified a random one will be generated.
 
--y or --async-msg
-: Prints pretty / logging messages asynchronously. Desactivated by default.
+    -y or --async-msg
+> Prints pretty / logging messages asynchronously. Desactivated by default.
 
--V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
-: Use this flag to set a logging loglevel. The default is _ERROR_.
+    -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
+> Use this flag to set a logging loglevel. The default is _ERROR_.
 
--F or --logfile <LOGFILE>
-: Create a _LOGFILE.log_ logging file. The default is named _pykms_logclient.log_.
+    -F or --logfile <LOGFILE>
+> Creates a _LOGFILE.log_ logging file. The default is named _pykms_logclient.log_.
 You can enable same _pykms_Server.py_ suboptions of ```-F```. 
 
--S or --logsize <MAXSIZE>
-: Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+    -S or --logsize <MAXSIZE>
+> Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 ## Activation Procedure
 Briefly the product asks for a key during installation, so it needs to enter the GVLK. Then user can set connection parameters, while KMS server must already be running on server machine. Finally with specific commands activation occurs automatically and can be extended later every time for another 180 (or 45) days.
