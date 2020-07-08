@@ -10,20 +10,10 @@ import logging
 import os
 import threading
 import pickle
-
-try:
-        # Python 2 import.
-        import SocketServer as socketserver
-        import Queue as Queue
-        import pykms_Selectors as selectors
-        from pykms_Time import monotonic as time
-except ImportError:
-        # Python 3 import.
-        import socketserver
-        import queue as Queue
-        import selectors
-        from time import monotonic as time
-
+import socketserver
+import queue as Queue
+import selectors
+from time import monotonic as time
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
