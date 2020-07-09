@@ -9,6 +9,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk
 import tkinter.font as tkFont
+
 from pykms_Format import MsgMap, unshell_message, unformat_message
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------

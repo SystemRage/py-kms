@@ -10,6 +10,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 import tkinter.font as tkFont
+
 from pykms_Server import srv_options, srv_version, srv_config, server_terminate, serverqueue, serverthread
 from pykms_GuiMisc import ToolTip, TextDoubleScroll, TextRedirect, ListboxOfRadiobuttons
 from pykms_GuiMisc import custom_background, custom_pages
@@ -25,13 +26,8 @@ gui_description         = "A GUI for py-kms."
 ##---------------------------------------------------------------------------------------------------------------------------------------------------------
 def get_ip_address():
         if os.name == 'posix':
-                try:
-                        # Python 2.x import
-                        import commands 
-                except ImportError:
-                        #Python 3.x import
-                        import subprocess as commands 
-                ip = commands.getoutput("hostname -I")
+                import subprocess
+                ip = subprocess.getoutput("hostname -I")
         elif os.name == 'nt':
                 import socket
                 ip = socket.gethostbyname(socket.gethostname())

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function
 import sys
 import logging
 import os
 import argparse
 from logging.handlers import RotatingFileHandler
+
 from pykms_Format import ColorExtraMap, ShellMessage, pretty_printer
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -88,12 +88,7 @@ class LevelFormatter(logging.Formatter):
 
 # based on https://github.com/jruere/multiprocessing-logging (license LGPL-3.0)
 from multiprocessing import Queue as MPQueue
-try:
-    # Python 2.x imports
-    import Queue as Queue
-except ImportError:
-    # Python 3.x imports
-    import queue as Queue
+import queue as Queue
 import threading
 
 class MultiProcessingLogHandler(logging.Handler):

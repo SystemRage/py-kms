@@ -1,38 +1,22 @@
 #!/usr/bin/env python3
 
-from __future__ import print_function, unicode_literals
 import re
 import sys
 import os
 from collections import OrderedDict
 import logging
-
-try:
-    # Python 2.x imports
-    from StringIO import StringIO
-    import Queue as Queue
-except ImportError:
-    # Python 3.x imports
-    from io import StringIO
-    import queue as Queue
-
-pyver = sys.version_info[:2]
+from io import StringIO
+import queue as Queue
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 def enco(strg, typ = 'latin-1'):
-    if pyver >= (3, 0):
-        if isinstance(strg, str):
-            return strg.encode(typ)
-    else:
-            return strg
+    if isinstance(strg, str):
+        return strg.encode(typ)
 
 def deco(strg, typ = 'latin-1'):
-    if pyver >= (3, 0):
-        if isinstance(strg, bytes):
-            return strg.decode(typ)
-    else:
-            return strg
+    if isinstance(strg, bytes):
+        return strg.decode(typ)
             
 def byterize(obj):
     
@@ -44,11 +28,10 @@ def byterize(obj):
             for subkey in subdictio:
                 do_encode(subdictio, subkey)
 
-    if pyver >= (3, 0):
-        objdict = obj.__dict__['fields']
-        for field in objdict:
-            do_encode(objdict, field)
-            
+    objdict = obj.__dict__['fields']
+    for field in objdict:
+        do_encode(objdict, field)
+
     return obj
 
 
@@ -186,17 +169,6 @@ def unshell_message(ansi_string, count):
     return msgcolored, count
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
-# https://stackoverflow.com/questions/230751/how-to-flush-output-of-print-function
-if pyver < (3, 3):
-    old_print = print
-    
-    def print(*args, **kwargs):
-        flush = kwargs.pop('flush', False)
-        old_print(*args, **kwargs)
-        if flush:
-            file = kwargs.get('file', sys.stdout)
-            file.flush() if file is not None else sys.stdout.flush()
-
 # based on: https://ryanjoneil.github.io/posts/2014-02-14-capturing-stdout-in-a-python-child-process.html
 queue_print = Queue.Queue()
 
