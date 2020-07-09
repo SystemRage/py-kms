@@ -34,11 +34,11 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
     - `sudo pip3 install tzlocal pysqlite3`
        
 # Usage
-- To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `0.0.0.0` or `::` ( all interfaces ) and the default _PORT_ is "1688".
+- To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ `::` ( all interfaces ) and the default _PORT_ is "1688".
 - To run the client (only for testing purposes), use `python3 pykms_Client.py [IPADDRESS] [PORT]`, with the same defaults of `pykms_Server.py`.
 - To show the help pages type: `python3 pykms_Server.py -h` and `python3 pykms_Client.py -h`.
 - To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
-- To get the HWID from any server use the client, for example type: `python3 pykms_Client.py 0.0.0.0 1688 -m Windows8.1 -V INFO`.
+- To get the HWID from any server use the client, for example type: `python3 pykms_Client.py :: 1688 -m Windows8.1 -V INFO`.
 
 - To change your logfile path use `-F` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V DEBUG`.
 - To view a minimal set of logging information use `-V MINI` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V MINI`.
