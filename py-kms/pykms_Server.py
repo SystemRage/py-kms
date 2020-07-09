@@ -156,7 +156,7 @@ loggersrv = logging.getLogger('logsrv')
 
 # 'help' string - 'default' value - 'dest' string.
 srv_options = {
-        'ip' : {'help' : 'The IP address to listen on. The default is \"0.0.0.0\" (all interfaces).', 'def' : "0.0.0.0", 'des' : "ip"},
+        'ip' : {'help' : 'The IPv6 address to listen on. The default is \"::\" (all interfaces).', 'def' : "::", 'des' : "ip"},
         'port' : {'help' : 'The network port to listen on. The default is \"1688\".', 'def' : 1688, 'des' : "port"},
         'epid' : {'help' : 'Use this option to manually specify an ePID to use. If no ePID is specified, a random ePID will be auto generated.',
                   'def' : None, 'des' : "epid"},
