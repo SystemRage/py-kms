@@ -34,7 +34,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
     - `sudo pip3 install tzlocal pysqlite3`
        
 # Usage
-- To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `::` ( all interfaces ) and the default _PORT_ is `1688`.
+- To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `::` ( all interfaces ) and the default _PORT_ is `1688`. Note that both the address and port are optional. Also note that you have to use an IPv6 address - even if you are just plan to use IPv4 (the kernel maps the incoming IPv4 requests automatically to IPv6), otherwise you will get unsupported address family exceptions!
 - To run the client (only for testing purposes), use `python3 pykms_Client.py [IPADDRESS] [PORT]`, with the same defaults of `pykms_Server.py`.
 - To show the help pages type: `python3 pykms_Server.py -h` and `python3 pykms_Client.py -h`.
 - To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
