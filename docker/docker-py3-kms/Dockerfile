@@ -9,8 +9,8 @@ FROM alpine:3.8
 
 # EN: IP-address
 # RU: IP-адрес
-ENV IP		::
-# The IP address to listen on. The default is "::" (all interfaces).
+ENV IP		0.0.0.0
+# The IP address to listen on. The default is "0.0.0.0" (all interfaces).
 
 # EN: TCP-port
 # RU: TCP-порт

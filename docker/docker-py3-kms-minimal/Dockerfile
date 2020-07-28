@@ -2,7 +2,7 @@
 
 FROM alpine:3.8
 
-ENV IP		::
+ENV IP		0.0.0.0
 ENV PORT		1688
 ENV EPID		""
 ENV LCID		1033
