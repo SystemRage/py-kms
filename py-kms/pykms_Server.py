@@ -69,7 +69,6 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                                 selector.register(fileobj = self, events = selectors.EVENT_READ)
                                 # self-pipe trick.
                                 selector.register(fileobj = self.r_service.fileno(), events = selectors.EVENT_READ)
-                                selector.register(fileobj = self.w_service.fileno(), events = selectors.EVENT_WRITE)
 
                                 while not self.__shutdown_request:
                                         ready = selector.select(timeout)
@@ -261,7 +260,7 @@ def server_options():
                         #               python3 pykms_Server.py 1.2.3.4 1234 --pykms_optionals etrigan start --daemon_optionals
 
                         kms_parser_check_optionals(userarg[0:pos], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = ['-F', '--logfile'])
-                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0:pos])
+                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0:pos], force_parse = True)
                         kms_parser_check_optionals(userarg[pos:], etrigan_zeroarg, etrigan_onearg, msg = 'optional etrigan')
                         kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos:], msg = 'positional etrigan')
 

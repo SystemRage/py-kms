@@ -406,9 +406,9 @@ def kms_parser_check_optionals(userarg, zeroarg, onearg, msg = 'optional py-kms 
                         if elem and elem not in allarg:
                                 raise KmsParserException("%s argument `" %msg + found + "`:" + " expected " + num + " unrecognized: '%s'" %elem)
 
-def kms_parser_check_positionals(config, parse_method, arguments = None, msg = 'positional py-kms server'):
+def kms_parser_check_positionals(config, parse_method, arguments = [], force_parse = False, msg = 'positional py-kms server'):
         try:
-                if arguments:
+                if arguments or force_parse:
                         config.update(vars(parse_method(arguments)))
                 else:
                         config.update(vars(parse_method()))
