@@ -195,7 +195,7 @@ def server_options():
         server_parser.add_argument("-l", "--lcid", action = "store", dest = srv_options['lcid']['des'], default = srv_options['lcid']['def'],
                                    help = srv_options['lcid']['help'], type = int)
         server_parser.add_argument("-c", "--client-count", action = "store", dest = srv_options['count']['des'] , default = srv_options['count']['def'],
-                                   help = srv_options['count']['help'], type = int)
+                                   help = srv_options['count']['help'], type = str)
         server_parser.add_argument("-a", "--activation-interval", action = "store", dest = srv_options['activation']['des'],
                                    default = srv_options['activation']['def'], help = srv_options['activation']['help'], type = int)
         server_parser.add_argument("-r", "--renewal-interval", action = "store", dest = srv_options['renewal']['des'],
@@ -205,7 +205,7 @@ def server_options():
         server_parser.add_argument("-w", "--hwid", action = "store", dest = srv_options['hwid']['des'], default = srv_options['hwid']['def'],
                                    help = srv_options['hwid']['help'], type = str)
         server_parser.add_argument("-t0", "--timeout-idle", action = "store", dest = srv_options['time0']['des'], default = srv_options['time0']['def'],
-                                   help = srv_options['time0']['help'], type = int)
+                                   help = srv_options['time0']['help'], type = str)
         server_parser.add_argument("-y", "--async-msg", action = "store_true", dest = srv_options['asyncmsg']['des'],
                                    default = srv_options['asyncmsg']['def'], help = srv_options['asyncmsg']['help'])
         server_parser.add_argument("-V", "--loglevel", action = "store", dest = srv_options['llevel']['des'], choices = srv_options['llevel']['choi'],
@@ -394,10 +394,12 @@ def server_check():
                 list_opt += ['-a/--activation-interval', '-r/--renewal-interval']
 
         for dest, opt in zip(list_dest, list_opt):
-                value = srv_config[dest]
-                if (value is not None) and (not isinstance(value, int)):
-                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
-                                       put_text = "{reverse}{red}{bold}argument `%s`: invalid with: '%s'. Exiting...{end}" %(opt, value))
+                try:
+                        srv_config[dest] = int(srv_config[dest])
+                except:
+                        if srv_config[dest] is not None:
+                                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                               put_text = "{reverse}{red}{bold}argument `%s`: invalid with: '%s'. Exiting...{end}" %(opt, srv_config[dest]))
 
 def server_create():
         try:
