@@ -35,22 +35,22 @@ activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8).
 More complete and well defined lists are available [here](https://github.com/SystemRage/py-kms/wiki/Windows-GVLK-Keys) and [here](https://github.com/SystemRage/py-kms/wiki/Office-GVLK-Keys).
 
 ### `SLMGR` and `OSPP` commands
-The software License Manager (```slmgr.vbs```) is a Visual Basic script used to configure and retrieve Volume 	Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script
-host (```wscript.exe```) or the command-based script host (```cscript.exe```), and administrators can specify which script engine to use. If no script engine is specified, SLMGR runs using the default script engine (note: it's
-recommended the cscript.exe script engine that resides in the system32 directory). The Software Licensing Service must be restarted for any changes to take effect. To restart it, can be used the Microsoft Management Console (MMC)
-Services or running the following command:
+The software License Manager (`slmgr.vbs`) is a Visual Basic script used to configure and retrieve Volume Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script host
+(`wscript.exe`) or the command-based script host (`cscript.exe`) - administrators can specify which script engine to use. If no script engine is specified, _SLMGR_ runs using the default script engine (it is recommended to utilize
+the `cscript.exe` script engine that resides in the system32 directory). The Software Licensing Service must be restarted for any changes to take effect. To restart it, the Microsoft Management Console (MMC) Services can be used or
+running the following command:
 
 ```
 net stop sppsvc && net start sppsvc
 ```
 
-The _SLMGR_ requires at least one parameter. If the script is run without any parameters, it displays Help information. The general syntax of `slmgr.vbs` is as follows (using the `cscript.exe` as the script engine):
-
+The _SLMGR_ requires at least one parameter. If the script is run without any parameters, it displays help information. The general syntax of `slmgr.vbs` is as follows (using the `cscript.exe` as the script engine):
 ```
 cscript slmgr.vbs /parameter
 cscript slmgr.vbs [ComputerName] [User] [Password] [Option]
 ```
-where command line options are:
+
+Where command line options are:
 ```
 [ComputerName]  Name of a remote computer (default is local computer).
 [User]          Account with the required privilege on the remote computer.
