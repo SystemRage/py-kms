@@ -90,7 +90,7 @@ Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
 ```
 
 You can also enable other suboptions of `-F` doing what is reported in the following table:
-<table>
+<table style="width: 100%;">
     <thead>
         <tr>
             <th>command</th>
@@ -101,31 +101,31 @@ You can also enable other suboptions of `-F` doing what is reported in the follo
     </thead>
     <tbody>
         <tr>
-            <td>`-F <logfile>`</td>
+            <td><pre>-F &lt;logfile&gt;</pre></td>
             <td>ON</td>
             <td>OFF</td>
             <td>ON</td>
         </tr>
         <tr>
-            <td>`-F STDOUT`</td>
+            <td><pre>-F STDOUT</pre></td>
             <td>OFF</td>
             <td>ON</td>
             <td>OFF</td>
         </tr>
         <tr>
-            <td>`-F FILESTDOUT <logfile>`</td>
+            <td><pre>-F FILESTDOUT &lt;logfile&gt;</pre></td>
             <td>OFF</td>
             <td>ON</td>
             <td>ON</td>
         </tr>
         <tr>
-            <td>`-F STDOUTOFF <logfile>`</td>
+            <td><pre>-F STDOUTOFF &lt;logfile&gt;</pre></td>
             <td>OFF</td>
             <td>OFF</td>
             <td>ON</td>
         </tr>
         <tr>
-            <td>`-F FILEOFF`</td>
+            <td><pre>-F FILEOFF</pre></td>
             <td>ON</td>
             <td>OFF</td>
             <td>OFF</td>
