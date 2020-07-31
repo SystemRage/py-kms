@@ -8,7 +8,3 @@ Contents:
    :glob:
 
    *
-
-
-
-
