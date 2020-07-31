@@ -1,7 +1,9 @@
 # Usage
 
-## _pykms_Server.py Options_.
+## Options
 ***
+
+### pykms_Server.py
 Follows a list of usable parameters:
 
     ip <IPADDRESS>
@@ -94,8 +96,7 @@ creates _newlogfile.log_ with these initial messages:
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
-## _pykms_Client.py Options_.
-***
+### pykms_Client.py
 If _py-kms_ server doesn't works correctly, you can test it with the KMS client _pykms_Client.py_, 
 running on the same machine where you started _pykms_Server.py_. 
 For example (in separated bash windows) run these commands:
