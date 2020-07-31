@@ -1,6 +1,6 @@
 # Usage
 
-## _How to run pykms_Server.py manually_.
+## How to run pykms_Server.py manually
 ***
 
 A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
@@ -29,26 +29,12 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
 To stop `pykms_Server.py`, in the same bash window where code running, simply press CTRL+C.
 Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
 
-## _How to run pykms_Server.py automatically at start_.
+## How to run pykms_Server.py automatically at start
 ***
 
 You can simply manage a daemon that runs as a background process.
 
-If you are running a Linux distro using `upstart` (deprecated), create the file: `sudo nano /etc/init/py3-kms.conf`, then add the following (change it where needed) and save:
-```
-description "py3-kms"
-author "SystemRage"
-env PYTHONPATH=/usr/bin
-env PYKMSPATH=</path/to/your/pykms/files/folder>/py-kms
-env LOGPATH=</path/to/your/log/files/folder>/pykms_logserver.log
-start on runlevel [2345]
-stop on runlevel [016]
-exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F $LOGPATH
-respawn
-```
-Check syntax with: `sudo init-checkconf -d /etc/init/py3-kms.conf`, then reload upstart to recognise this process: `sudo initctl reload-configuration`.
-Now start the service: `sudo start py3-kms`, and you can see the logfile stating that your daemon is running: `cat </path/to/your/log/files/folder>/pykms_logserver.log`.
-
+### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
 ```systemd
 [Unit]
@@ -68,10 +54,26 @@ ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Serve
 WantedBy=multi-user.target
 ```
 Check syntax with `sudo systemd-analyze verify py3-kms.service`, correct file permission (if needed) `sudo chmod 644 /etc/systemd/system/py3-kms.service`, then reload systemd manager configuration `sudo systemctl daemon-reload`,
-start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`.
+start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`. Finally a
+few generic commands useful for interact with your daemon [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
 
-_You can also create a daemon with `SysV` (obsolete)._ Finally a few generic commands useful for interact with your daemon [here](https://eopio.com/linux-upstart-process-manager/) and [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
+### Upstart (deprecated)
+If you are running a Linux distro using `upstart` (deprecated), create the file: `sudo nano /etc/init/py3-kms.conf`, then add the following (change it where needed) and save:
+```
+description "py3-kms"
+author "SystemRage"
+env PYTHONPATH=/usr/bin
+env PYKMSPATH=</path/to/your/pykms/files/folder>/py-kms
+env LOGPATH=</path/to/your/log/files/folder>/pykms_logserver.log
+start on runlevel [2345]
+stop on runlevel [016]
+exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F $LOGPATH
+respawn
+```
+Check syntax with `sudo init-checkconf -d /etc/init/py3-kms.conf`, then reload upstart to recognise this process `sudo initctl reload-configuration`. Now start the service `sudo start py3-kms`, and you can see the logfile
+stating that your daemon is running: `cat </path/to/your/log/files/folder>/pykms_logserver.log`. Finally a few generic commands useful for interact with your daemon [here](https://eopio.com/linux-upstart-process-manager/).
 
+### Windows
 If you are using Windows, to run `pykms_Server.py` as service you need to install [pywin32](https://sourceforge.net/projects/pywin32/), then you can create a file for example named `kms-winservice.py` and put into it this code:
 ```python
 import win32serviceutil
