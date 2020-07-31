@@ -137,17 +137,18 @@ You can also enable other suboptions of `-F` doing what is reported in the follo
 > Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 ### pykms_Client.py
-If _py-kms_ server doesn't works correctly, you can test it with the KMS client _pykms_Client.py_, 
-running on the same machine where you started _pykms_Server.py_. 
+If _py-kms_ server doesn't works correctly, you can test it with the KMS client `_pykms_Client.py_`, running on the same machine where you started `_pykms_Server.py_`.
+
 For example (in separated bash windows) run these commands:
 ```
-user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG
-user@user ~/path/to/folder/py-kms $ python3 pykms_Client.py 0.0.0.0 1688 -V DEBUG
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG
+user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py 0.0.0.0 1688 -V DEBUG
 ```
-or if you want better specify:
+
+Or if you want better specify:
 ```
-user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py <YOUR_IPADDRESS> 1688 -V DEBUG
-user@user ~/path/to/folder/py-kms $ python3 pykms_Client.py <YOUR_IPADDRESS> 1688 -V DEBUG
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py <YOUR_IPADDRESS> 1688 -V DEBUG
+user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py <YOUR_IPADDRESS> 1688 -V DEBUG
 ```
 You can also put further parameters as defined below:
 
@@ -182,31 +183,31 @@ activate regardless of CMID being unique for a subset of specific machines or no
 
     -F or --logfile <LOGFILE>
 > Creates a _LOGFILE.log_ logging file. The default is named _pykms_logclient.log_.
-You can enable same _pykms_Server.py_ suboptions of ```-F```. 
+You can enable same _pykms_Server.py_ suboptions of `-F`. 
 
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 ## Activation Procedure
-Briefly the product asks for a key during installation, so it needs to enter the GVLK. Then user can set connection parameters, while KMS server must already be running on server machine. Finally with specific commands activation occurs automatically and can be extended later every time for another 180 (or 45) days.
+Briefly the product asks for a key during installation, so it needs you to enter the GVLK. Then the user can set connection parameters, while KMS server must already be running on server machine. Finally with specific
+commands activation occurs automatically and can be extended later every time for another 180 (or 30 or 45) days.
 
-### _Windows_
+### Windows
 ***
+The `//nologo` option of `cscript` was used only to hide the startup logo.
+
 ![win1](https://user-images.githubusercontent.com/25354386/36869547-74d05076-1d9c-11e8-9dee-1ff641449c7c.png)
 
 ![win2](https://user-images.githubusercontent.com/25354386/36871704-5f62dda6-1da3-11e8-91f7-a7bc71670926.png)
 
-0. Run a Command Prompt as Administrator (you are directly in ```C:\Windows\System32``` path).
-
-```//nologo``` option of ```cscript``` needs only to hide startup logo.
-
-1. This is facoltative, it's for unistalling existing product key.
-2. Then put your product's GVLK.
-3. Set connection parameters.
-4. Try online activation, but... if that fails with error ```0xC004F074``` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688.
-So for Linux users (server-side with _pykms_Server.py_ running): ```sudo ufw allow 1688``` (to remove this rule ```sudo ufw delete allow 1688```)
-5. Attempt online activation  (with now traffic on 1688 enabled). 
-6. View license informations (facoltative).
+0. Run a Command Prompt as Administrator (you are directly in `C:\Windows\System32` path).
+1. This is optional, it's for unistalling any existing product key.
+2. Then put in your product's GVLK.
+3. Set connection parameters...
+4. Try online activation, but... if that fails with error `0xC004F074` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688. So for Linux users (server-side with `_pykms_Server.py_`
+    running): `sudo ufw allow 1688` (to remove this rule `sudo ufw delete allow 1688`)
+5. Attempt online activation (now with traffic on 1688 enabled). 
+6. View license informations (optional).
 
 ### _Office_
 ***
