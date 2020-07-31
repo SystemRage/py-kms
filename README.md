@@ -1,10 +1,11 @@
-# README
+# Readme
+***
 
 ## History
 _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMS Emulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
 
 ## Features
-- Responds to V4, V5, and V6 KMS requests.
+- Responds to `v4`, `v5`, and `v6` KMS requests.
 - Supports activating:
 	- Windows Vista 
 	- Windows 7 
@@ -22,12 +23,11 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 	- Microsoft Office 2013 ( Volume License )
 	- Microsoft Office 2016 ( Volume License )
 	- Microsoft Office 2019 ( Volume License )
-- It's written in Python:
-	- tested with Python 3.6.7
+- It's written in Python (tested with Python 3.6.7)
 
 ## Dependencies
 - Python 3.x.
-- Tkinter module.
+- Tkinter module (for the GUI).
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the `sqlite3` module so you can use the database function, storing activation data so it can be recalled again. 
 - Installation example on Ubuntu / Mint:
