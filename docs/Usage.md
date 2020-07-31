@@ -2,9 +2,10 @@
 
 ## _How to run pykms_Server.py manually_.
 ***
-A Linux user with ```ifconfig``` command can get his KMS IP (Windows users can try ```ipconfig /all```).
-```
-user@user ~ $ ifconfig
+
+A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
+```bash
+user@host ~ $ ifconfig
 eth0    Link encap: Ethernet HWaddr xx:xx:xx:xx.....
 	inet addr: 192.168.1.102 Bcast 192.168.1.255 Mask: 255.255.255.0
 	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
@@ -21,18 +22,19 @@ lo      Link encap: Local Loopback
 ```
 In the example above is 192.168.1.102, so is valid:
 
-```user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688```
+```
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
+```
 
-To stop _pykms_Server.py_, in the same bash window where code running, simply press CTRL+C.
-Alternatively, in a new bash window, use ```kill <pid>``` command (you can type ```ps aux``` first and have the process <pid>) or ```killall <name_of_server>```.
+To stop `pykms_Server.py`, in the same bash window where code running, simply press CTRL+C.
+Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
 
 ## _How to run pykms_Server.py automatically at start_.
 ***
+
 You can simply manage a daemon that runs as a background process.
 
-If you are running a Linux distro using ```upstart``` (deprecated),
-create the file: ```sudo nano /etc/init/py3-kms.conf```,
-then add the following (changing where needed) and save:
+If you are running a Linux distro using `upstart` (deprecated), create the file: `sudo nano /etc/init/py3-kms.conf`, then add the following (change it where needed) and save:
 ```
 description "py3-kms"
 author "SystemRage"
@@ -44,10 +46,8 @@ stop on runlevel [016]
 exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F $LOGPATH
 respawn
 ```
-Check syntax with: ```sudo init-checkconf -d /etc/init/py3-kms.conf```, then
-reload upstart to recognise this process: ```sudo initctl reload-configuration```.
-Now start the service: ```sudo start py3-kms```, and 
-you can see the logfile stating that your daemon is running: ```cat  </path/to/your/log/files/folder>/pykms_logserver.log```.
+Check syntax with: `sudo init-checkconf -d /etc/init/py3-kms.conf`, then reload upstart to recognise this process: `sudo initctl reload-configuration`.
+Now start the service: `sudo start py3-kms`, and you can see the logfile stating that your daemon is running: `cat </path/to/your/log/files/folder>/pykms_logserver.log`.
 
 If you are running a Linux distro using ```systemd```,
 create the file: ```sudo nano /etc/systemd/system/py3-kms.service```,
