@@ -34,7 +34,7 @@ There are also not official keys for consumer-only versions of Windows that requ
 activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8).
 More complete and well defined lists are available [here](https://github.com/SystemRage/py-kms/wiki/Windows-GVLK-Keys) and [here](https://github.com/SystemRage/py-kms/wiki/Office-GVLK-Keys).
 
-### `SLMGR` and `OSPP` commands
+### SLMGR and OSPP commands
 The software License Manager (`slmgr.vbs`) is a Visual Basic script used to configure and retrieve Volume Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script host
 (`wscript.exe`) or the command-based script host (`cscript.exe`) - administrators can specify which script engine to use. If no script engine is specified, _SLMGR_ runs using the default script engine (it is recommended to utilize
 the `cscript.exe` script engine that resides in the system32 directory). The Software Licensing Service must be restarted for any changes to take effect. To restart it, the Microsoft Management Console (MMC) Services can be used or
@@ -58,6 +58,7 @@ Where command line options are:
 [Option]        Options are shown in the table below.
 ```
 
+#### SLMGR
 Following tables lists _SLMGR_ more relevant options and a brief description of each. Most of the parameters configure the KMS host.
 
 <table width="700" cellspacing="0" cellpadding="0">
@@ -198,13 +199,12 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
     </tbody>
 </table>
 
-The Office Software Protection Platform script (`ospp.vbs`) can help you to configure and test volume license editions of Office client products.
-You must open a command prompt by using administrator permissions and navigate to the folder that contains the 	script. The script is located in the folder of Office installation (`\Office14` for Office 2010, `\Office15` for Office
-2013 and `\Office16` for Office 2016): `%installdir%\Program Files\Microsoft Office\Office15`.
+#### OSPP
+The Office Software Protection Platform script (`ospp.vbs`) can help you to configure and test volume license editions of Office client products. You must open a command prompt by using administrator permissions and navigate to the
+folder that contains the mentioned script. The script is located in the folder of the Office installation (use `\Office14` for Office 2010, `\Office15` for Office 2013 and `\Office16` for Office 2016): `%installdir%\Program Files\Microsoft Office\Office15`.
+If you are running a 32-bit Office on a 64-bit operating system, the script is located in the folder: `%installdir%\Program Files (x86)\Microsoft Office\Office15`.
 
-If you are running 32-bit Office on a 64-bit operating system, the script is located in the folder: `%installdir%\Program Files (x86)\Microsoft Office\Office15`.
-
-Running _OSPP_ requires the `cscript.exe` script engine. To see the Help file, type the following command, and then press ENTER:
+Running _OSPP_ requires the `cscript.exe` script engine. To see the help file, type the following command, and then press ENTER:
 ```
 cscript ospp.vbs /?
 ```
