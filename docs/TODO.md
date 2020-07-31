@@ -7,4 +7,4 @@ Some stuff which needs to be done...
 * Migrate README
 * `pykms_Server.py` /Client has sometimes some _underscores_ to much
 * Reformulate Documentation intro
-
+* See getting started

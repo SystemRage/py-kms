@@ -1,7 +1,7 @@
 # Getting Started
 What follows are some guides how to start the `pykms_Server.py` script, which provides the server.
 
-## Manually
+## Manual execution
 ***
 
 A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
@@ -30,10 +30,15 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
 To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
 Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
 
-## Automatically by daemon
+## Running as a service
 ***
 
 You can simply manage a daemon that runs as a background process.
+//TODO add note regarding docker (and its ipv4/ipv6 mastery)
+
+### Docker
+
+//TODO -> Merge README section!
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
