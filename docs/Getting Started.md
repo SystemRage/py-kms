@@ -1,6 +1,7 @@
 # Getting Started
+What follows are some guides how to start the `pykms_Server.py` script, which provides the server.
 
-## Run pykms_Server.py manually
+## Manually
 ***
 
 A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
@@ -26,10 +27,10 @@ In the example above is 192.168.1.102, so is valid:
 user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
 ```
 
-To stop `pykms_Server.py`, in the same bash window where code running, simply press CTRL+C.
+To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
 Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
 
-## Run pykms_Server.py automatically at start
+## Automatically by daemon
 ***
 
 You can simply manage a daemon that runs as a background process.
