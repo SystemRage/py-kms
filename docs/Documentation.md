@@ -326,7 +326,7 @@ Where command line options are:
     </tbody>
 </table>
 
-### Further references
+## Further references
 * <sup>[1]</sup> https://forums.mydigitallife.net/threads/emulated-kms-servers-on-non-windows-platforms.50234
 * <sup>[2]</sup> https://forums.mydigitallife.net/threads/discussion-microsoft-office-2019.75232
 * <sup>[3]</sup> https://forums.mydigitallife.net/threads/miscellaneous-kms-related-developments.52594
