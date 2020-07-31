@@ -1,7 +1,9 @@
-# History
+# README
+
+## History
 _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMS Emulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
 
-# Features
+## Features
 - Responds to V4, V5, and V6 KMS requests.
 - Supports activating:
 	- Windows Vista 
@@ -23,7 +25,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 - It's written in Python:
 	- tested with Python 3.6.7
 
-# Dependencies
+## Dependencies
 - Python 3.x.
 - Tkinter module.
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
@@ -33,7 +35,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
     - `sudo apt-get install python3-tk python3-pip`
     - `sudo pip3 install tzlocal pysqlite3`
        
-# Usage
+## Usage
 - To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `::` ( all interfaces ) and the default _PORT_ is `1688`. Note that both the address and port are optional. Also note that you have to use an IPv6 address - even if you are just plan to use IPv4 (the kernel maps the incoming IPv4 requests automatically to IPv6), otherwise you will get unsupported address family exceptions!
 - To run the client (only for testing purposes), use `python3 pykms_Client.py [IPADDRESS] [PORT]`, with the same defaults of `pykms_Server.py`.
 - To show the help pages type: `python3 pykms_Server.py -h` and `python3 pykms_Client.py -h`.
@@ -54,7 +56,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 - With Etrigan you have another way to launch py-kms GUI (specially suitable if you're using a virtualenv), so: `python3 pykms_Server.py etrigan start -g`
 and stop the GUI with `python3 pykms_Server.py etrigan stop` (or interact with the EXIT button).
 
-# Docker
+## Docker
 ![auto-docker](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
 ![status-docker](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
 ![pulls-docker](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
@@ -70,9 +72,9 @@ There are three tags of the images available:
 If you just want to use the image and don't want to build them yourself, you can use the official image at the docker hub (`pykmsorg/py-kms`).
 To ensure that the image is always up-to-date you should check [watchtower](https://github.com/containrrr/watchtower) out!
 
-# Other Important Stuff
+## Other Important Stuff
 Consult the [Wiki](https://github.com/SystemRage/py-kms/wiki) for more information about activation with _py-kms_ and to get GVLK keys.
 
-# License
+## License
    - _py-kms_ is [![License0](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
    - _py-kms GUI_ is [![License1](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE.gui.md) © Matteo ℱan
