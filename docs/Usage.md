@@ -49,7 +49,7 @@ respawn
 Check syntax with: `sudo init-checkconf -d /etc/init/py3-kms.conf`, then reload upstart to recognise this process: `sudo initctl reload-configuration`.
 Now start the service: `sudo start py3-kms`, and you can see the logfile stating that your daemon is running: `cat </path/to/your/log/files/folder>/pykms_logserver.log`.
 
-If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (changing where needed) and save:
+If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
 ```systemd
 [Unit]
 Description=py3-kms
@@ -67,12 +67,10 @@ ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Serve
 [Install]
 WantedBy=multi-user.target
 ```
-Check syntax with: `sudo systemd-analyze verify py3-kms.service`, give file permission (if needed): `sudo chmod 644 /etc/systemd/system/py3-kms.service`, then reload systemd manager configuration: `sudo systemctl daemon-reload`,
-and start the daemon: `sudo systemctl start py3-kms.service` and view status: `sudo systemctl status py3-kms.service`.
-Check if daemon is correctly running: `cat </path/to/your/log/files/folder>/pykms_logserver.log`.
+Check syntax with `sudo systemd-analyze verify py3-kms.service`, correct file permission (if needed) `sudo chmod 644 /etc/systemd/system/py3-kms.service`, then reload systemd manager configuration `sudo systemctl daemon-reload`,
+start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`.
 
-You can also create a daemon with `SysV` (obsolete).
-Finally a few generic commands useful for interact with your daemon: [here](https://eopio.com/linux-upstart-process-manager/) and [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/)
+_You can also create a daemon with `SysV` (obsolete)._ Finally a few generic commands useful for interact with your daemon [here](https://eopio.com/linux-upstart-process-manager/) and [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
 
 If you are using Windows, to run `pykms_Server.py` as service you need to install [pywin32](https://sourceforge.net/projects/pywin32/), then you can create a file for example named `kms-winservice.py` and put into it this code:
 ```python
