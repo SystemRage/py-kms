@@ -40,7 +40,7 @@ If the two _HWID_ numbers differ too much then the operating system will shut do
 The theory behind _HWID_ is to ensure that the operating system is not being used on any device other than the one
 for which it was purchased and registered.
 HWID must be an 16-character string of hex characters that are interpreted as a series of 8 bytes (big endian). 
-Default is _364F463A8863D35F_. To auto generate the _HWID_, type ```-w RANDOM```.
+Default is _364F463A8863D35F_. To auto generate the _HWID_, type `-w RANDOM`.
 
     -c or --client-count <CLIENTCOUNT>
 > Use this flag to specify the current _CLIENTCOUNT_. Default is None. Remember that a number >=25 is 
@@ -67,31 +67,71 @@ asynchronously reducing time-consuming. Desactivated by default.
 
     -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
 > Use this flag to set a logging loglevel. The default is _ERROR_.
-example: 
-user@user ~/path/to/folder/py-kms $ ```python3 pykms_Server.py -V INFO```
+example:
+```
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py -V INFO
+```
 creates _pykms_logserver.log_ with these initial messages:
-  ```
-  Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 0.0.0.0 on port 1688.
-  Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
-  ```
+```
+Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 0.0.0.0 on port 1688.
+Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
+```
+
     -F or --logfile <LOGFILE>
 > Creates a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
-example: 
-user@user ~/path/to/folder/py-kms $ ```python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM```
+example:
+```
+user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
+```
 creates _newlogfile.log_ with these initial messages:
-  ```
-  Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 8080.
-  Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
-  ```
+```
+Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 8080.
+Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
+```
 
-  You can also enable other suboptions of ```-F``` doing what is reported in the following table:
-  |         command               | pretty msg | logging msg | logfile |
-  |-------------------------------|:----------:|:-----------:|:-------:|
-  | ```-F <logfile>```            | ON         | OFF         | ON      |
-  | ```-F STDOUT```               | OFF        | ON          | OFF     |
-  | ```-F FILESTDOUT <logfile>``` | OFF        | ON          | ON      |
-  | ```-F STDOUTOFF <logfile>```  | OFF        | OFF         | ON      |
-  | ```-F FILEOFF```              | ON         | OFF         | OFF     |
+You can also enable other suboptions of `-F` doing what is reported in the following table:
+<table>
+    <thead>
+        <tr>
+            <th>command</th>
+            <th>pretty msg</th>
+            <th>logging msg</th>
+            <th>logfile</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`-F <logfile>`</td>
+            <td>ON</td>
+            <td>OFF</td>
+            <td>ON</td>
+        </tr>
+        <tr>
+            <td>`-F STDOUT`</td>
+            <td>OFF</td>
+            <td>ON</td>
+            <td>OFF</td>
+        </tr>
+        <tr>
+            <td>`-F FILESTDOUT <logfile>`</td>
+            <td>OFF</td>
+            <td>ON</td>
+            <td>ON</td>
+        </tr>
+        <tr>
+            <td>`-F STDOUTOFF <logfile>`</td>
+            <td>OFF</td>
+            <td>OFF</td>
+            <td>ON</td>
+        </tr>
+        <tr>
+            <td>`-F FILEOFF`</td>
+            <td>ON</td>
+            <td>OFF</td>
+            <td>OFF</td>
+        </tr>
+    </tbody>
+</table>
 
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
