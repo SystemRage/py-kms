@@ -25,13 +25,10 @@ on the same machine** (the KMS server must be a different computer than the clie
 ### About GVLK keys
 The GVLK keys for products sold via volume license contracts (renewal every 180 days) are published on 	Microsoft’s Technet web site.
 
-* Windows:     https://technet.microsoft.com/en-us/library/jj612867.aspx
-
-* Office 2010: https://technet.microsoft.com/en-us/library/ee624355(v=office.14).aspx#section2_3
-
-* Office 2013: https://technet.microsoft.com/en-us/library/dn385360.aspx
-
-* Office 2016: https://technet.microsoft.com/it-it/library/dn385360(v=office.16).aspx
+* Windows: [https://technet.microsoft.com/en-us/library/jj612867.aspx](https://technet.microsoft.com/en-us/library/jj612867.aspx)
+* Office 2010: [https://technet.microsoft.com/en-us/library/ee624355(v=office.14).aspx#section2_3](https://technet.microsoft.com/en-us/library/ee624355(v=office.14).aspx)
+* Office 2013: [https://technet.microsoft.com/en-us/library/dn385360.aspx](https://technet.microsoft.com/en-us/library/dn385360.aspx)
+* Office 2016: [https://technet.microsoft.com/en-en/library/dn385360(v=office.16).aspx](https://technet.microsoft.com/en-en/library/dn385360(v=office.16).aspx)
 
 There are also not official keys for consumer-only versions of Windows that require 
 activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8).
