@@ -1,8 +1,12 @@
-## Understanding Key Management Service
-KMS activates Microsoft products on a local network, eliminating the need for individual computers to connect to Microsoft. To do this, KMS uses a client–server topology. KMS client locate KMS server by using DNS or a static configuration, then contact it by using Remote Procedure Call (RPC) and tries to activate against it.
-KMS can activate both physical computers and virtual machines, but a network must meet or exceed the activation threshold (minimum number of computers that KMS requires). For activation, KMS clients on the network need to install a KMS client key (General Volume License Key, GVLK), so the product no longer asks Microsoft server but a user–defined server (the KMS server) which usually resides in a company’s intranet.
+# Understanding Key Management Service
+KMS activates Microsoft products on a local network, eliminating the need for individual computers to connect to Microsoft.
+To do this, KMS uses a client–server topology. KMS client locate KMS server by using DNS or a static configuration, then contact it by using Remote Procedure Call (RPC) and tries to activate against it.
+KMS can activate both physical computers and virtual machines, but a network must meet or exceed the activation threshold (minimum number of computers that KMS requires).
+For activation, KMS clients on the network need to install a KMS client key (General Volume License Key, GVLK), so the product no longer asks Microsoft server but a user–defined server (the KMS server) which usually
+resides in a company’s intranet.
 	
-_py-kms_ is a free open source KMS server emulator written in python, while Microsoft gives their KMS server only to corporations that signed a Select contract. Furthermore _py-kms_ never refuses activation since is without 	restrictions, while the Microsoft KMS server only activates the products the customer has paid for.
+_py-kms_ is a free open source KMS server emulator written in python, while Microsoft gives their KMS server only to corporations that signed a Select contract. Furthermore _py-kms_ never refuses activation since is without
+restrictions, while the Microsoft KMS server only activates the products the customer has paid for.
 
 _py-kms_ supports KMS protocol versions 4, 5 and 6.
 Although _py-kms_ does neither require an activation key nor any payment, it is not meant to run illegal copies of Windows. Its purpose is to ensure that owners of legal copies can use their software without restrictions, 
@@ -13,9 +17,9 @@ Activation with _py-kms_ is achieved with the following steps:
 2. Install the product on client (or said remote host, which is the computer sending data to local host) and enter the GVLK.
 3. Configure the client to use the KMS server.
 	
-Note that KMS activations are valid for 180 days, the activation validity interval, or 30 / 45 days with    	consumer-only products. To remain activated, KMS client computers must renew their activation by connecting to the KMS server at least once every 180 days.
-For this to work, should be to guarantee that a KMS server is always reachable for the clients on the network.
-To remember you can't activate Windows 8.1 (and above) on a KMS server hosted on the same machine (the KMS server must be a different computer than the client).
+Note that KMS activations are valid for 180 days, the activation validity interval, or 30 / 45 days with consumer-only products. To remain activated, KMS client computers must renew their activation by connecting to the KMS server
+at least once every 180 days. For this to work, should be to guarantee that a KMS server is always reachable for the clients on the network. To remember you can't activate Windows 8.1 (and above) on a KMS server hosted on the same
+machine (the KMS server must be a different computer than the client).
 
 ## About GVLK keys
 The GVLK keys for products sold via volume license contracts (renewal every 180 days) are published on 	Microsoft’s Technet web site.
@@ -33,12 +37,16 @@ activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8).
 More complete and well defined lists are available [here](https://github.com/SystemRage/py-kms/wiki/Windows-GVLK-Keys) and [here](https://github.com/SystemRage/py-kms/wiki/Office-GVLK-Keys).
 
 ## SLMGR and OSPP commands
-The software License Manager (```slmgr.vbs```) is a Visual Basic script used to configure and retrieve Volume 	Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script host (```wscript.exe```) or the command-based script host (```cscript.exe```), and administrators can specify which script engine to use. If no script engine is specified, SLMGR runs using the default script engine (note: it's recommended the cscript.exe script engine that resides in the system32 directory).
-The Software Licensing Service must be restarted for any changes to take effect. To restart it, can be used the Microsoft Management Console (MMC) Services or running the following command:
+The software License Manager (```slmgr.vbs```) is a Visual Basic script used to configure and retrieve Volume 	Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script
+host (```wscript.exe```) or the command-based script host (```cscript.exe```), and administrators can specify which script engine to use. If no script engine is specified, SLMGR runs using the default script engine (note: it's
+recommended the cscript.exe script engine that resides in the system32 directory). The Software Licensing Service must be restarted for any changes to take effect. To restart it, can be used the Microsoft Management Console (MMC)
+Services or running the following command:
 
-```net stop sppsvc && net start sppsvc```
+```
+net stop sppsvc && net start sppsvc
+```
 
-The _SLMGR_ requires at least one parameter. If the script is run without any parameters, it displays Help 	information. The general syntax of ```slmgr.vbs``` is as follows (using the ```cscript.exe``` as the script engine):
+The _SLMGR_ requires at least one parameter. If the script is run without any parameters, it displays Help information. The general syntax of `slmgr.vbs` is as follows (using the `cscript.exe` as the script engine):
 
 ```
 cscript slmgr.vbs /parameter
@@ -192,24 +200,23 @@ Following tables lists _SLMGR_ more relevant options and a brief description of 
     </tbody>
 </table>
 
-The Office Software Protection Platform script (```ospp.vbs```) can help you to configure and test volume license editions of Office client products.
-You must open a command prompt by using administrator permissions and navigate to the folder that contains the 	script. The script is located in the folder of Office installation (```\Office14``` for Office 2010, ```\Office15``` for Office 2013, ```\Office16``` for Office 2016):
+The Office Software Protection Platform script (`ospp.vbs`) can help you to configure and test volume license editions of Office client products.
+You must open a command prompt by using administrator permissions and navigate to the folder that contains the 	script. The script is located in the folder of Office installation (`\Office14` for Office 2010, `\Office15` for Office
+2013 and `\Office16` for Office 2016): `%installdir%\Program Files\Microsoft Office\Office15`.
 
-```%installdir%\Program Files\Microsoft Office\Office15```.
+If you are running 32-bit Office on a 64-bit operating system, the script is located in the folder: `%installdir%\Program Files (x86)\Microsoft Office\Office15`.
 
-If you are running 32-bit Office on a 64-bit operating system, the script is located in the folder:
-
-```%installdir%\Program Files (x86)\Microsoft Office\Office15```.
-
-Running _OSPP_ requires the ```cscript.exe``` script engine. To see the Help file, type the following command, and then press ENTER:
-
-```cscript ospp.vbs /?```.
+Running _OSPP_ requires the `cscript.exe` script engine. To see the Help file, type the following command, and then press ENTER:
+```
+cscript ospp.vbs /?
+```
 
 The general syntax is as follows:
+```
+cscript ospp.vbs [Option:Value] [ComputerName] [User] [Password]
+```
 
-```cscript ospp.vbs [Option:Value] [ComputerName] [User] [Password]```,
-
-where command line options are:
+Where command line options are:
 ```
 [Option:Value]  Specifies the option and Value to use to activate a product, install or uninstall a product key, install and display license information, set KMS host name and port, and remove KMS host. The options and values are listed in the tables below.
 [ComputerName]  Name of the remote computer. If a computer name is not provided, the local computer is used.
