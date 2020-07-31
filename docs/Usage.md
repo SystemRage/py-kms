@@ -137,7 +137,7 @@ You can also enable other suboptions of `-F` doing what is reported in the follo
 > Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
 
 ### pykms_Client.py
-If _py-kms_ server doesn't works correctly, you can test it with the KMS client `_pykms_Client.py_`, running on the same machine where you started `_pykms_Server.py_`.
+If _py-kms_ server doesn't works correctly, you can test it with the KMS client `pykms_Client.py`, running on the same machine where you started `pykms_Server.py`.
 
 For example (in separated bash windows) run these commands:
 ```
@@ -204,12 +204,12 @@ The `//nologo` option of `cscript` was used only to hide the startup logo.
 1. This is optional, it's for unistalling any existing product key.
 2. Then put in your product's GVLK.
 3. Set connection parameters...
-4. Try online activation, but... if that fails with error `0xC004F074` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688. So for Linux users (server-side with `_pykms_Server.py_`
+4. Try online activation, but... if that fails with error `0xC004F074` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688. So for Linux users (server-side with `pykms_Server.py`
     running): `sudo ufw allow 1688` (to remove this rule `sudo ufw delete allow 1688`)
 5. Attempt online activation (now with traffic on 1688 enabled). 
 6. View license informations (optional).
 
-### _Office_
+### Office
 ***
 Note that you’ll have to install a volume license (VL) version of Office. Office versions downloaded from MSDN and / or Technet are non-VL.
 
@@ -221,10 +221,11 @@ Note that you’ll have to install a volume license (VL) version of Office. Offi
 
 ![off4](https://user-images.githubusercontent.com/25354386/36871764-8e179e2a-1da3-11e8-8e37-eb138a988dea.png)
 
-0. Run a Command Prompt as Administrator and navigate to Office folder ```cd C:\ProgramFiles\Microsoft Office\OfficeXX``` (64-bit path) or ```cd C:\ProgramFiles(x86)\Microsoft Office\OfficeXX``` (32-bit path), where XX = 14 for Office 2010, 15 for Office 2013, 16 for Office 2016 or Office 2019.
-1. As you can see, running ```/dstatus```, my Office is expiring (14 days remaining).
+0. Run a Command Prompt as Administrator and navigate to Office folder `cd C:\ProgramFiles\Microsoft Office\OfficeXX` (64-bit path) or `cd C:\ProgramFiles(x86)\Microsoft Office\OfficeXX` (32-bit path), where XX = `14` for Office 2010,
+    `15` for Office 2013, `16` for Office 2016 or Office 2019.
+1. As you can see, running `/dstatus`, my Office is expiring (14 days remaining).
 2. Only for example, let's go to uninstall this product.
-3. This is confirmed running ```/dstatus``` again.
+3. This is confirmed running `/dstatus` again.
 4. Now i put my product's GVLK (and you your key).
 5. Set the connection parameter KMS server address.
 6. Set the connection parameter KMS server port.
@@ -232,4 +233,6 @@ Note that you’ll have to install a volume license (VL) version of Office. Offi
 8. View license informations (in my case product is now licensed and remaining grace 180 days as expected).
 
 ## Supported Products
-Note that it is possible to activate all versions in the VL (Volume License) channel, so long as you provide the proper key to let Windows know that it should be activating against a KMS server. KMS activation can't be used for Retail channel products, however you can install a VL product key specific to your edition of Windows even if it was installed as Retail. This effectively converts Retail installation to VL channel and will allow you to activate from a KMS server. This is not valid for Office's products, so Office, Project and Visio must be volume license 	versions. Newer version may work as long as the KMS protocol does not change. 
+Note that it is possible to activate all versions in the VL (Volume License) channel, so long as you provide the proper key to let Windows know that it should be activating against a KMS server. KMS activation can't be used for
+Retail channel products, however you can install a VL product key specific to your edition of Windows even if it was installed as Retail. This effectively converts Retail installation to VL channel and will allow you to activate
+from a KMS server. **However, this is not valid for Office's products**, so Office, Project and Visio must be always volume license versions. Newer version may work as long as the KMS protocol does not change...
