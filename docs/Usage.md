@@ -196,9 +196,9 @@ commands activation occurs automatically and can be extended later every time fo
 ***
 The `//nologo` option of `cscript` was used only to hide the startup logo.
 
-![win1](https://user-images.githubusercontent.com/25354386/36869547-74d05076-1d9c-11e8-9dee-1ff641449c7c.png)
+![win1](img/win1.png)
 
-![win2](https://user-images.githubusercontent.com/25354386/36871704-5f62dda6-1da3-11e8-91f7-a7bc71670926.png)
+![win2](img/win2.png)
 
 0. Run a Command Prompt as Administrator (you are directly in `C:\Windows\System32` path).
 1. This is optional, it's for unistalling any existing product key.
@@ -213,13 +213,13 @@ The `//nologo` option of `cscript` was used only to hide the startup logo.
 ***
 Note that you’ll have to install a volume license (VL) version of Office. Office versions downloaded from MSDN and / or Technet are non-VL.
 
-![off1](https://user-images.githubusercontent.com/25354386/36871724-6e9e5958-1da3-11e8-8c09-8fd693b20c52.png)
+![off1](img/off1.png)
 
-![off2](https://user-images.githubusercontent.com/25354386/36871740-79ce2ae2-1da3-11e8-9ef1-d9b14b86364c.png)
+![off2](img/off2.png)
 
-![off3](https://user-images.githubusercontent.com/25354386/36871754-84fa99e6-1da3-11e8-907b-f9435acd3a2d.png)
+![off3](img/off3.png)
 
-![off4](https://user-images.githubusercontent.com/25354386/36871764-8e179e2a-1da3-11e8-8e37-eb138a988dea.png)
+![off4](img/off4.png)
 
 0. Run a Command Prompt as Administrator and navigate to Office folder `cd C:\ProgramFiles\Microsoft Office\OfficeXX` (64-bit path) or `cd C:\ProgramFiles(x86)\Microsoft Office\OfficeXX` (32-bit path), where XX = `14` for Office 2010,
     `15` for Office 2013, `16` for Office 2016 or Office 2019.
