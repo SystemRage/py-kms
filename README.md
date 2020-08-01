@@ -39,7 +39,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 The documentation has been completly reworked and is now available on [readthedocs.com](https://py-kms-demo.readthedocs.io/en/readthedocs/Usage.html#start-parameters). It should you provide all necessary information how to get py-kms up
 and running using your favourite tools - all without clumping this readme up. The documentation also houses more information about activation with _py-kms_ and to how get GVLK keys.
        
-### Get it running (fast)...
+## Get it running (fast)...
 - To start the server manually, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default `IPADDRESS` is `::` ( all ipv6-interfaces ) and the default `PORT` is `1688`. Note that both the address and port are optional.
     Also note that it is recommended to use an IPv6 address - even if you are just plan to use IPv4 (the kernel maps the incoming IPv4 requests automatically to IPv6)!
 - To start the server automatically using Docker, execute `docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms`.
