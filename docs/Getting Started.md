@@ -1,35 +1,6 @@
 # Getting Started
 What follows are some guides how to start the `pykms_Server.py` script, which provides the server.
 
-## Manual execution
-***
-
-A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
-```bash
-user@host ~ $ ifconfig
-eth0    Link encap: Ethernet HWaddr xx:xx:xx:xx.....
-	inet addr: 192.168.1.102 Bcast 192.168.1.255 Mask: 255.255.255.0
-	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
-	RX Packets: 6 errors: 0 dropped, etc.. 0
-	TX packets: 3 errors:0, etc.. 0
-	colisions: 0 txqueuelen: 1000
-	RX bytes: 1020 TX Bytes: 708
-
-lo      Link encap: Local Loopback
-        inet addr: 127.0.0.1 Mask 255.0.0.0
-	UP Loopback running MTU: 65536 Metric: 1
-	RX packets 4: errors: 0 etc 0
-	TX packets 4: errors: 0 etc 0
-```
-In the example above is 192.168.1.102, so is valid:
-
-```
-user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
-```
-
-To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
-Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
-
 ## Running as a service
 ***
 
@@ -123,3 +94,32 @@ if __name__ == '__main__':
 ```
 Now in a command prompt type `C:\Windows\Python27\python.exe kms-winservice.py install` to install the service. Display all the services with `services.msc` and find the service associated with _py-kms_, change the startup type
 from `manual` to `auto`. Finally `Start` the service. If this approach fails, you can try to use [Non-Sucking Service Manager](https://nssm.cc/) or Task Scheduler as described [here](https://blogs.esri.com/esri/arcgis/2013/07/30/scheduling-a-scrip/).
+
+## Manual execution
+***
+
+A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
+```bash
+user@host ~ $ ifconfig
+eth0    Link encap: Ethernet HWaddr xx:xx:xx:xx.....
+	inet addr: 192.168.1.102 Bcast 192.168.1.255 Mask: 255.255.255.0
+	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+	RX Packets: 6 errors: 0 dropped, etc.. 0
+	TX packets: 3 errors:0, etc.. 0
+	colisions: 0 txqueuelen: 1000
+	RX bytes: 1020 TX Bytes: 708
+
+lo      Link encap: Local Loopback
+        inet addr: 127.0.0.1 Mask 255.0.0.0
+	UP Loopback running MTU: 65536 Metric: 1
+	RX packets 4: errors: 0 etc 0
+	TX packets 4: errors: 0 etc 0
+```
+In the example above is 192.168.1.102, so is valid:
+
+```
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
+```
+
+To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
+Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
