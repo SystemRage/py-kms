@@ -30,9 +30,7 @@ The GVLK keys for products sold via volume license contracts (renewal every 180 
 * Office 2013: [https://technet.microsoft.com/en-us/library/dn385360.aspx](https://technet.microsoft.com/en-us/library/dn385360.aspx)
 * Office 2016: [https://technet.microsoft.com/en-en/library/dn385360(v=office.16).aspx](https://technet.microsoft.com/en-en/library/dn385360(v=office.16).aspx)
 
-There are also not official keys for consumer-only versions of Windows that require 
-activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8).
-More complete and well defined lists are available [here](https://github.com/SystemRage/py-kms/wiki/Windows-GVLK-Keys) and [here](https://github.com/SystemRage/py-kms/wiki/Office-GVLK-Keys).
+There are also not official keys for consumer-only versions of Windows that require activation renewal every 45 days (Windows 8.1) or 30 days (Windows 8). A more complete and well defined list is available [here](Keys.md).
 
 ### SLMGR and OSPP commands
 The software License Manager (`slmgr.vbs`) is a Visual Basic script used to configure and retrieve Volume Activation information. The script can be run locally or remotely on the target computer, using the Windows-based script host
