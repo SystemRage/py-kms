@@ -1,11 +1,6 @@
 # Documentation
 What follows are some detailed explanations how some parts work.
 
-| Syntax      | Description |
-| ----------- | ----------- |
-| Header      | Title       |
-| Paragraph   | Text        |
-
 ## Understanding Key Management Service
 KMS activates Microsoft products on a local network, eliminating the need for individual computers to connect to Microsoft. To do this, KMS uses a client–server topology. A KMS client locates a KMS server by using DNS or a static
 configuration, then contact it by using Remote Procedure Call (RPC) and tries to activate against it. KMS can activate both physical computers and virtual machines, but a network must meet or exceed the activation threshold
