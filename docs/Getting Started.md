@@ -122,50 +122,31 @@ from `manual` to `auto`. Finally `Start` the service. If this approach fails, yo
 - Tkinter module (for the GUI).
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the `sqlite3` module so you can use the database function, storing activation data so it can be recalled again.
-
-//TODO Merge
-============
 - Installation example on Ubuntu / Mint:
     - `sudo apt-get update`
     - `sudo apt-get install python3-tk python3-pip`
     - `sudo pip3 install tzlocal pysqlite3`
 
-- To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
-- To get the HWID from any server use the client, for example type: `python3 pykms_Client.py :: 1688 -m Windows8.1 -V INFO`.
-
-
-- To change your logfile path use `-F` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V DEBUG`.
-- To view a minimal set of logging information use `-V MINI` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V MINI`.
-- To redirect logging on stdout use `-F STDOUT` option, for example: `python3 pykms_Server.py -F STDOUT -V DEBUG`.
-- You can create logfile and view logging information on stdout at the same time with `-F FILESTDOUT` option, for example: `python3 pykms_Server.py -F FILESTDOUT /path/to/your/logfile.log -V DEBUG`.
-- With `-F STDOUTOFF` you disable all stdout messages (but a logfile will be created), for example: `python3 pykms_Server.py -F STDOUTOFF /path/to/your/logfile.log -V DEBUG`.
-- With `-F FILEOFF` you disable logfile creation.
-
-
-
-- Select timeout (seconds) for py-kms with `-t0` option, for example `python3 pykms_Server.py -t0 10`.
-- Option `-y` enables printing asynchronously of messages (pretty / logging).
-============
-
-### Start it!
-A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
+### Startup
+A Linux user with `ip addr` command can get his KMS IP (Windows users can try `ipconfig /all`).
 ```bash
-user@host ~ $ ifconfig
-eth0    Link encap: Ethernet HWaddr xx:xx:xx:xx.....
-	inet addr: 192.168.1.102 Bcast 192.168.1.255 Mask: 255.255.255.0
-	UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
-	RX Packets: 6 errors: 0 dropped, etc.. 0
-	TX packets: 3 errors:0, etc.. 0
-	colisions: 0 txqueuelen: 1000
-	RX bytes: 1020 TX Bytes: 708
-
-lo      Link encap: Local Loopback
-        inet addr: 127.0.0.1 Mask 255.0.0.0
-	UP Loopback running MTU: 65536 Metric: 1
-	RX packets 4: errors: 0 etc 0
-	TX packets 4: errors: 0 etc 0
+user@host ~ $ ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp6s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether **:**:**:**:**:** brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.102/24 brd 192.168.1.255 scope global dynamic noprefixroute enp6s0
+       valid_lft 860084sec preferred_lft 860084sec
+    inet6 ****:****:****:****:****:****:****:****/64 scope global dynamic noprefixroute 
+       valid_lft 6653sec preferred_lft 3052sec
+    inet6 ****::****:****:****:****/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
 ```
-In the example above is 192.168.1.102, so is valid:
+In the example above is `192.168.1.102` the ip we want to listen on, so it is this command (**note you can omit the ip AND port specification if you just wish to listen on all interfaces**):
 
 ```
 user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
@@ -173,3 +154,17 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
 
 To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
 Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
+
+#### Notes
+The following are just some quick notes - for a more detailed list of parameters see [here](Usage.md).
+
+- To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
+- To get the HWID from any server use the client, for example type: `python3 pykms_Client.py :: 1688 -m Windows8.1 -V INFO`.
+- To change your logfile path use `-F` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V DEBUG`.
+- To view a minimal set of logging information use `-V MINI` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V MINI`.
+- To redirect logging on stdout use `-F STDOUT` option, for example: `python3 pykms_Server.py -F STDOUT -V DEBUG`.
+- You can create logfile and view logging information on stdout at the same time with `-F FILESTDOUT` option, for example: `python3 pykms_Server.py -F FILESTDOUT /path/to/your/logfile.log -V DEBUG`.
+- With `-F STDOUTOFF` you disable all stdout messages (but a logfile will be created), for example: `python3 pykms_Server.py -F STDOUTOFF /path/to/your/logfile.log -V DEBUG`.
+- With `-F FILEOFF` you disable logfile creation.
+- Select timeout (seconds) for py-kms with `-t0` option, for example `python3 pykms_Server.py -t0 10`.
+- Option `-y` enables printing asynchronously of messages (pretty / logging).
