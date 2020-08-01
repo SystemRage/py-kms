@@ -4,12 +4,27 @@ What follows are some guides how to start the `pykms_Server.py` script, which pr
 ## Running as a service
 ***
 
-You can simply manage a daemon that runs as a background process.
-//TODO add note regarding docker (and its ipv4/ipv6 mastery)
+You can simply manage a daemon that runs as a background process. This can be achieved by using any of the guides below or by writing your own solution.
 
 ### Docker
+![docker-auto](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
+![docker-status](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
+![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
+![docker-size](https://img.shields.io/docker/image-size/pykmsorg/py-kms)
 
-//TODO -> Merge README section!
+If you wish to get _py-kms_ just up and running without installing any dependencies or writing own scripts: Just use Docker! The following command will download, "install" and start _py-kms_ and also keep it alive after any
+service disruption.
+```bash
+docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
+```
+
+There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
+* `latest`, currently the same like minimal...
+* `minimal`, wich is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support!_
+* `python3`, which is fully configurable and equiped with `sqlite` support and a web interface for management.
+
+If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
+latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
@@ -33,6 +48,10 @@ WantedBy=multi-user.target
 Check syntax with `sudo systemd-analyze verify py3-kms.service`, correct file permission (if needed) `sudo chmod 644 /etc/systemd/system/py3-kms.service`, then reload systemd manager configuration `sudo systemctl daemon-reload`,
 start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`. Finally a
 few generic commands useful for interact with your daemon [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
+
+### Etrigan
+You can run py-kms daemonized (via [Etrigan](https://github.com/SystemRage/Etrigan)) using a command like `python3 pykms_Server.py etrigan start` and stop it with `python3 pykms_Server.py etrigan stop`. With Etrigan you have another
+way to launch py-kms GUI (specially suitable if you're using a virtualenv), so `python3 pykms_Server.py etrigan start -g` and stop the GUI with `python3 pykms_Server.py etrigan stop` (or interact with the `EXIT` button).
 
 ### Upstart (deprecated)
 If you are running a Linux distro using `upstart` (deprecated), create the file: `sudo nano /etc/init/py3-kms.conf`, then add the following (change it where needed) and save:
@@ -98,6 +117,37 @@ from `manual` to `auto`. Finally `Start` the service. If this approach fails, yo
 ## Manual execution
 ***
 
+### Dependencies
+- Python 3.x.
+- Tkinter module (for the GUI).
+- If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
+- It can use the `sqlite3` module so you can use the database function, storing activation data so it can be recalled again.
+
+//TODO Merge
+============
+- Installation example on Ubuntu / Mint:
+    - `sudo apt-get update`
+    - `sudo apt-get install python3-tk python3-pip`
+    - `sudo pip3 install tzlocal pysqlite3`
+
+- To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
+- To get the HWID from any server use the client, for example type: `python3 pykms_Client.py :: 1688 -m Windows8.1 -V INFO`.
+
+
+- To change your logfile path use `-F` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V DEBUG`.
+- To view a minimal set of logging information use `-V MINI` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V MINI`.
+- To redirect logging on stdout use `-F STDOUT` option, for example: `python3 pykms_Server.py -F STDOUT -V DEBUG`.
+- You can create logfile and view logging information on stdout at the same time with `-F FILESTDOUT` option, for example: `python3 pykms_Server.py -F FILESTDOUT /path/to/your/logfile.log -V DEBUG`.
+- With `-F STDOUTOFF` you disable all stdout messages (but a logfile will be created), for example: `python3 pykms_Server.py -F STDOUTOFF /path/to/your/logfile.log -V DEBUG`.
+- With `-F FILEOFF` you disable logfile creation.
+
+
+
+- Select timeout (seconds) for py-kms with `-t0` option, for example `python3 pykms_Server.py -t0 10`.
+- Option `-y` enables printing asynchronously of messages (pretty / logging).
+============
+
+### Start it!
 A Linux user with `ifconfig` command can get his KMS IP (Windows users can try `ipconfig /all`).
 ```bash
 user@host ~ $ ifconfig
