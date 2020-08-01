@@ -21,7 +21,7 @@ docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
 * `latest`, currently the same like minimal...
 * `minimal`, wich is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support!_
-* `python3`, which is fully configurable and equiped with `sqlite` support and a web interface for management.
+* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface for management.
 
 If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
 latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
