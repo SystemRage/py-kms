@@ -6,10 +6,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 ***
 
 ### Windows Server 2019
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -24,10 +24,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Server 2016
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -45,10 +45,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows 10
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -83,10 +83,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Server 2012 R2
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -98,10 +98,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows 8.1
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -128,10 +128,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Server 2012
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -147,10 +147,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows 8
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -170,10 +170,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Server 2008 R2
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -188,10 +188,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>	
 
 ### Windows 7
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -208,10 +208,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Server 2008
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -228,10 +228,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Vista
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -243,10 +243,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Windows Previews
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -348,10 +348,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 ***
 
 ### Office 2019
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -375,10 +375,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Office 2016
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -406,10 +406,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 
 ### Office 2013
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
@@ -453,10 +453,10 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 </table>
 		
 ### Office 2010
-<table width="650" cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <colgroup>
-       <col span="1" width="300">
-       <col span="1" width="350">
+       <col span="1" width="50%">
+       <col span="1" width="50%">
     </colgroup>
     <thead><tr><th>Product</th><th>GVLK</th></tr></thead>
     <tbody>
