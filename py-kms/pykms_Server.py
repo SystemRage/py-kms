@@ -14,6 +14,7 @@ import socketserver
 import queue as Queue
 import selectors
 from time import monotonic as time
+import ipaddress
 
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
@@ -36,9 +37,8 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         daemon_threads = True
         allow_reuse_address = True
 
-        def __init__(self, server_address, RequestHandlerClass):
-                self.address_family = socket.AF_INET6 # This call make sure the server creates an IPv6 socket and NOT an IPv4 by default
-                socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
+        def __init__(self, server_address, RequestHandlerClass, bind_and_activate = True):
+                socketserver.BaseServer.__init__(self, server_address, RequestHandlerClass)
                 self.__shutdown_request = False
                 self.r_service, self.w_service = socket.socketpair()
 
@@ -46,6 +46,25 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                         self._ServerSelector = selectors.PollSelector
                 else:
                         self._ServerSelector = selectors.SelectSelector
+
+                try:
+                        ip_ver = ipaddress.ip_address(server_address[0])
+                except ValueError as e:
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
+                if ip_ver.version == 4:
+                        self.address_family = socket.AF_INET
+                elif ip_ver.version == 6:
+                        self.address_family = socket.AF_INET6
+
+                self.socket = socket.socket(self.address_family, self.socket_type)
+                if bind_and_activate:
+                        try:
+                                self.server_bind()
+                                self.server_activate()
+                        except:
+                                self.server_close()
+                                raise
 
         def pykms_serve(self):
                 """ Mixing of socketserver serve_forever() and handle_request() functions,
@@ -157,7 +176,7 @@ loggersrv = logging.getLogger('logsrv')
 
 # 'help' string - 'default' value - 'dest' string.
 srv_options = {
-        'ip' : {'help' : 'The IPv6 address to listen on. The default is \"::\" (all interfaces).', 'def' : "::", 'des' : "ip"},
+        'ip' : {'help' : 'The IP address (IPv4 or IPv6) to listen on. The default is \"0.0.0.0\" (all interfaces).', 'def' : "0.0.0.0", 'des' : "ip"},
         'port' : {'help' : 'The network port to listen on. The default is \"1688\".', 'def' : 1688, 'des' : "port"},
         'epid' : {'help' : 'Use this option to manually specify an ePID to use. If no ePID is specified, a random ePID will be auto generated.',
                   'def' : None, 'des' : "epid"},
