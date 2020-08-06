@@ -4,6 +4,7 @@
 ![last-commit](https://img.shields.io/github/last-commit/SystemRage/py-kms/master)
 ![docker-status](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
 ![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
+![read-the-docs](https://img.shields.io/readthedocs/py-kms)
 ***
 
 ## History
@@ -34,8 +35,6 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
   - Uses `sqlite` for persistent data storage
 
 ## Documentation
-![Read the Docs](https://img.shields.io/readthedocs/py-kms-demo)
-
 The documentation has been completly reworked and is now available on [readthedocs.com](https://py-kms.readthedocs.io/en/latest/Usage.html#start-parameters). It should you provide all necessary information how to get py-kms up
 and running using your favourite tools - all without clumping this readme up. The documentation also houses more information about activation with _py-kms_ and to how get GVLK keys.
        
