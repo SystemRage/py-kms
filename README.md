@@ -34,7 +34,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
   - Includes a GUI for simlpe managing
   - Uses `sqlite` for persistent data storage
 
-## Documentation
+## [Documentation](https://py-kms.readthedocs.io/en/latest/)
 The documentation has been completly reworked and is now available on [readthedocs.com](https://py-kms.readthedocs.io/en/latest/Usage.html#start-parameters). It should you provide all necessary information how to get py-kms up
 and running using your favourite tools - all without clumping this readme up. The documentation also houses more information about activation with _py-kms_ and to how get GVLK keys.
        
