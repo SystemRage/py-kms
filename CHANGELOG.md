@@ -1,3 +1,5 @@
+# Changelog
+
 ### py-kms_2020-07-01
 - py-kms Gui: now matches all cli options, added modes onlyserver / onlyclient,
   added some animations.
