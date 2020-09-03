@@ -54,7 +54,8 @@ e.g. because it could not reach the server. The default is 120 minutes (2 hours)
 > Instructs clients to renew activation every _RENEWALINTERVAL_ minutes. The default is 10080 minutes (7 days).
 
     -s or --sqlite
-> Use this option to store request information from unique clients in an SQLite database.
+> Use this option to store request information from unique clients in an SQLite database. Deactivated by default.
+If enabled the default database file is _pykms_database.db_. You can also provide a specific location.
 
     -t0 or --timeout-idle <TIMEOUT>
 > Maximum inactivity time (in seconds) after which the connection with the client is closed. 
@@ -63,7 +64,7 @@ Default setting is serve forever (no timeout).
     -y or --async-msg
 > With high levels of logging (e.g hundreds of log statements), in a traditional synchronous log model, 
 the overhead involved becomes more expensive, so using this option you enable printing (pretty / logging) messages 
-asynchronously reducing time-consuming. Desactivated by default.
+asynchronously reducing time-consuming. Deactivated by default.
 
     -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
 > Use this flag to set a logging loglevel. The default is _ERROR_.
@@ -81,7 +82,7 @@ Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
 > Creates a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
 example:
 ```
-user@user ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
 ```
 creates _newlogfile.log_ with these initial messages:
 ```
@@ -134,7 +135,7 @@ You can also enable other suboptions of `-F` doing what is reported in the follo
 </table>
 
     -S or --logsize <MAXSIZE>
-> Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+> Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
 ### pykms_Client.py
 If _py-kms_ server doesn't works correctly, you can test it with the KMS client `pykms_Client.py`, running on the same machine where you started `pykms_Server.py`.
@@ -142,7 +143,7 @@ If _py-kms_ server doesn't works correctly, you can test it with the KMS client 
 For example (in separated bash windows) run these commands:
 ```
 user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG
-user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py 0.0.0.0 1688 -V DEBUG
+user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py -V DEBUG
 ```
 
 Or if you want better specify:
@@ -176,7 +177,7 @@ activate regardless of CMID being unique for a subset of specific machines or no
 > Use this flag to manually specify an ASCII _MACHINENAME_ to use. If no _MACHINENAME_ is specified a random one will be generated.
 
     -y or --async-msg
-> Prints pretty / logging messages asynchronously. Desactivated by default.
+> Prints pretty / logging messages asynchronously. Deactivated by default.
 
     -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
 > Use this flag to set a logging loglevel. The default is _ERROR_.
@@ -186,11 +187,10 @@ activate regardless of CMID being unique for a subset of specific machines or no
 You can enable same _pykms_Server.py_ suboptions of `-F`. 
 
     -S or --logsize <MAXSIZE>
-> Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+> Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
 ## Activation Procedure
-Briefly the product asks for a key during installation, so it needs you to enter the GVLK. Then the user can set connection parameters, while KMS server must already be running on server machine. Finally with specific
-commands activation occurs automatically and can be extended later every time for another 180 (or 30 or 45) days.
+The product asks for a key during installation, so it needs you to enter the GVLK. Then the user can set connection parameters, while KMS server must already be running on server machine. Finally with specific commands, activation occurs automatically and can be extended later every time for another 180 (or 30 or 45) days.
 
 ### Windows
 ***
@@ -203,7 +203,7 @@ The `//nologo` option of `cscript` was used only to hide the startup logo.
 0. Run a Command Prompt as Administrator (you are directly in `C:\Windows\System32` path).
 1. This is optional, it's for unistalling any existing product key.
 2. Then put in your product's GVLK.
-3. Set connection parameters...
+3. Set connection parameters.
 4. Try online activation, but... if that fails with error `0xC004F074` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688. So for Linux users (server-side with `pykms_Server.py`
     running): `sudo ufw allow 1688` (to remove this rule `sudo ufw delete allow 1688`)
 5. Attempt online activation (now with traffic on 1688 enabled). 

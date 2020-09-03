@@ -29,23 +29,19 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 	- Microsoft Office 2013 ( Volume License )
 	- Microsoft Office 2016 ( Volume License )
 	- Microsoft Office 2019 ( Volume License )
-  - It's written in Python (tested with Python 3.6.7)
+  - It's written in Python (tested with Python 3.6.9).
   - Supports execution by `Docker`, `systemd`, `Upstart` and many more...
-  - Includes a GUI for simlpe managing
-  - Uses `sqlite` for persistent data storage
+  - Includes a GUI for simple managing.
+  - Uses `sqlite` for persistent data storage.
 
-## [Documentation](https://py-kms.readthedocs.io/en/latest/)
-The documentation has been completly reworked and is now available on [readthedocs.com](https://py-kms.readthedocs.io/en/latest/Usage.html#start-parameters). It should you provide all necessary information how to get py-kms up
-and running using your favourite tools - all without clumping this readme up. The documentation also houses more information about activation with _py-kms_ and to how get GVLK keys.
+## Documentation
+The wiki has been completly reworked and is now available on [readthedocs.com](https://py-kms.readthedocs.io/en/latest/). It should you provide all necessary information how to setup and to use _py-kms_ , all without clumping this readme. The documentation also houses more details about activation with _py-kms_ and how to get GVLK keys.
        
-## Get it running (fast)...
-- To start the server manually, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default `IPADDRESS` is `::` ( all ipv6-interfaces ) and the default `PORT` is `1688`. Note that both the address and port are optional.
-    Also note that it is recommended to use an IPv6 address - even if you are just plan to use IPv4 (the kernel maps the incoming IPv4 requests automatically to IPv6)!
+## Quick start
+- To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `0.0.0.0` ( all interfaces ) and the default _PORT_ is `1688`. Note that both the address and port are optional. It's allowed to use IPv4 and IPv6 addresses. If you have a IPv6-capable dual-stack OS, a dual-stack socket is created when using a IPv6 address.
 - To start the server automatically using Docker, execute `docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms`.
 - To show the help pages type: `python3 pykms_Server.py -h` and `python3 pykms_Client.py -h`.
-- For launching py-kms GUI make the file `pykms_Server.py` executable with `chmod +x /path/to/folder/py-kms/pykms_Server.py`, then simply run `pykms_Server.py` by double-clicking.
-
-_If you wish to learn more about using py-kms, please refer to the documentation [here](Getting Started.md)!_
+- For launching _py-kms_ GUI make the file `pykms_Server.py` executable with `chmod +x /path/to/folder/py-kms/pykms_Server.py`, then simply run `pykms_Server.py` by double-clicking.
 
 ## License
    - _py-kms_ is [![Unlicense](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)

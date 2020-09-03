@@ -9,17 +9,17 @@ docker run -it -d --name py3-kms \
     -e HWID=RANDOM \
     -e LOGLEVEL=INFO \
     -e LOGSIZE=2 \
-    -e LOGFILE=/var/log/py3-kms.log \
+    -e LOGFILE=/var/log/pykms_logserver.log \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
     --restart unless-stopped pykmsorg/py-kms:[TAG]
 ```
-_Make sure to insert at `[TAG]` your wanted edition! The default is `latest`, which does not include SQLLite support. For all available tag check [this](https://hub.docker.com/r/pykmsorg/py-kms/tags) out._
+_Make sure to insert at `[TAG]` your wanted edition! The default is `latest`, which does not include SQLite support. For all available tag check [this](https://hub.docker.com/r/pykmsorg/py-kms/tags)._
 Therefore you can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image.
 
 # Sqlite-web
 A web-based SQLite database browser written in Python.
-Start on http://example.com:8080/ in read-only mode for clients.db.
+Start on http://example.com:8080/ in read-only mode for _pykms_database.db_.
 
 # Options
 ```

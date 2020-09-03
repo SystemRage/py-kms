@@ -107,8 +107,8 @@ class kmsBase:
                 return 4 + (((~bodyLength & 3) + 1) & 3)
 
         def serverLogic(self, kmsRequest):
-                if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
-                        self.dbName = sql_initialize()
+                if self.srv_config['sqlite']:
+                        sql_initialize(self.srv_config['sqlite'])
 
                 pretty_printer(num_text = 15, where = "srv")
                 kmsRequest = byterize(kmsRequest)
@@ -210,8 +210,8 @@ could be detected as not genuine !{end}" %currentClientCount)
                                                     'status' : infoDict["licenseStatus"],
                                                     'product' : infoDict["skuId"]})
 
-                if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
-                        sql_update(self.dbName, infoDict)
+                if self.srv_config['sqlite']:
+                        sql_update(self.srv_config['sqlite'], infoDict)
 
                 return self.createKmsResponse(kmsRequest, currentClientCount)
 
@@ -233,8 +233,8 @@ could be detected as not genuine !{end}" %currentClientCount)
                 response['vLActivationInterval'] = self.srv_config["activation"]
                 response['vLRenewalInterval'] = self.srv_config["renewal"]
 
-                if self.srv_config['sqlite'] and self.srv_config['dbSupport']:
-                        response = sql_update_epid(self.dbName, kmsRequest, response)
+                if self.srv_config['sqlite']:
+                        response = sql_update_epid(self.srv_config['sqlite'], kmsRequest, response)
 
                 loggersrv.info("Server ePID: %s" % response["kmsEpid"].decode('utf-16le'))
                         

@@ -9,8 +9,8 @@ FROM alpine:3.8
 
 # EN: IP-address
 # RU: IP-адрес
-ENV IP		::
-# The IP address to listen on. The default is "::" (all interfaces).
+ENV IP		0.0.0.0
+# The IP address to listen on. The default is "0.0.0.0" (all interfaces).
 
 # EN: TCP-port
 # RU: TCP-порт
@@ -68,7 +68,7 @@ ENV LOGFILE		/var/log/pykms_logserver.log
 # EN: log file size in MB
 # RU: Максимальный размер Лог-файл в мегабайтах
 ENV LOGSIZE		""
-# Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.
+# Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
 # EN: Startup script
 # RU: Скрипт автозапуска

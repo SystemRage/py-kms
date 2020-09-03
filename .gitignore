@@ -4,6 +4,7 @@ pykms_logclient.log*
 pykms_newlines.txt*
 pykms_clean_newlines.txt*
 pykms_config.pickle*
+pykms_database.db*
 etrigan.log*
 
 # Byte-compiled / optimized / DLL files

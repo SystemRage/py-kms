@@ -188,13 +188,14 @@ for server OSes and Office >=5', 'def' : None, 'des' : "clientcount"},
                         'def' : 120, 'des': "activation"},
         'renewal' : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
                      'def' : 1440 * 7, 'des' : "renewal"},
-        'sql' : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Desactivated by default.',
+        'sql' : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default. \
+If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.',
                  'def' : False, 'des' : "sqlite"},
         'hwid' : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
 The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.', 'def' : "364F463A8863D35F", 'des' : "hwid"},
         'time0' : {'help' : 'Maximum inactivity time (in seconds) after which the connection with the client is closed. If \"None\" (default) serve forever.',
                    'def' : None, 'des' : "timeoutidle"},
-        'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Desactivated by default.',
+        'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
                       'def' : False, 'des' : "asyncmsg"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
@@ -202,7 +203,7 @@ The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID
 Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previous actions. \
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
                    'def' : os.path.join('.', 'pykms_logserver.log'), 'des' : "logfile"},
-        'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
+        'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
         }
 
 def server_options():
@@ -219,8 +220,8 @@ def server_options():
                                    default = srv_options['activation']['def'], help = srv_options['activation']['help'], type = int)
         server_parser.add_argument("-r", "--renewal-interval", action = "store", dest = srv_options['renewal']['des'],
                                    default = srv_options['renewal']['def'], help = srv_options['renewal']['help'], type = int)
-        server_parser.add_argument("-s", "--sqlite", action = "store_true", dest = srv_options['sql']['des'],
-                                   default = srv_options['sql']['def'], help = srv_options['sql']['help'])
+        server_parser.add_argument("-s", "--sqlite", nargs = "?", dest = srv_options['sql']['des'], const = True,
+                                   default = srv_options['sql']['def'], help = srv_options['sql']['help'], type = str)
         server_parser.add_argument("-w", "--hwid", action = "store", dest = srv_options['hwid']['des'], default = srv_options['hwid']['def'],
                                    help = srv_options['hwid']['help'], type = str)
         server_parser.add_argument("-t0", "--timeout-idle", action = "store", dest = srv_options['time0']['des'], default = srv_options['time0']['def'],
@@ -298,7 +299,6 @@ def server_options():
         except KmsParserException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
 
-
 class Etrigan_Check(Etrigan_check):
         def emit_opt_err(self, msg):
                 pretty_printer(put_text = "{reverse}{red}{bold}%s{end}" %msg, to_exit = True)
@@ -316,7 +316,7 @@ class Etrigan(Etrigan):
 
 def server_daemon():
         if 'etrigan' in srv_config.values():
-                path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pykms_config.pickle')
+                path = os.path.join('.', 'pykms_config.pickle')
 
                 if srv_config['operation'] in ['stop', 'restart', 'status'] and len(sys.argv[1:]) > 2:
                         pretty_printer(put_text = "{reverse}{red}{bold}too much arguments with etrigan '%s'. Exiting...{end}" %srv_config['operation'],
@@ -394,15 +394,18 @@ def server_check():
         srv_config['lcid'] = check_lcid(srv_config['lcid'], loggersrv.warning)
                                 
         # Check sqlite.
-        try:
-                import sqlite3            
-        except:
-                pretty_printer(log_obj = loggersrv.warning,
-                               put_text = "{reverse}{yellow}{bold}Module 'sqlite3' is not installed, database support disabled.{end}")
-                srv_config['dbSupport'] = False
-        else:
-                srv_config['dbSupport'] = True
-
+        if srv_config['sqlite']:
+                if (isinstance(srv_config['sqlite'], str)) and (not srv_config['sqlite'].lower().endswith('.db')):
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                       put_text = "{reverse}{red}{bold}Not a sqlite file (.db).{end}")
+                try:
+                        import sqlite3
+                        if isinstance(srv_config['sqlite'], bool):
+                                srv_config['sqlite'] = os.path.join('.', 'pykms_database.db')
+                except ImportError:
+                        pretty_printer(log_obj = loggersrv.warning,
+                                       put_text = "{reverse}{yellow}{bold}Module 'sqlite3' is not installed, database support disabled.{end}")
+                        srv_config['sqlite'] = False
 
         # Check other specific server options.
         list_dest = ['clientcount', 'timeoutidle']

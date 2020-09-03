@@ -1,10 +1,9 @@
 # Getting Started
-What follows are some guides how to start the `pykms_Server.py` script, which provides the server.
+What follows are some guides how to start the `pykms_Server.py` script, which provides the emulated server.
 
 ## Running as a service
 ***
-
-You can simply manage a daemon that runs as a background process. This can be achieved by using any of the guides below or by writing your own solution.
+You can simply manage a daemon that runs as a background process. This can be achieved by using any of the notes below or by writing your own solution.
 
 ### Docker
 ![docker-auto](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
@@ -12,19 +11,20 @@ You can simply manage a daemon that runs as a background process. This can be ac
 ![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
 ![docker-size](https://img.shields.io/docker/image-size/pykmsorg/py-kms)
 
-If you wish to get _py-kms_ just up and running without installing any dependencies or writing own scripts: Just use Docker! Docker also solves problems regarding the explicit IPv4 and IPv6 usage: It just supports both. The following
+If you wish to get _py-kms_ just up and running without installing any dependencies or writing own scripts: Just use Docker !
+Docker also solves problems regarding the explicit IPv4 and IPv6 usage (it just supports both). The following
 command will download, "install" and start _py-kms_ and also keep it alive after any service disruption.
 ```bash
 docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
 ```
 
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
-* `latest`, currently the same like minimal...
-* `minimal`, wich is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support!_
+* `latest`, currently the same like `minimal`.
+* `minimal`, which is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support !_
 * `python3`, which is fully configurable and equipped with `sqlite` support and a web interface for management.
 
 If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
-latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
+latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out !
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
@@ -114,14 +114,19 @@ if __name__ == '__main__':
 Now in a command prompt type `C:\Windows\Python27\python.exe kms-winservice.py install` to install the service. Display all the services with `services.msc` and find the service associated with _py-kms_, change the startup type
 from `manual` to `auto`. Finally `Start` the service. If this approach fails, you can try to use [Non-Sucking Service Manager](https://nssm.cc/) or Task Scheduler as described [here](https://blogs.esri.com/esri/arcgis/2013/07/30/scheduling-a-scrip/).
 
-## Manual execution
+### Other Platforms
+They might be useful to you:
+-  [FreeNAS](https://github.com/SystemRage/py-kms/issues/56)
+-  [FreeBSD](https://github.com/SystemRage/py-kms/issues/89)
+
+## Manual Execution
 ***
 
 ### Dependencies
 - Python 3.x.
 - Tkinter module (for the GUI).
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
-- It can use the `sqlite3` module so you can use the database function, storing activation data so it can be recalled again.
+- It can use the `sqlite3` module, storing activation data in a database so it can be recalled again.
 - Installation example on Ubuntu / Mint:
     - `sudo apt-get update`
     - `sudo apt-get install python3-tk python3-pip`
@@ -146,7 +151,7 @@ user@host ~ $ ip addr
     inet6 ****::****:****:****:****/64 scope link noprefixroute 
        valid_lft forever preferred_lft forever
 ```
-In the example above is `192.168.1.102` the ip we want to listen on, so it is this command (**note you can omit the ip AND port specification if you just wish to listen on all interfaces**):
+In the example above is `192.168.1.102` the ip we want to listen on, so it is this command (**note you can omit the ip AND port specification if you just wish to listen on all interfaces with port 1688**):
 
 ```
 user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
@@ -155,8 +160,8 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
 To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
 Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
 
-#### Notes
-The following are just some quick notes - for a more detailed list of parameters see [here](Usage.md).
+### Quick Guide
+The following are just some brief notes about parameters handling. For a more detailed description see [here](Usage.md).
 
 - To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
 - To get the HWID from any server use the client, for example type: `python3 pykms_Client.py :: 1688 -m Windows8.1 -V INFO`.

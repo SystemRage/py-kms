@@ -59,7 +59,7 @@ clt_options = {
                   'def' : None, 'des' : "cmid"},
         'name' : {'help' : 'Use this flag to manually specify an ASCII machine name to use. If no machine name is specified a random one \
 will be generated.', 'def' : None, 'des' : "machine"},
-        'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Desactivated by default.',
+        'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
                       'def' : False, 'des' : "asyncmsg"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
                     'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
@@ -67,7 +67,7 @@ will be generated.', 'def' : None, 'des' : "machine"},
 Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previous actions. \
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
                    'def' : os.path.join('.', 'pykms_logclient.log'), 'des' : "logfile"},
-        'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Desactivated by default.', 'def' : 0, 'des': "logsize"},
+        'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
         }
 
 def client_options():

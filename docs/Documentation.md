@@ -1,5 +1,5 @@
 # Documentation
-What follows are some detailed explanations how some parts work.
+What follows are some detailed explanations how the KMS infrastructure works.
 
 ## Understanding Key Management Service
 KMS activates Microsoft products on a local network, eliminating the need for individual computers to connect to Microsoft. To do this, KMS uses a client–server topology. A KMS client locates a KMS server by using DNS or a static
@@ -324,7 +324,7 @@ Where command line options are:
     </tbody>
 </table>
 
-## Further references
+## Further References
 * <sup>[1]</sup> https://forums.mydigitallife.net/threads/emulated-kms-servers-on-non-windows-platforms.50234
 * <sup>[2]</sup> https://forums.mydigitallife.net/threads/discussion-microsoft-office-2019.75232
 * <sup>[3]</sup> https://forums.mydigitallife.net/threads/miscellaneous-kms-related-developments.52594
