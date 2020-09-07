@@ -66,7 +66,7 @@ Default setting is serve forever (no timeout).
 the overhead involved becomes more expensive, so using this option you enable printing (pretty / logging) messages 
 asynchronously reducing time-consuming. Deactivated by default.
 
-    -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
+    -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MININFO}>
 > Use this flag to set a logging loglevel. The default is _ERROR_.
 example:
 ```
@@ -162,7 +162,7 @@ You can also put further parameters as defined below:
     -m or --mode <{WindowsVista, Windows7, Windows8, Windows8.1, Windows10, Office2010, Office2013, Office2016, Office2019}>
 > Use this flag to manually specify a Microsoft _PRODUCTNAME_ for testing the KMS server. Default is Windows8.1.
 
-   -c or --cmid <CMID>
+    -c or --cmid <CMID>
 > Use this flag to manually specify a CMID to use. If no CMID is specified, a random one will be generated.
 The Microsoft KMS host machine identifies KMS clients with a unique Client Machine ID 
 (CMID,   example: ae3a27d1-b73a-4734-9878-70c949815218). For a KMS client to successfully activate, the KMS server 
@@ -179,7 +179,7 @@ activate regardless of CMID being unique for a subset of specific machines or no
     -y or --async-msg
 > Prints pretty / logging messages asynchronously. Deactivated by default.
 
-    -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MINI}>
+    -V or --loglevel <{CRITICAL, ERROR, WARNING, INFO, DEBUG, MININFO}>
 > Use this flag to set a logging loglevel. The default is _ERROR_.
 
     -F or --logfile <LOGFILE>

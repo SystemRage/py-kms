@@ -80,9 +80,9 @@ class KmsGui(tk.Tk):
 
                 self.customcolors = { 'black'   : '#000000',
                                       'white'   : '#FFFFFF',
-                                      'green'   : '#90EE90',
+                                      'green'   : '#00EE76',
                                       'yellow'  : '#FFFF00',
-                                      'magenta' : '#DA70D6',
+                                      'magenta' : '#CD00CD',
                                       'orange'  : '#FFA500',
                                       'red'     : '#FF4500',
                                       'blue'    : '#1E90FF',

@@ -66,8 +66,8 @@ class LevelFormatter(logging.Formatter):
                         self.formatters[loglevel] = logging.Formatter(formats[loglevel], datefmt = self.dfmt)
 
         def colorize(self, formats, loglevel):
-                if loglevel == logging.MINI:
-                        frmt = '{gray}' + formats[loglevel] + '{end}'
+                if loglevel == logging.MININFO:
+                        frmt = '{orange}' + formats[loglevel] + '{end}'
                 elif loglevel == logging.CRITICAL:
                         frmt = '{magenta}{bold}' + formats[loglevel] + '{end}'
                 elif loglevel == logging.ERROR:
@@ -153,7 +153,8 @@ class MultiProcessingLogHandler(logging.Handler):
 
 def logger_create(log_obj, config, mode = 'a'):
         # Create new level.
-        add_logging_level('MINI', logging.CRITICAL + 10)
+        num_lvl_mininfo = 25
+        add_logging_level('MININFO', num_lvl_mininfo)
         log_handlers = []
 
         # Configure visualization.
@@ -188,13 +189,19 @@ def logger_create(log_obj, config, mode = 'a'):
         levelnum = [k for k in levelnames if k != 0]
 
         frmt_gen = '%(asctime)s %(levelname)-8s %(message)s'
-        frmt_std = '%(name)s %(asctime)s %(levelname)-8s %(message)s'
-        frmt_min = '[%(asctime)s] [%(levelname)-8s]   %(host)s   %(status)s   %(product)s   %(message)s'
+        frmt_std = '%(asctime)s %(levelname)-8s %(message)s'
+        frmt_min = '%(asctime)s %(levelname)-8s %(host)s   %(status)s   %(product)s  %(message)s'
+        frmt_name = '%(name)s '
+
+        from pykms_Server import serverthread
+        if serverthread.with_gui:
+                frmt_std = frmt_name + frmt_std
+                frmt_min = frmt_name + frmt_min
 
         def apply_formatter(levelnum, formats, handler, color = False):
                 levelformdict = {}
                 for num in levelnum:
-                        if num != logging.CRITICAL + 10:
+                        if num != num_lvl_mininfo:
                                 levelformdict[num] = formats[0]
                         else:
                                 levelformdict[num] = formats[1]
@@ -220,25 +227,32 @@ def logger_create(log_obj, config, mode = 'a'):
         log_obj.setLevel(config['loglevel'])
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
+def check_dir(path, where, log_obj = None, argument = '-F/--logfile', typefile = '.log'):
+        filename = os.path.basename(path)
+        pathname = os.path.dirname(path)
+        extension = os.path.splitext(filename)[1]
+
+        if pathname == os.sep:
+                pathname += filename
+
+        msg_dir  = "{reverse}{red}{bold}argument `%s`: invalid directory: '%s'. Exiting...{end}"
+        msg_fil = "{reverse}{red}{bold}argument `%s`: not a %s file, invalid extension: '%s'. Exiting...{end}"
+
+        if not os.path.isdir(pathname):
+                if path.count('/') == 0:
+                        pathname = filename
+                pretty_printer(log_obj = log_obj, where = where, to_exit = True,
+                               put_text = msg_dir %(argument, pathname))
+        elif not extension.lower() == typefile:
+                pretty_printer(log_obj = log_obj, where = where, to_exit = True,
+                               put_text = msg_fil %(argument, typefile, extension))
 
 def check_logfile(optionlog, defaultlog, where):
         if not isinstance(optionlog, list):
                 optionlog = [optionlog]
 
         lenopt = len(optionlog)
-        msg_dir  = "{reverse}{red}{bold}argument `-F/--logfile`: invalid directory: '%s'. Exiting...{end}"
         msg_long = "{reverse}{red}{bold}argument `-F/--logfile`: too much arguments. Exiting...{end}"
-        msg_log = "{reverse}{red}{bold}argument `-F/--logfile`: not a log file, invalid extension: '%s'. Exiting...{end}"
-
-        def checkdir(path):
-                filename = os.path.basename(path)
-                pathname = os.path.dirname(path)
-                if not os.path.isdir(pathname):
-                        if path.count('/') == 0:
-                                pathname = filename
-                        pretty_printer(put_text = msg_dir %pathname, where = where, to_exit = True)
-                elif not filename.lower().endswith('.log'):
-                        pretty_printer(put_text = msg_log %filename, where = where, to_exit = True)
 
         if lenopt > 2:
                 pretty_printer(put_text = msg_long, where = where, to_exit = True)
@@ -249,13 +263,13 @@ def check_logfile(optionlog, defaultlog, where):
                         optionlog.append(defaultlog)
                 elif lenopt == 2:
                         # check directory path.
-                        checkdir(optionlog[1])
+                        check_dir(optionlog[1], where)
         else:
                 if lenopt == 2:
                         pretty_printer(put_text = msg_long, where = where, to_exit = True)
                 elif lenopt == 1 and (any(opt not in ['STDOUT', 'FILEOFF'] for opt in optionlog)):
                         # check directory path.
-                        checkdir(optionlog[0])
+                        check_dir(optionlog[0], where)
 
         return optionlog
 

@@ -107,9 +107,6 @@ class kmsBase:
                 return 4 + (((~bodyLength & 3) + 1) & 3)
 
         def serverLogic(self, kmsRequest):
-                if self.srv_config['sqlite']:
-                        sql_initialize(self.srv_config['sqlite'])
-
                 pretty_printer(num_text = 15, where = "srv")
                 kmsRequest = byterize(kmsRequest)
                 loggersrv.debug("KMS Request Bytes: \n%s\n" % justify(deco(binascii.b2a_hex(enco(str(kmsRequest), 'latin-1')), 'latin-1')))                         
@@ -205,17 +202,18 @@ could be detected as not genuine !{end}" %currentClientCount)
                 loggersrv.info("License Status: %s" % infoDict["licenseStatus"])
                 loggersrv.info("Request Time: %s" % local_dt.strftime('%Y-%m-%d %H:%M:%S %Z (UTC%z)'))
                 
-                if self.srv_config['loglevel'] == 'MINI':
-                        loggersrv.mini("", extra = {'host': socket.gethostname() + " [" + self.srv_config["ip"] + "]",
-                                                    'status' : infoDict["licenseStatus"],
-                                                    'product' : infoDict["skuId"]})
-
+                if self.srv_config['loglevel'] == 'MININFO':
+                        loggersrv.mininfo("", extra = {'host': str(self.srv_config['raddr']),
+                                                       'status' : infoDict["licenseStatus"],
+                                                       'product' : infoDict["skuId"]})
+                # Create database.
                 if self.srv_config['sqlite']:
+                        sql_initialize(self.srv_config['sqlite'])
                         sql_update(self.srv_config['sqlite'], infoDict)
 
-                return self.createKmsResponse(kmsRequest, currentClientCount)
+                return self.createKmsResponse(kmsRequest, currentClientCount, appName)
 
-        def createKmsResponse(self, kmsRequest, currentClientCount):
+        def createKmsResponse(self, kmsRequest, currentClientCount, appName):
                 response = self.kmsResponseStruct()
                 response['versionMinor'] = kmsRequest['versionMinor']
                 response['versionMajor'] = kmsRequest['versionMajor']
@@ -225,16 +223,17 @@ could be detected as not genuine !{end}" %currentClientCount)
                                                             self.srv_config["lcid"]).encode('utf-16le')
                 else:
                         response["kmsEpid"] = self.srv_config["epid"].encode('utf-16le')
-                        
+
                 response['clientMachineId'] = kmsRequest['clientMachineId']
-                # rule: timeserver - 4h <= timeclient <= timeserver + 4h, check if is satisfied.
-                response['responseTime'] = kmsRequest['requestTime'] 
+                # rule: timeserver - 4h <= timeclient <= timeserver + 4h, check if is satisfied (TODO).
+                response['responseTime'] = kmsRequest['requestTime']
                 response['currentClientCount'] = currentClientCount
                 response['vLActivationInterval'] = self.srv_config["activation"]
                 response['vLRenewalInterval'] = self.srv_config["renewal"]
 
+                # Update database epid.
                 if self.srv_config['sqlite']:
-                        response = sql_update_epid(self.srv_config['sqlite'], kmsRequest, response)
+                        sql_update_epid(self.srv_config['sqlite'], kmsRequest, response, appName)
 
                 loggersrv.info("Server ePID: %s" % response["kmsEpid"].decode('utf-16le'))
                         

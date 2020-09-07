@@ -54,14 +54,15 @@ def justify(astring, indent = 35, break_every = 100):
     return justy
 
 ##----------------------------------------------------------------------------------------------------------------------------------------------------
-ColorMap = {'gray'       : '\x1b[90m',
+ColorMap = {'black'      : '\x1b[90m',
             'red'        : '\x1b[91m',
-            'green'      : '\x1b[92m',
+            'green'      : '\x1b[38;2;0;238;118m', # '\x1b[92m'
             'yellow'     : '\x1b[93m',
             'blue'       : '\x1b[94m',
-            'magenta'    : '\x1b[95m',
+            'magenta'    : '\x1b[38;2;205;0;205m', # '\x1b[95m'
             'cyan'       : '\x1b[96m',
-            'white'      : '\x1b[97m'
+            'white'      : '\x1b[97m',
+            'orange'     : '\x1b[38;2;255;165;0m'
             }
 
 ExtraMap = {'end'        : '\x1b[0m',

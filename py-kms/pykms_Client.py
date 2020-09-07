@@ -62,7 +62,7 @@ will be generated.', 'def' : None, 'des' : "machine"},
         'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
                       'def' : False, 'des' : "asyncmsg"},
         'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
-                    'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MINI"]},
+                    'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MININFO"]},
         'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logclient.log\". \
 Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previous actions. \
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
@@ -168,7 +168,7 @@ def client_update():
 def client_create():
         loggerclt.info("Connecting to %s on port %d..." % (clt_config['ip'], clt_config['port']))
         try:
-                s = socket.create_connection((clt_config['ip'], clt_config['port']))
+                clt_sock = socket.create_connection((clt_config['ip'], clt_config['port']))
                 loggerclt.info("Connection successful !")
         except (socket.gaierror, socket.error) as e:
                 pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
@@ -181,12 +181,12 @@ def client_create():
         try:
                 loggerclt.info("Sending RPC bind request...")
                 pretty_printer(num_text = [-1, 1], where = "clt")
-                s.send(RPC_Bind)
+                clt_sock.send(RPC_Bind)
         except socket.error as e:
                 pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
         try:
-                bindResponse = s.recv(1024)
+                bindResponse = clt_sock.recv(1024)
                 if bindResponse == '' or not bindResponse:
                         pretty_printer(log_obj = loggerclt.warning, to_exit = True, where = "clt",
                                        put_text = "{reverse}{yellow}{bold}No data received.{end}")
@@ -206,12 +206,12 @@ def client_create():
                         loggerclt.info("Sending RPC activation request...")
                         RPC_Actv = enco(str(requester.generateRequest()), 'latin-1')
                         pretty_printer(num_text = [-1, 12], where = "clt")
-                        s.send(RPC_Actv)
+                        clt_sock.send(RPC_Actv)
                 except socket.error as e:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
                                        put_text = "{reverse}{red}{bold}While sending: %s{end}" %str(e))
                 try:
-                        response = s.recv(1024)
+                        response = clt_sock.recv(1024)
                         pretty_printer(num_text = [-4, 20], where = "clt")
                 except socket.error as e:
                         pretty_printer(log_obj = loggerclt.error, to_exit = True, where = "clt",
@@ -232,10 +232,10 @@ def client_create():
                 loggerclt.info("KMS VL Activation Interval: %s" % kmsResp['vLActivationInterval'])
                 loggerclt.info("KMS VL Renewal Interval: %s" % kmsResp['vLRenewalInterval'])
                 
-                if clt_config['loglevel'] == 'MINI':
-                        loggerclt.mini("", extra = {'host': socket.gethostname() + " [" + clt_config["ip"] + "]",
-                                                    'status' : "Activated",
-                                                    'product' : clt_config["mode"]})
+                if clt_config['loglevel'] == 'MININFO':
+                        loggerclt.mininfo("", extra = {'host': str(clt_sock.getpeername()),
+                                                       'status' : kmsBase.licenseStates[requester.srv_config['KMSClientLicenseStatus']],
+                                                       'product' : clt_config["mode"]})
 
                 pretty_printer(num_text = 21, where = "clt")
                 
@@ -280,7 +280,7 @@ def createKmsRequestBase():
         pretty_printer(num_text = 9, where = "clt")
         requestDict = byterize(requestDict)
         loggerclt.debug("Request Base Dictionary: \n%s\n" % justify(requestDict.dump(print_to_stdout = False)))
-        
+
         return requestDict
 
 def createKmsRequest():

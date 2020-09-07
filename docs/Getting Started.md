@@ -166,7 +166,7 @@ The following are just some brief notes about parameters handling. For a more de
 - To generate a random HWID use `-w` option: `python3 pykms_Server.py -w RANDOM`.
 - To get the HWID from any server use the client, for example type: `python3 pykms_Client.py :: 1688 -m Windows8.1 -V INFO`.
 - To change your logfile path use `-F` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V DEBUG`.
-- To view a minimal set of logging information use `-V MINI` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V MINI`.
+- To view a minimal set of logging information use `-V MININFO` option, for example: `python3 pykms_Server.py -F /path/to/your/logfile.log -V MININFO`.
 - To redirect logging on stdout use `-F STDOUT` option, for example: `python3 pykms_Server.py -F STDOUT -V DEBUG`.
 - You can create logfile and view logging information on stdout at the same time with `-F FILESTDOUT` option, for example: `python3 pykms_Server.py -F FILESTDOUT /path/to/your/logfile.log -V DEBUG`.
 - With `-F STDOUTOFF` you disable all stdout messages (but a logfile will be created), for example: `python3 pykms_Server.py -F STDOUTOFF /path/to/your/logfile.log -V DEBUG`.
