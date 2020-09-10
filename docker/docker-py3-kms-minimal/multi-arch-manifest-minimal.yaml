@@ -1,20 +1,20 @@
-image: realsimonmicro/py-kms-multiarch:minimal
+image: pykmsorg/py-kms:minimal
 manifests:
-  - image: realsimonmicro/py-kms-multiarch:minimal-amd64
+  - image: pykmsorg/py-kms:minimal-amd64
     platform:
       architecture: amd64
       os: linux
-  - image: realsimonmicro/py-kms-multiarch:minimal-arm32v6
+  - image: pykmsorg/py-kms:minimal-arm32v6
     platform:
       architecture: arm
       os: linux
       variant: v6
-  - image: realsimonmicro/py-kms-multiarch:minimal-arm32v7
+  - image: pykmsorg/py-kms:minimal-arm32v7
     platform:
       architecture: arm
       os: linux
       variant: v7
-  - image: realsimonmicro/py-kms-multiarch:minimal-arm64v8
+  - image: pykmsorg/py-kms:minimal-arm64v8
     platform:
       architecture: arm64
       os: linux
