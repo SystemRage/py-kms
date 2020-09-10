@@ -4,6 +4,11 @@ manifests:
     platform:
       architecture: amd64
       os: linux
+  - image: realsimonmicro/py-kms-multiarch:minimal-arm32v6
+    platform:
+      architecture: arm
+      os: linux
+      variant: v6
   - image: realsimonmicro/py-kms-multiarch:minimal-arm32v7
     platform:
       architecture: arm
