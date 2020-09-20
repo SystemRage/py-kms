@@ -14,16 +14,16 @@ import socketserver
 import queue as Queue
 import selectors
 from time import monotonic as time
-import ipaddress
 
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
 from pykms_Misc import check_setup, check_lcid, check_dir
 from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
-from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals
-from pykms_Format import enco, deco, pretty_printer
+from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals, kms_parser_check_connect
+from pykms_Format import enco, deco, pretty_printer, justify
 from Etrigan import Etrigan, Etrigan_parser, Etrigan_check, Etrigan_job
+from pykms_Connect import MultipleListener
 
 srv_version             = "py-kms_2020-07-01"
 __license__             = "The Unlicense"
@@ -35,9 +35,8 @@ srv_config = {}
 ##---------------------------------------------------------------------------------------------------------------------------------------------------------
 class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
         daemon_threads = True
-        allow_reuse_address = True
 
-        def __init__(self, server_address, RequestHandlerClass, bind_and_activate = True):
+        def __init__(self, server_address, RequestHandlerClass, bind_and_activate = True, want_dual = False):
                 socketserver.BaseServer.__init__(self, server_address, RequestHandlerClass)
                 self.__shutdown_request = False
                 self.r_service, self.w_service = socket.socketpair()
@@ -47,24 +46,27 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                 else:
                         self._ServerSelector = selectors.SelectSelector
 
-                try:
-                        ip_ver = ipaddress.ip_address(server_address[0])
-                except ValueError as e:
-                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
-                                       put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
-                if ip_ver.version == 4:
-                        self.address_family = socket.AF_INET
-                elif ip_ver.version == 6:
-                        self.address_family = socket.AF_INET6
-
-                self.socket = socket.socket(self.address_family, self.socket_type)
                 if bind_and_activate:
                         try:
-                                self.server_bind()
-                                self.server_activate()
-                        except:
-                                self.server_close()
-                                raise
+                                self.multisock = MultipleListener(server_address, want_dual = want_dual)
+                        except Exception as e:
+                                if want_dual and str(e) == "dualstack_ipv6 not supported on this platform":
+                                        try:
+                                                pretty_printer(log_obj = loggersrv.warning,
+                                                               put_text = "{reverse}{yellow}{bold}%s. Creating not dualstack sockets...{end}" %str(e))
+                                                self.multisock = MultipleListener(server_address, want_dual = False)
+                                        except Exception as e:
+                                                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                                               put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
+                                else:
+                                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                                       put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e))
+
+                        if self.multisock.cant_dual:
+                                delim = ('' if len(self.multisock.cant_dual) == 1 else ', ')
+                                pretty_printer(log_obj = loggersrv.warning,
+                                               put_text = "{reverse}{yellow}{bold}IPv4 [%s] can't be dualstack{end}" %delim.join(self.multisock.cant_dual))
+
 
         def pykms_serve(self):
                 """ Mixing of socketserver serve_forever() and handle_request() functions,
@@ -74,7 +76,7 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                 """
                 # Support people who used socket.settimeout() to escape
                 # pykms_serve() before self.timeout was available.
-                timeout = self.socket.gettimeout()
+                timeout = self.multisock.gettimeout()
                 if timeout is None:
                         timeout = self.timeout
                 elif self.timeout is not None:
@@ -85,7 +87,7 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                 try:
                         # Wait until a request arrives or the timeout expires.
                         with self._ServerSelector() as selector:
-                                selector.register(fileobj = self, events = selectors.EVENT_READ)
+                                self.multisock.register(selector)
                                 # self-pipe trick.
                                 selector.register(fileobj = self.r_service.fileno(), events = selectors.EVENT_READ)
 
@@ -101,7 +103,9 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
                                                                 return self.handle_timeout()
                                         else:
                                                 for key, mask in ready:
-                                                        if key.fileobj is self:
+                                                        if key.fileobj in self.multisock.filenos():
+                                                                self.socket = self.multisock.sockmap[key.fileobj]
+                                                                self.server_address = self.socket.getsockname()
                                                                 self._handle_request_noblock()
                                                         elif key.fileobj is self.r_service.fileno():
                                                                 # only to clean buffer.
@@ -112,6 +116,9 @@ class KeyServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
         def shutdown(self):
                 self.__shutdown_request = True
+
+        def server_close(self):
+                self.multisock.close()
 
         def handle_timeout(self):
                 pretty_printer(log_obj = loggersrv.error, to_exit = True,
@@ -176,34 +183,39 @@ loggersrv = logging.getLogger('logsrv')
 
 # 'help' string - 'default' value - 'dest' string.
 srv_options = {
-        'ip' : {'help' : 'The IP address (IPv4 or IPv6) to listen on. The default is \"0.0.0.0\" (all interfaces).', 'def' : "0.0.0.0", 'des' : "ip"},
-        'port' : {'help' : 'The network port to listen on. The default is \"1688\".', 'def' : 1688, 'des' : "port"},
-        'epid' : {'help' : 'Use this option to manually specify an ePID to use. If no ePID is specified, a random ePID will be auto generated.',
-                  'def' : None, 'des' : "epid"},
-        'lcid' : {'help' : 'Use this option to manually specify an LCID for use with randomly generated ePIDs. Default is \"1033\" (en-us)',
-                  'def' : 1033, 'des' : "lcid"},
-        'count' : {'help' : 'Use this option to specify the current client count. A number >=25 is required to enable activation of client OSes; \
+        'ip'         : {'help' : 'The IP address (IPv4 or IPv6) to listen on. The default is \"0.0.0.0\" (all interfaces).', 'def' : "0.0.0.0", 'des' : "ip"},
+        'port'       : {'help' : 'The network port to listen on. The default is \"1688\".', 'def' : 1688, 'des' : "port"},
+        'epid'       : {'help' : 'Use this option to manually specify an ePID to use. If no ePID is specified, a random ePID will be auto generated.',
+                        'def' : None, 'des' : "epid"},
+        'lcid'       : {'help' : 'Use this option to manually specify an LCID for use with randomly generated ePIDs. Default is \"1033\" (en-us)',
+                        'def' : 1033, 'des' : "lcid"},
+        'count'      : {'help' : 'Use this option to specify the current client count. A number >=25 is required to enable activation of client OSes; \
 for server OSes and Office >=5', 'def' : None, 'des' : "clientcount"},
         'activation' : {'help' : 'Use this option to specify the activation interval (in minutes). Default is \"120\" minutes (2 hours).',
                         'def' : 120, 'des': "activation"},
-        'renewal' : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
-                     'def' : 1440 * 7, 'des' : "renewal"},
-        'sql' : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default. \
-If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.',
-                 'def' : False, 'des' : "sqlite"},
-        'hwid' : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
-The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.', 'def' : "364F463A8863D35F", 'des' : "hwid"},
-        'time0' : {'help' : 'Maximum inactivity time (in seconds) after which the connection with the client is closed. If \"None\" (default) serve forever.',
-                   'def' : None, 'des' : "timeoutidle"},
-        'asyncmsg' : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
-                      'def' : False, 'des' : "asyncmsg"},
-        'llevel' : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
-                    'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MININFO"]},
-        'lfile' : {'help' : 'Use this option to set an output log file. The default is \"pykms_logserver.log\". \
+        'renewal'    : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
+                        'def' : 1440 * 7, 'des' : "renewal"},
+        'sql'        : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default. \
+If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.', 'def' : False, 'des' : "sqlite"},
+        'hwid'       : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
+The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.',
+                        'def' : "364F463A8863D35F", 'des' : "hwid"},
+        'time0'      : {'help' : 'Maximum inactivity time (in seconds) after which the connection with the client is closed. If \"None\" (default) serve forever.',
+                        'def' : None, 'des' : "timeoutidle"},
+        'asyncmsg'   : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
+                        'def' : False, 'des' : "asyncmsg"},
+        'llevel'     : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
+                        'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MININFO"]},
+        'lfile'      : {'help' : 'Use this option to set an output log file. The default is \"pykms_logserver.log\". \
 Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previous actions. \
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
-                   'def' : os.path.join('.', 'pykms_logserver.log'), 'des' : "logfile"},
-        'lsize' : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
+                        'def' : os.path.join('.', 'pykms_logserver.log'), 'des' : "logfile"},
+        'lsize'      : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
+        'listen'     : {'help' : 'Adds multiple listening address / port couples.', 'des': "listen"},
+        'backlog'    : {'help' : 'Specifies the maximum length of the queue of pending connections. Default is \"5\".', 'def' : 5, 'des': "backlog"},
+        'reuse'      : {'help' : 'Allows binding / listening to the same address and port. Activated by default.', 'def' : True, 'des': "reuse"},
+        'dual'       : {'help' : 'Allows binding / listening to an IPv6 address also accepting connections via IPv4. Deactivated by default.',
+                        'def' : False, 'des': "dual"}
         }
 
 def server_options():
@@ -237,6 +249,7 @@ def server_options():
 
         server_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
+        ## Daemon (Etrigan) parsing.
         daemon_parser = KmsParser(description = "daemon options inherited from Etrigan", add_help = False)
         daemon_subparser = daemon_parser.add_subparsers(dest = "mode")
 
@@ -245,56 +258,113 @@ def server_options():
                                     help = "Enable py-kms GUI usage.")
         etrigan_parser = Etrigan_parser(parser = etrigan_parser)
 
+        ## Connection parsing.
+        connection_parser = KmsParser(description = "connect options", add_help = False)
+        connection_subparser = connection_parser.add_subparsers(dest = "mode")
+
+        connect_parser = connection_subparser.add_parser("connect", add_help = False)
+        connect_parser.add_argument("-n", "--listen", action = "append", dest = srv_options['listen']['des'], default = [],
+                                    help = srv_options['listen']['help'], type = str)
+        connect_parser.add_argument("-b", "--backlog", action = "append", dest = srv_options['backlog']['des'], default = [],
+                                    help = srv_options['backlog']['help'], type = int)
+        connect_parser.add_argument("-u", "--no-reuse", action = "append_const", dest = srv_options['reuse']['des'], const = False, default = [],
+                                    help = srv_options['reuse']['help'])
+        connect_parser.add_argument("-d", "--dual", action = "store_true", dest = srv_options['dual']['des'], default = srv_options['dual']['def'],
+                                    help = srv_options['reuse']['help'])
+
         try:
                 userarg = sys.argv[1:]
 
                 # Run help.
                 if any(arg in ["-h", "--help"] for arg in userarg):
-                        KmsParserHelp().printer(parsers = [server_parser, daemon_parser, etrigan_parser])
+                        KmsParserHelp().printer(parsers = [server_parser, (daemon_parser, etrigan_parser),
+                                                           (connection_parser, connect_parser)])
 
                 # Get stored arguments.
                 pykmssrv_zeroarg, pykmssrv_onearg = kms_parser_get(server_parser)
                 etrigan_zeroarg, etrigan_onearg = kms_parser_get(etrigan_parser)
-                pykmssrv_zeroarg += ['etrigan'] # add subparser
+                connect_zeroarg, connect_onearg = kms_parser_get(connect_parser)
+                subpars = ['etrigan', 'connect']
+                pykmssrv_zeroarg += subpars # add subparsers
 
-                # Set defaults for config.
+                exclude_kms = ['-F', '--logfile']
+                exclude_dup = ['-n', '--listen', '-b', '--backlog', '-u', '--no-reuse']
+
+                # Set defaults for server dict config.
                 # example case:
                 #               python3 pykms_Server.py
                 srv_config.update(vars(server_parser.parse_args([])))
 
-                try:
-                        # Eventually set daemon options for dict server config.
-                        pos = sys.argv[1:].index('etrigan')
-                        # example cases:
-                        #               python3 pykms_Server.py etrigan start
-                        #               python3 pykms_Server.py etrigan start --daemon_optionals
-                        #               python3 pykms_Server.py 1.2.3.4 etrigan start
-                        #               python3 pykms_Server.py 1.2.3.4 etrigan start --daemon_optionals
-                        #               python3 pykms_Server.py 1.2.3.4 1234 etrigan start
-                        #               python3 pykms_Server.py 1.2.3.4 1234 etrigan start --daemon_optionals
-                        #               python3 pykms_Server.py --pykms_optionals etrigan start
-                        #               python3 pykms_Server.py --pykms_optionals etrigan start --daemon_optionals
-                        #               python3 pykms_Server.py 1.2.3.4 --pykms_optionals etrigan start
-                        #               python3 pykms_Server.py 1.2.3.4 --pykms_optionals etrigan start --daemon_optionals
-                        #               python3 pykms_Server.py 1.2.3.4 1234 --pykms_optionals etrigan start
-                        #               python3 pykms_Server.py 1.2.3.4 1234 --pykms_optionals etrigan start --daemon_optionals
+                if all(pars in userarg for pars in subpars):
+                        ## Set `daemon options` and `connect options` for server dict config.
+                        pos_etr = userarg.index('etrigan')
+                        pos_con = userarg.index('connect')
+                        pos = min(pos_etr, pos_con)
 
-                        kms_parser_check_optionals(userarg[0:pos], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = ['-F', '--logfile'])
-                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0:pos], force_parse = True)
-                        kms_parser_check_optionals(userarg[pos:], etrigan_zeroarg, etrigan_onearg, msg = 'optional etrigan')
-                        kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos:], msg = 'positional etrigan')
+                        kms_parser_check_optionals(userarg[0 : pos], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
+                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0 : pos], force_parse = True)
 
-                except ValueError:
+                        if pos == pos_etr:
+                                # example case:
+                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals] \
+                                #               connect [--connect_optionals]
+                                kms_parser_check_optionals(userarg[pos : pos_con], etrigan_zeroarg, etrigan_onearg,
+                                                           msg = 'optional etrigan')
+                                kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos : pos_con],
+                                                             msg = 'positional etrigan')
+                                kms_parser_check_optionals(userarg[pos_con:], connect_zeroarg, connect_onearg,
+                                                           msg = 'optional connect', exclude_opt_dup = exclude_dup)
+                                kms_parser_check_positionals(srv_config, connection_parser.parse_args, arguments = userarg[pos_con:],
+                                                             msg = 'positional connect')
+                        elif pos == pos_con:
+                                # example case:
+                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals] etrigan \
+                                #               daemon_positional [--daemon_optionals]
+                                kms_parser_check_optionals(userarg[pos : pos_etr], connect_zeroarg, connect_onearg,
+                                                           msg = 'optional connect', exclude_opt_dup = exclude_dup)
+                                kms_parser_check_positionals(srv_config, connection_parser.parse_args, arguments = userarg[pos : pos_etr],
+                                                             msg = 'positional connect')
+                                kms_parser_check_optionals(userarg[pos_etr:], etrigan_zeroarg, etrigan_onearg,
+                                                           msg = 'optional etrigan')
+                                kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos_etr:],
+                                                             msg = 'positional etrigan')
+
+                        srv_config['mode'] = 'etrigan+connect'
+
+                elif any(pars in userarg for pars in subpars):
+                        if 'etrigan' in userarg:
+                                pos = userarg.index('etrigan')
+                        elif 'connect' in userarg:
+                                pos = userarg.index('connect')
+
+                        kms_parser_check_optionals(userarg[0 : pos], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
+                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0 : pos], force_parse = True)
+
+                        if 'etrigan' in userarg:
+                                ## Set daemon options for server dict config.
+                                # example case:
+                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals]
+                                kms_parser_check_optionals(userarg[pos:], etrigan_zeroarg, etrigan_onearg,
+                                                           msg = 'optional etrigan')
+                                kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos:],
+                                                             msg = 'positional etrigan')
+
+                        elif 'connect' in userarg:
+                                ## Set connect options for server dict config.
+                                # example case:
+                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals]
+                                kms_parser_check_optionals(userarg[pos:], connect_zeroarg, connect_onearg,
+                                                           msg = 'optional connect', exclude_opt_dup = exclude_dup)
+                                kms_parser_check_positionals(srv_config, connection_parser.parse_args, arguments = userarg[pos:],
+                                                             msg = 'positional connect')
+                else:
                         # Update pykms options for dict server config.
-                        # example cases:
-                        #               python3 pykms_Server.py 1.2.3.4
-                        #               python3 pykms_Server.py 1.2.3.4 --pykms_optionals
-                        #               python3 pykms_Server.py 1.2.3.4 1234
-                        #               python3 pykms_Server.py 1.2.3.4 1234 --pykms_optionals
-                        #               python3 pykms_Server.py --pykms_optionals
-
-                        kms_parser_check_optionals(userarg, pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = ['-F', '--logfile'])
+                        # example case:
+                        #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals]
+                        kms_parser_check_optionals(userarg, pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
                         kms_parser_check_positionals(srv_config, server_parser.parse_args)
+
+                kms_parser_check_connect(srv_config, srv_options, userarg, connect_zeroarg, connect_onearg)
 
         except KmsParserException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
@@ -423,17 +493,48 @@ def server_check():
                                 pretty_printer(log_obj = loggersrv.error, to_exit = True,
                                                put_text = "{reverse}{red}{bold}argument `%s`: invalid with: '%s'. Exiting...{end}" %(opt, srv_config[dest]))
 
+        # Check further addresses / ports.
+        if 'listen' in srv_config:
+                addresses = []
+                for elem in srv_config['listen']:
+                        try:
+                                addr, port = elem.split(',')
+                        except ValueError:
+                                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                               put_text = "{reverse}{red}{bold}argument `-n/--listen`: %s not well defined. Exiting...{end}" %elem)
+                        try:
+                                port = int(port)
+                        except ValueError:
+                                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                               put_text = "{reverse}{red}{bold}argument `-n/--listen`: port number '%s' is invalid. Exiting...{end}" %port)
+
+                        if not (1 <= port <= 65535):
+                                pretty_printer(log_obj = loggersrv.error, to_exit = True,
+                                               put_text = "{reverse}{red}{bold}argument `-n/--listen`: port number '%s' is invalid. Enter between 1 - 65535. Exiting...{end}" %port)
+
+                        addresses.append((addr, port))
+                srv_config['listen'] = addresses
+
 def server_create():
-        try:
-                server = KeyServer((srv_config['ip'], srv_config['port']), kmsServerHandler)
-        except (socket.gaierror, socket.error) as e:
-                pretty_printer(log_obj = loggersrv.error, to_exit = True,
-                               put_text = "{reverse}{red}{bold}Connection failed '%s:%d': %s. Exiting...{end}" %(srv_config['ip'],
-                                                                                                                srv_config['port'],
-                                                                                                                str(e)))
+        # Create address list.
+        all_address = [(
+                        srv_config['ip'], srv_config['port'],
+                        (srv_config['backlog_primary'] if 'backlog_primary' in srv_config else srv_options['backlog']['def']),
+                        (srv_config['reuse_primary'] if 'reuse_primary' in srv_config else srv_options['reuse']['def'])
+                        )]
+        log_address = "TCP server listening at %s on port %d" %(srv_config['ip'], srv_config['port'])
+
+        if 'listen' in srv_config:
+                for l, b, r in zip(srv_config['listen'], srv_config['backlog'], srv_config['reuse']):
+                        all_address.append(l + (b,) + (r,))
+                        log_address += justify("at %s on port %d" %(l[0], l[1]), indent = 56)
+
+        server = KeyServer(all_address, kmsServerHandler, want_dual = (srv_config['dual'] if 'dual' in srv_config else srv_options['dual']['def']))
         server.timeout = srv_config['timeoutidle']
-        loggersrv.info("TCP server listening at %s on port %d." % (srv_config['ip'], srv_config['port']))
+
+        loggersrv.info(log_address)
         loggersrv.info("HWID: %s" % deco(binascii.b2a_hex(srv_config['hwid']), 'utf-8').upper())
+
         return server
 
 def server_terminate(generic_srv, exit_server = False, exit_thread = False):

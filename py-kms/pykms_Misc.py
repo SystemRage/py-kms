@@ -338,22 +338,32 @@ class KmsParserHelp(object):
                 return help_list
 
         def printer(self, parsers):
-                if len(parsers) == 3:
-                        parser_base, parser_adj, parser_sub = parsers
-                        replace_epilog_with = 80 * '*' + '\n'
-                elif len(parsers) == 1:
-                        parser_base = parsers[0]
+                parser_base = parsers[0]
+                if len(parsers) == 1:
                         replace_epilog_with = ''
+                else:
+                        parser_adj_0, parser_sub_0 = parsers[1]
+                        replace_epilog_with = 80 * '*' + '\n'
+                        if len(parsers) == 3:
+                                parser_adj_1, parser_sub_1 = parsers[2]
+
                 print('\n' + parser_base.description)
                 print(len(parser_base.description) * '-' + '\n')
                 for line in self.replace(parser_base, replace_epilog_with):
                         print(line)
-                try:
-                        print(parser_adj.description + '\n')
-                        for line in self.replace(parser_sub, replace_epilog_with):
+
+                def subprinter(adj, sub, replace):
+                        print(adj.description + '\n')
+                        for line in self.replace(sub, replace):
                                 print(line)
-                except:
-                        pass
+                        print('\n')
+
+                if len(parsers) >= 2:
+                        subprinter(parser_adj_0, parser_sub_0, replace_epilog_with)
+                        if len(parsers) == 3:
+                                print(replace_epilog_with)
+                                subprinter(parser_adj_1, parser_sub_1, replace_epilog_with)
+
                 print('\n' + len(parser_base.epilog) * '-')
                 print(parser_base.epilog + '\n')
                 parser_base.exit()
@@ -363,13 +373,13 @@ def kms_parser_get(parser):
         act = vars(parser)['_actions']
         for i in range(len(act)):
                 if act[i].option_strings not in ([], ['-h', '--help']):
-                        if isinstance(act[i], argparse._StoreAction):
+                        if isinstance(act[i], argparse._StoreAction) or isinstance(act[i], argparse._AppendAction):
                                 onearg.append(act[i].option_strings)
                         else:
                                 zeroarg.append(act[i].option_strings)
         return zeroarg, onearg
 
-def kms_parser_check_optionals(userarg, zeroarg, onearg, msg = 'optional py-kms server', exclude_opt_len = []):
+def kms_parser_check_optionals(userarg, zeroarg, onearg, msg = 'optional py-kms server', exclude_opt_len = [], exclude_opt_dup = []):
         """
         For optionals arguments:
         Don't allow duplicates,
@@ -399,12 +409,13 @@ def kms_parser_check_optionals(userarg, zeroarg, onearg, msg = 'optional py-kms 
         # Check duplicates.
         founds = [i for i in userarg if i in allarg]
         dup = [item for item in set(founds) if founds.count(item) > 1]
-        if dup != []:
-                raise KmsParserException("%s argument `%s` appears several times" %(msg, ', '.join(dup)))
+        for d in dup:
+                if d not in exclude_opt_dup:
+                        raise KmsParserException("%s argument `%s` appears several times" %(msg, ', '.join(dup)))
 
         # Check length.
         elem = None
-        for found in founds:
+        for found in set(founds):
                 if found not in exclude_opt_len:
                         pos = userarg.index(found)
                         try:
@@ -432,6 +443,70 @@ def kms_parser_check_positionals(config, parse_method, arguments = [], force_par
                         raise
                 else:
                         raise KmsParserException("unrecognized %s arguments: '%s'" %(msg, e.split(': ')[1]))
+
+def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
+        if 'listen' in config:
+                try:
+                        lung = len(config['listen'])
+                except TypeError:
+                        raise KmsParserException("optional connect arguments missing")
+
+                rng = range(lung - 1)
+                config['backlog_primary'] = options['backlog']['def']
+                config['reuse_primary'] = options['reuse']['def']
+
+                def assign(arguments, index, options, config, default, islast = False):
+                        if all(opt not in arguments for opt in options):
+                                if config and islast:
+                                        config.append(default)
+                                elif config:
+                                        config.insert(index, default)
+                                else:
+                                        config.append(default)
+
+                def assign_primary(arguments, config):
+                        if any(opt in arguments for opt in ['-b', '--backlog']):
+                                config['backlog_primary'] = config['backlog'][0]
+                                config['backlog'].pop(0)
+                        if any(opt in arguments for opt in ['-u', '--no-reuse']):
+                                config['reuse_primary'] = config['reuse'][0]
+                                config['reuse'].pop(0)
+
+                if config['listen']:
+                        # check before.
+                        pos = userarg.index(config['listen'][0])
+                        assign_primary(userarg[1 : pos - 1], config)
+
+                        # check middle.
+                        for indx in rng:
+                                pos1 = userarg.index(config['listen'][indx])
+                                pos2 = userarg.index(config['listen'][indx + 1])
+                                arguments = userarg[pos1 + 1 : pos2 - 1]
+                                kms_parser_check_optionals(arguments, zeroarg, onearg, msg = 'optional connect')
+                                assign(arguments, indx, ['-b', '--backlog'], config['backlog'], options['backlog']['def'])
+                                assign(arguments, indx, ['-u', '--no-reuse'], config['reuse'], options['reuse']['def'])
+
+                                if not arguments:
+                                        config['backlog'][indx] = config['backlog_primary']
+                                        config['reuse'][indx] = config['reuse_primary']
+
+                        # check after.
+                        if lung == 1:
+                                indx = -1
+
+                        pos = userarg.index(config['listen'][indx + 1])
+                        arguments = userarg[pos + 1:]
+                        kms_parser_check_optionals(arguments, zeroarg, onearg, msg = 'optional connect')
+                        assign(arguments, None, ['-b', '--backlog'], config['backlog'], options['backlog']['def'], islast = True)
+                        assign(arguments, None, ['-u', '--no-reuse'], config['reuse'], options['reuse']['def'], islast = True)
+
+                        if not arguments:
+                                config['backlog'][indx + 1] = config['backlog_primary']
+                                config['reuse'][indx + 1] = config['reuse_primary']
+
+                else:
+                        assign_primary(userarg[1:], config)
+
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 def proper_none(dictionary):
