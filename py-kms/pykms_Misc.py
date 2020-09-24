@@ -552,6 +552,15 @@ def check_setup(config, options, logger, where):
                 pretty_printer(log_obj = logger.error, where = where, to_exit = True,
                                put_text = "{reverse}{red}{bold}Port number '%s' is invalid. Enter between 1 - 65535. Exiting...{end}" %config['port'])
 
+def check_other(config, options, logger, where):
+        for dest, stropt in options:
+                try:
+                        config[dest] = int(config[dest])
+                except:
+                        if config[dest] is not None:
+                                pretty_printer(log_obj = logger.error, where = where, to_exit = True,
+                                               put_text = "{reverse}{red}{bold}argument `%s`: invalid with: '%s'. Exiting...{end}" %(stropt, config[dest]))
+
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # http://joshpoley.blogspot.com/2011/09/hresults-user-0x004.html  (slerror.h)

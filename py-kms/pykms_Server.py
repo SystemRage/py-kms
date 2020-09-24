@@ -18,7 +18,7 @@ from time import monotonic as time
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
-from pykms_Misc import check_setup, check_lcid, check_dir
+from pykms_Misc import check_setup, check_lcid, check_dir, check_other
 from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
 from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals, kms_parser_check_connect
 from pykms_Format import enco, deco, pretty_printer, justify
@@ -202,6 +202,8 @@ The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID
                         'def' : "364F463A8863D35F", 'des' : "hwid"},
         'time0'      : {'help' : 'Maximum inactivity time (in seconds) after which the connection with the client is closed. If \"None\" (default) serve forever.',
                         'def' : None, 'des' : "timeoutidle"},
+        'time1'      : {'help' : 'Set the maximum time to wait for sending / receiving a request / response. Default is no timeout.',
+                        'def' : None, 'des' : "timeoutsndrcv"},
         'asyncmsg'   : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
                         'def' : False, 'des' : "asyncmsg"},
         'llevel'     : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
@@ -238,6 +240,8 @@ def server_options():
                                    help = srv_options['hwid']['help'], type = str)
         server_parser.add_argument("-t0", "--timeout-idle", action = "store", dest = srv_options['time0']['des'], default = srv_options['time0']['def'],
                                    help = srv_options['time0']['help'], type = str)
+        server_parser.add_argument("-t1", "--timeout-sndrcv", action = "store", dest = srv_options['time1']['des'], default = srv_options['time1']['def'],
+                                   help = srv_options['time1']['help'], type = str)
         server_parser.add_argument("-y", "--async-msg", action = "store_true", dest = srv_options['asyncmsg']['des'],
                                    default = srv_options['asyncmsg']['def'], help = srv_options['asyncmsg']['help'])
         server_parser.add_argument("-V", "--loglevel", action = "store", dest = srv_options['llevel']['des'], choices = srv_options['llevel']['choi'],
@@ -478,20 +482,13 @@ def server_check():
                         srv_config['sqlite'] = False
 
         # Check other specific server options.
-        list_dest = ['clientcount', 'timeoutidle']
-        list_opt = ['-c/--client-count', '-t0/--timeout-idle']
-
+        opts = [('clientcount', '-c/--client-count'),
+                ('timeoutidle', '-t0/--timeout-idle'),
+                ('timeoutsndrcv', '-t1/--timeout-sndrcv')]
         if serverthread.with_gui:
-                list_dest += ['activation', 'renewal']
-                list_opt += ['-a/--activation-interval', '-r/--renewal-interval']
-
-        for dest, opt in zip(list_dest, list_opt):
-                try:
-                        srv_config[dest] = int(srv_config[dest])
-                except:
-                        if srv_config[dest] is not None:
-                                pretty_printer(log_obj = loggersrv.error, to_exit = True,
-                                               put_text = "{reverse}{red}{bold}argument `%s`: invalid with: '%s'. Exiting...{end}" %(opt, srv_config[dest]))
+                opts += [('activation', '-a/--activation-interval'),
+                         ('renewal', '-r/--renewal-interval')]
+        check_other(srv_config, opts, loggersrv, where = 'srv')
 
         # Check further addresses / ports.
         if 'listen' in srv_config:
@@ -602,6 +599,7 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
                 srv_config['raddr'] = self.client_address
 
         def handle(self):
+                self.request.settimeout(srv_config['timeoutsndrcv'])
                 while True:
                         # self.request is the TCP socket connected to the client
                         try:
