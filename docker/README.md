@@ -17,6 +17,30 @@ docker run -it -d --name py3-kms \
 _Make sure to insert at `[TAG]` your wanted edition! The default is `latest`, which does not include SQLite support. For all available tag check [this](https://hub.docker.com/r/pykmsorg/py-kms/tags)._
 Therefore you can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image.
 
+## Docker-compose
+
+You can use docker-compose instead of Dockerfile. The following compose file will deploy `latest` image into your local directory.
+
+```
+version: '3'
+
+services:
+  kms:
+    image: pykmsorg/py-kms:latest
+    ports:
+      - 1688:1688
+    environment:
+      - IP=0.0.0.0
+      - SQLITE=true
+      - HWID=RANDOM
+      - LOGLEVEL=INFO
+      - LOGSIZE=2
+      - LOGFILE=/var/log/pykms_logserver.log
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./:/var/log:rw
+```
+
 # Sqlite-web
 A web-based SQLite database browser written in Python.
 Start on http://example.com:8080/ in read-only mode for _pykms_database.db_.
