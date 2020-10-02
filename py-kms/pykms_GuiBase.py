@@ -412,24 +412,38 @@ class KmsGui(tk.Tk):
 
                 ## Create widgets (optsrvwin:Srv:PageWin:PageEnd)-------------------------------------------------------------------------------------------
                 # Timeout connection.
-                timeout0lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.optfont)
-                self.timeout0 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
-                self.timeout0.insert('end', str(srv_options['time0']['def']))
-                ToolTip(self.timeout0, text = srv_options['time0']['help'], wraplength = self.wraplength)
+                srvtimeout0lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.optfont)
+                self.srvtimeout0 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                self.srvtimeout0.insert('end', str(srv_options['time0']['def']))
+                ToolTip(self.srvtimeout0, text = srv_options['time0']['help'], wraplength = self.wraplength)
+                # Timeout send/recv.
+                srvtimeout1lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout send-recv: ', font = self.optfont)
+                self.srvtimeout1 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                self.srvtimeout1.insert('end', str(srv_options['time1']['def']))
+                ToolTip(self.srvtimeout1, text = srv_options['time1']['help'], wraplength = self.wraplength)
                 # Sqlite database.
                 self.chkvalsql = tk.BooleanVar()
                 self.chkvalsql.set(srv_options['sql']['def'])
+                self.chkfilesql = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                self.chkfilesql.insert('end', srv_options['sql']['file'])
+                self.chkfilesql.xview_moveto(1)
+                self.chkfilesql.configure(state = 'disabled')
+
                 chksql = tk.Checkbutton(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Create Sqlite\nDatabase',
-                                        font = self.optfontredux, var = self.chkvalsql, relief = 'groove')
+                                        font = self.optfontredux, var = self.chkvalsql, relief = 'groove',
+                                        command = lambda: self.sql_status())
                 ToolTip(chksql, text = srv_options['sql']['help'], wraplength = self.wraplength)
 
                 ## Layout widgets (optsrvwin:Srv:PageWin:PageEnd)
                 # a label for vertical aligning with PageStart
                 tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 0,
                          height = 0, bg = self.customcolors['lavender']).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = 'nw')
-                timeout0lbl.grid(row = 1, column = 0, padx = 5, pady = 5, sticky = 'e')
-                self.timeout0.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = 'w')
-                chksql.grid(row = 2, column = 1, padx = 5, pady = 5, sticky = 'w')
+                srvtimeout0lbl.grid(row = 1, column = 0, padx = 5, pady = 5, sticky = 'e')
+                self.srvtimeout0.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = 'w')
+                srvtimeout1lbl.grid(row = 2, column = 0, padx = 5, pady = 5, sticky = 'e')
+                self.srvtimeout1.grid(row = 2, column = 1, padx = 5, pady = 5, sticky = 'w')
+                chksql.grid(row = 3, column = 0, padx = 5, pady = 5, sticky = 'e')
+                self.chkfilesql.grid(row = 3, column = 1, padx = 5, pady = 5, sticky = 'w')
 
                 # Store server-side widgets.
                 self.storewidgets_srv = self.gui_store(side = "Srv", typewidgets = ['Button', 'Entry', 'TCombobox', 'Checkbutton'])
@@ -439,6 +453,12 @@ class KmsGui(tk.Tk):
                 self.textboxsrv = TextDoubleScroll(self.msgsrvwin, background = self.customcolors['black'], wrap = 'none', state = 'disabled',
                                                    relief = 'ridge', font = self.msgfont)
                 self.textboxsrv.put()
+
+        def sql_status(self):
+                if self.chkvalsql.get():
+                        self.chkfilesql.configure(state = 'normal')
+                else:
+                        self.chkfilesql.configure(state = 'disabled')
 
         def always_centered(self, geo, centered, refs):
                 x = (self.winfo_screenwidth() // 2) - (self.winfo_width() // 2)
@@ -485,7 +505,7 @@ class KmsGui(tk.Tk):
                 return x, y, w, h
                 
         def gui_clt(self):
-                self.count_clear = 0
+                self.count_clear, self.keep_clear = (0, '0.0')
                 self.optcltwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
                 self.msgcltwin = tk.Frame(self.masterwin, background = self.customcolors['black'], relief = 'ridge', width = 300, height = 200)
                 self.btncltwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
@@ -613,11 +633,25 @@ class KmsGui(tk.Tk):
                                                                             padx = 35, pady = 54, sticky = 'e')
 
                 ## Create widgets (optcltwin:Clt:PageWin:PageEnd) -------------------------------------------------------------------------------------------
+                # Timeout connection.
+                clttimeout0lbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.optfont)
+                self.clttimeout0 = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                self.clttimeout0.insert('end', str(clt_options['time0']['def']))
+                ToolTip(self.clttimeout0, text = clt_options['time0']['help'], wraplength = self.wraplength)
+                # Timeout send/recv.
+                clttimeout1lbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], text = 'Timeout send-recv: ', font = self.optfont)
+                self.clttimeout1 = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                self.clttimeout1.insert('end', str(clt_options['time1']['def']))
+                ToolTip(self.clttimeout1, text = clt_options['time1']['help'], wraplength = self.wraplength)
 
                 ## Layout widgets (optcltwin:Clt:PageWin:PageEnd)
                 # a label for vertical aligning with PageStart
                 tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 0,
                          height = 0, bg = self.customcolors['lavender']).grid(row = 0, column = 0, padx = 5, pady = 5, sticky = 'nw')
+                clttimeout0lbl.grid(row = 1, column = 0, padx = 5, pady = 5, sticky = 'e')
+                self.clttimeout0.grid(row = 1, column = 1, padx = 5, pady = 5, sticky = 'w')
+                clttimeout1lbl.grid(row = 2, column = 0, padx = 5, pady = 5, sticky = 'e')
+                self.clttimeout1.grid(row = 2, column = 1, padx = 5, pady = 5, sticky = 'w')
 
                 ## Store client-side widgets.
                 self.storewidgets_clt = self.gui_store(side = "Clt", typewidgets = ['Button', 'Entry', 'TCombobox', 'Checkbutton'])
@@ -714,13 +748,13 @@ class KmsGui(tk.Tk):
                 srv_config[srv_options['llevel']['des']] = self.srvlevel.get()
                 srv_config[srv_options['lsize']['des']] = self.prep_option(self.srvsize.get())
 
-                srv_config[srv_options['time0']['des']] = self.prep_option(self.timeout0.get())
-                srv_config[srv_options['sql']['des']] = self.chkvalsql.get()
+                srv_config[srv_options['time0']['des']] = self.prep_option(self.srvtimeout0.get())
+                srv_config[srv_options['time1']['des']] = self.prep_option(self.srvtimeout1.get())
+                srv_config[srv_options['sql']['des']] = (self.chkfilesql.get() if self.chkvalsql.get() else self.chkvalsql.get())
 
                 ## Redirect stdout.
                 gui_redirector('stdout', redirect_to = TextRedirect.Log,
                                redirect_conditio = (srv_config[srv_options['lfile']['des']] in ['STDOUT', 'FILESTDOUT']))
-                gui_redirector_setup()
                 serverqueue.put('start')
 
         def srv_actions_stop(self):
@@ -733,6 +767,7 @@ class KmsGui(tk.Tk):
                         else:
                                 serverthread.is_running_server = False
                         self.srv_toggle_all(on_start = False)
+                        self.count_clear, self.keep_clear = (0, '0.0')
 
         def srv_toggle_all(self, on_start = True):
                 self.srv_toggle_state()
@@ -786,10 +821,12 @@ class KmsGui(tk.Tk):
                 clt_config[clt_options['llevel']['des']] = self.cltlevel.get()
                 clt_config[clt_options['lsize']['des']] = self.prep_option(self.cltsize.get())
 
+                clt_config[clt_options['time0']['des']] = self.prep_option(self.clttimeout0.get())
+                clt_config[clt_options['time1']['des']] = self.prep_option(self.clttimeout1.get())
+
                 ## Redirect stdout.
                 gui_redirector('stdout', redirect_to = TextRedirect.Log,
                                redirect_conditio = (clt_config[clt_options['lfile']['des']] in ['STDOUT', 'FILESTDOUT']))
-                gui_redirector_setup()
 
                 # run client (in a thread).
                 self.clientthread = client_thread(name = "Thread-Clt")
@@ -824,20 +861,16 @@ class KmsGui(tk.Tk):
 
         def on_clear_setup(self):
                 if any(opt in ['STDOUT', 'FILESTDOUT'] for opt in srv_config[srv_options['lfile']['des']]):
+                        add_newline = True
                         if self.count_clear == 0:
-                                self.ini = txsrv.index('end')
-                                add_newline = False
-                        else:
-                                if self.count_clear == 1:
-                                        self.ini = '%s.0' %(int(self.ini[0]) - 1)
-                                else:
-                                        self.ini = '%s.0' %(int(self.ini[0]))
-                                add_newline = True
-                        rng = [self.ini, 'end']
-                        self.count_clear += 1
+                                self.keep_clear = txsrv.index('end-1c')
                 else:
-                        rng, add_newline = None, False
-                        self.count_clear = 0
+                        add_newline = False
+                        if self.count_clear == 0:
+                                self.keep_clear = txsrv.index('end')
+
+                rng = [self.keep_clear, 'end']
+                self.count_clear += 1
 
                 return rng, add_newline
 

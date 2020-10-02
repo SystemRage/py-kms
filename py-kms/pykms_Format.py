@@ -176,7 +176,7 @@ queue_print = Queue.Queue()
 class ShellMessage(object):
     viewsrv, viewclt = (True for _ in range(2))
     asyncmsgsrv, asyncmsgclt = (False for _ in range(2))
-    indx, count, remain, numlist = (0, 0, 0, [])
+    indx, count, remain, numlist, dummy = (0, 0, 0, [], False)
     loggersrv_pty = logging.getLogger('logsrvpty')
     loggerclt_pty = logging.getLogger('logcltpty')
 
@@ -254,12 +254,12 @@ class ShellMessage(object):
                 with open(self.path_clean_nl, 'r') as file:
                     some = file.read()
                 if num == 21:
-                    ShellMessage.count, ShellMessage.remain, ShellMessage.numlist = (0, 0, [])
+                    ShellMessage.count, ShellMessage.remain, ShellMessage.numlist, ShellMessage.dummy = (0, 0, [], False)
                     os.remove(self.path_nl)
                     os.remove(self.path_clean_nl)
             except:
                 if num == 19:
-                    ShellMessage.count, ShellMessage.remain, ShellMessage.numlist = (0, 0, [])
+                    ShellMessage.count, ShellMessage.remain, ShellMessage.numlist, ShellMessage.dummy = (0, 0, [], False)
                     os.remove(self.path_nl)
 
         def putter(self, aqueue, toput):
@@ -366,11 +366,14 @@ class ShellMessage(object):
                     for msg in self.put_text:
                         ShellMessage.count += msg.count('\n')
                         # Append a dummy element.
-                        ShellMessage.numlist.append('put')
+                        if ShellMessage.dummy:
+                            ShellMessage.numlist.append('put')
                         self.formatter(msg)
                         print(self.msgfrmt, end = '\n', flush = True)
                 else:
                     for num in self.nshell:
+                        if num == 0:
+                            ShellMessage.dummy = True
                         self.newlines_count(num)
                         self.formatter(MsgMap[num])
                         print(self.msgfrmt, end = '\n', flush = True)

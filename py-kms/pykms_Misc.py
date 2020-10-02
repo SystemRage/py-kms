@@ -452,8 +452,8 @@ def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
                         raise KmsParserException("optional connect arguments missing")
 
                 rng = range(lung - 1)
-                config['backlog_primary'] = options['backlog']['def']
-                config['reuse_primary'] = options['reuse']['def']
+                config['backlog_main'] = options['backlog']['def']
+                config['reuse_main'] = options['reuse']['def']
 
                 def assign(arguments, index, options, config, default, islast = False):
                         if all(opt not in arguments for opt in options):
@@ -464,18 +464,18 @@ def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
                                 else:
                                         config.append(default)
 
-                def assign_primary(arguments, config):
+                def assign_main(arguments, config):
                         if any(opt in arguments for opt in ['-b', '--backlog']):
-                                config['backlog_primary'] = config['backlog'][0]
+                                config['backlog_main'] = config['backlog'][0]
                                 config['backlog'].pop(0)
                         if any(opt in arguments for opt in ['-u', '--no-reuse']):
-                                config['reuse_primary'] = config['reuse'][0]
+                                config['reuse_main'] = config['reuse'][0]
                                 config['reuse'].pop(0)
 
                 if config['listen']:
                         # check before.
                         pos = userarg.index(config['listen'][0])
-                        assign_primary(userarg[1 : pos - 1], config)
+                        assign_main(userarg[1 : pos - 1], config)
 
                         # check middle.
                         for indx in rng:
@@ -487,8 +487,8 @@ def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
                                 assign(arguments, indx, ['-u', '--no-reuse'], config['reuse'], options['reuse']['def'])
 
                                 if not arguments:
-                                        config['backlog'][indx] = config['backlog_primary']
-                                        config['reuse'][indx] = config['reuse_primary']
+                                        config['backlog'][indx] = config['backlog_main']
+                                        config['reuse'][indx] = config['reuse_main']
 
                         # check after.
                         if lung == 1:
@@ -501,11 +501,11 @@ def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
                         assign(arguments, None, ['-u', '--no-reuse'], config['reuse'], options['reuse']['def'], islast = True)
 
                         if not arguments:
-                                config['backlog'][indx + 1] = config['backlog_primary']
-                                config['reuse'][indx + 1] = config['reuse_primary']
+                                config['backlog'][indx + 1] = config['backlog_main']
+                                config['reuse'][indx + 1] = config['reuse_main']
 
                 else:
-                        assign_primary(userarg[1:], config)
+                        assign_main(userarg[1:], config)
 
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------

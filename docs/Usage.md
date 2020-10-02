@@ -53,13 +53,16 @@ e.g. because it could not reach the server. The default is 120 minutes (2 hours)
     -r or --renewal-interval <RENEWALINTERVAL>
 > Instructs clients to renew activation every _RENEWALINTERVAL_ minutes. The default is 10080 minutes (7 days).
 
-    -s or --sqlite
+    -s or --sqlite [<SQLFILE>]
 > Use this option to store request information from unique clients in an SQLite database. Deactivated by default.
 If enabled the default database file is _pykms_database.db_. You can also provide a specific location.
 
-    -t0 or --timeout-idle <TIMEOUT>
+    -t0 or --timeout-idle <TIMEOUTIDLE>
 > Maximum inactivity time (in seconds) after which the connection with the client is closed. 
 Default setting is serve forever (no timeout).
+
+    -t1 or --timeout-sndrcv <TIMEOUTSNDRCV>
+> Set the maximum time (in seconds) to wait for sending / receiving a request / response. Default is no timeout.
 
     -y or --async-msg
 > With high levels of logging (e.g hundreds of log statements), in a traditional synchronous log model, 
@@ -137,6 +140,109 @@ You can also enable other suboptions of `-F` doing what is reported in the follo
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
+    -n or --listen <'IP,PORT'>
+> Use this subparser `connect` option to add multiple listening ip address - port couples. Note the format with the comma between the ip address and the port number. You can use this option more than once.
+
+    -b or --backlog <BACKLOG>
+> Use this subparser `connect` option to specify the maximum length of the queue of pending connections, referred to a ip address - port couple.
+If placed just after `connect` refers to the main address and all additive couples without `-b` or `-u` options. Default is 5.
+
+    -u or --no-reuse
+> Use this subparser `connect` option not to allow binding / listening to the same ip address - port couple specified with `-n`.
+If placed just after `connect` refers to the main address and all additive couples without `-b` or `-u` options. Reusing port is activated by default.
+
+    -d or --dual
+> Use this subparser `connect` option to allow listening to an IPv6 address also accepting connections via IPv4.
+If used it refers to all addresses (main and additional). Deactivated by default.
+
+examples (with fictitious addresses and ports):
+<table style="width: 100%;">
+    <thead>
+        <tr>
+            <th>command</th>
+            <th>address (main)</th>
+            <th>backlog (main)</th>
+            <th>reuse port (main)</th>
+            <th>address (listen)</th>
+            <th>backlog (listen)</th>
+            <th>reuse port (listen)</th>
+            <th>dualstack (main / listen)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><pre>python3 pykms_Server.py connect -b 12</pre></td>
+            <td>('0.0.0.0', 1688)</td>
+            <td>12</td>
+            <td>True</td>
+            <td>[]</td>
+            <td>[]</td>
+            <td>[]</td>
+            <td>False</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py :: connect -b 12 -u -d</pre></td>
+            <td>('::', 1688)</td>
+            <td>12</td>
+            <td>False</td>
+            <td>[]</td>
+            <td>[]</td>
+            <td>[]</td>
+            <td>True</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py connect -n 1.1.1.1,1699 -b 10</pre></td>
+            <td>('0.0.0.0', 1688)</td>
+            <td>5</td>
+            <td>True</td>
+            <td>[('1.1.1.1', 1699)]</td>
+            <td>[10]</td>
+            <td>[True]</td>
+            <td>False</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py :: 1655 connect -n 2001:db8:0:200::7,1699 -d -b 10 -n 2.2.2.2,1677 -u</pre></td>
+            <td>('::', 1655)</td>
+            <td>5</td>
+            <td>True</td>
+            <td>[('2001:db8:0:200::7', 1699), ('2.2.2.2', 1677)]</td>
+            <td>[10, 5]</td>
+            <td>[True, False]</td>
+            <td>True</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py connect -b 12 -u -n 1.1.1.1,1699 -b 10 -n 2.2.2.2,1677 -b 15</pre></td>
+            <td>('0.0.0.0', 1688)</td>
+            <td>12</td>
+            <td>False</td>
+            <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
+            <td>[10, 15]</td>
+            <td>[True, True]</td>
+            <td>False</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py connect -d -u -b 8 -n 1.1.1.1,1699 -n 2.2.2.2,1677 -b 12</pre></td>
+            <td>('0.0.0.0', 1688)</td>
+            <td>8</td>
+            <td>False</td>
+            <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
+            <td>[8, 12]</td>
+            <td>[False, True]</td>
+            <td>True</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py connect -b 11 -u -n ::,1699 -n 2.2.2.2,1677</pre></td>
+            <td>('0.0.0.0', 1688)</td>
+            <td>11</td>
+            <td>False</td>
+            <td>[('::', 1699), ('2.2.2.2', 1677)]</td>
+            <td>[11, 11]</td>
+            <td>[False, False]</td>
+            <td>False</td>
+        </tr>
+    </tbody>
+</table>
+
 ### pykms_Client.py
 If _py-kms_ server doesn't works correctly, you can test it with the KMS client `pykms_Client.py`, running on the same machine where you started `pykms_Server.py`.
 
@@ -175,6 +281,12 @@ activate regardless of CMID being unique for a subset of specific machines or no
 
     -n or --name <MACHINENAME>
 > Use this flag to manually specify an ASCII _MACHINENAME_ to use. If no _MACHINENAME_ is specified a random one will be generated.
+
+    -t0 or --timeout-idle <TIMEOUTIDLE>
+> Set the maximum time (in seconds) to wait for a connection attempt to KMS server to succeed. Default is no timeout.
+
+    -t1 or --timeout-sndrcv <TIMEOUTSNDRCV>
+> Set the maximum time (in seconds) to wait for sending / receiving a request / response. Default is no timeout.
 
     -y or --async-msg
 > Prints pretty / logging messages asynchronously. Deactivated by default.

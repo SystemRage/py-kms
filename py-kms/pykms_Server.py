@@ -25,7 +25,7 @@ from pykms_Format import enco, deco, pretty_printer, justify
 from Etrigan import Etrigan, Etrigan_parser, Etrigan_check, Etrigan_job
 from pykms_Connect import MultipleListener
 
-srv_version             = "py-kms_2020-07-01"
+srv_version             = "py-kms_2020-10-01"
 __license__             = "The Unlicense"
 __author__              = u"Matteo ℱan <SystemRage@protonmail.com>"
 __url__                 = "https://github.com/SystemRage/py-kms"
@@ -196,7 +196,8 @@ for server OSes and Office >=5', 'def' : None, 'des' : "clientcount"},
         'renewal'    : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
                         'def' : 1440 * 7, 'des' : "renewal"},
         'sql'        : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default. \
-If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.', 'def' : False, 'des' : "sqlite"},
+If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.', 'def' : False,
+                        'file': os.path.join('.', 'pykms_database.db'), 'des' : "sqlite"},
         'hwid'       : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
 The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.',
                         'def' : "364F463A8863D35F", 'des' : "hwid"},
@@ -213,10 +214,11 @@ Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previ
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
                         'def' : os.path.join('.', 'pykms_logserver.log'), 'des' : "logfile"},
         'lsize'      : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
-        'listen'     : {'help' : 'Adds multiple listening address / port couples.', 'des': "listen"},
+        'listen'     : {'help' : 'Adds multiple listening ip address - port couples.', 'des': "listen"},
         'backlog'    : {'help' : 'Specifies the maximum length of the queue of pending connections. Default is \"5\".', 'def' : 5, 'des': "backlog"},
-        'reuse'      : {'help' : 'Allows binding / listening to the same address and port. Activated by default.', 'def' : True, 'des': "reuse"},
-        'dual'       : {'help' : 'Allows binding / listening to an IPv6 address also accepting connections via IPv4. Deactivated by default.',
+        'reuse'      : {'help' : 'Do not allows binding / listening to the same address and port. Reusing port is activated by default.', 'def' : True,
+                        'des': "reuse"},
+        'dual'       : {'help' : 'Allows listening to an IPv6 address also accepting connections via IPv4. Deactivated by default.',
                         'def' : False, 'des': "dual"}
         }
 
@@ -274,7 +276,7 @@ def server_options():
         connect_parser.add_argument("-u", "--no-reuse", action = "append_const", dest = srv_options['reuse']['des'], const = False, default = [],
                                     help = srv_options['reuse']['help'])
         connect_parser.add_argument("-d", "--dual", action = "store_true", dest = srv_options['dual']['des'], default = srv_options['dual']['def'],
-                                    help = srv_options['reuse']['help'])
+                                    help = srv_options['dual']['help'])
 
         try:
                 userarg = sys.argv[1:]
@@ -472,7 +474,7 @@ def server_check():
                 if isinstance(srv_config['sqlite'], str):
                         check_dir(srv_config['sqlite'], 'srv', log_obj = loggersrv.error, argument = '-s/--sqlite', typefile = '.db')
                 elif srv_config['sqlite'] is True:
-                        srv_config['sqlite'] = os.path.join('.', 'pykms_database.db')
+                        srv_config['sqlite'] = srv_options['sql']['file']
 
                 try:
                         import sqlite3
@@ -516,8 +518,8 @@ def server_create():
         # Create address list.
         all_address = [(
                         srv_config['ip'], srv_config['port'],
-                        (srv_config['backlog_primary'] if 'backlog_primary' in srv_config else srv_options['backlog']['def']),
-                        (srv_config['reuse_primary'] if 'reuse_primary' in srv_config else srv_options['reuse']['def'])
+                        (srv_config['backlog_main'] if 'backlog_main' in srv_config else srv_options['backlog']['def']),
+                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else srv_options['reuse']['def'])
                         )]
         log_address = "TCP server listening at %s on port %d" %(srv_config['ip'], srv_config['port'])
 
