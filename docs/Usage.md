@@ -316,8 +316,9 @@ The `//nologo` option of `cscript` was used only to hide the startup logo.
 1. This is optional, it's for unistalling any existing product key.
 2. Then put in your product's GVLK.
 3. Set connection parameters.
-4. Try online activation, but... if that fails with error `0xC004F074` you’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688. So for Linux users (server-side with `pykms_Server.py`
-    running): `sudo ufw allow 1688` (to remove this rule `sudo ufw delete allow 1688`)
+4. Try online activation, but if that fails with error...
+    - `0xC004F074` You’ll most likely have to configure your firewall that it accepts incoming connections on TCP port 1688. So for Linux users (server-side with `pykms_Server.py` running): `sudo ufw allow 1688` (revert this rule `sudo ufw delete allow 1688`) should fix that.
+    - `0xC004F069` Take a look into the [issue here](https://github.com/SystemRage/py-kms/issues/57), it will may help you...
 5. Attempt online activation (now with traffic on 1688 enabled). 
 6. View license informations (optional).
 
