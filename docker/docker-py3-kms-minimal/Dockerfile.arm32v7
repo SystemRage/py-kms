@@ -1,6 +1,14 @@
 # This is a minimized version from docker/docker-py3-kms/Dockerfile without SQLite support to further reduce image size
 
-FROM alpine:3.8
+# Prepare the multiarch env
+FROM alpine AS builder
+RUN apk add curl && curl -L "https://github.com/balena-io/qemu/releases/download/v4.0.0%2Bbalena2/qemu-4.0.0.balena2-arm.tar.gz" | tar zxvf - -C . --strip-components 1
+
+# Switch to the target image
+FROM arm32v7/alpine:3.12
+
+# Import qemu from the preparation
+COPY --from=builder qemu-arm-static /usr/bin
 
 ENV IP		0.0.0.0
 ENV PORT		1688

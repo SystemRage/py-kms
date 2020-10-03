@@ -17,14 +17,23 @@ command will download, "install" and start _py-kms_ and also keep it alive after
 ```bash
 docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
 ```
+If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
+latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out !
 
+#### Tags
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
 * `latest`, currently the same like `minimal`.
 * `minimal`, which is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support !_
 * `python3`, which is fully configurable and equipped with `sqlite` support and a web interface for management.
 
-If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
-latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out !
+#### Architectures
+There are currently the following architectures available (if you need an other, feel free to open an issue):
+* `amd64`
+* `arm32v6` Raspberry PI 1 (A, A+, B, B+, Zero)
+* `arm32v7` Raspberry PI 2 (B)
+* `arm64v8` Raspberry PI 2 (B v1.2), Raspberry PI 3 (A+, B, B+), Raspberry PI 4 (B)
+
+_Please note that any architecture other than the classic `amd64` is slightly bigger (~4 MB), caused by the use of qemu during building._
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
