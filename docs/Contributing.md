@@ -1,6 +1,7 @@
 # Contributing
 
-You want to improve this project? Awesome! But before you wirte or modify the existing source code, please note the following guideline:
+You want to improve this project? 
+Awesome! But before you write or modify the existing source code, please note the following guideline:
 
 - Always make sure to add your changes to the wiki.
 - 8-space indentation without tabs.
@@ -10,5 +11,5 @@ You want to improve this project? Awesome! But before you wirte or modify the ex
     """ This is a
     """ multiline comment.
 ```
-- Wrap lines only if really long (it does not matter 79 chars, otherwise see [PEP8](https://www.python.org/dev/peps/pep-0008/))
-- For the rest a bit as it comes :)
+- Wrap lines only if really long (it does not matter 79 chars return)
+- For the rest a bit as it comes with a look at [PEP8](https://www.python.org/dev/peps/pep-0008/) :)
