@@ -10,5 +10,5 @@ You want to improve this project? Awesome! But before you wirte or modify the ex
     """ This is a
     """ multiline comment.
 ```
-- Wrap lines only if really long (it does not matter 79 chars PEP8)
+- Wrap lines only if really long (it does not matter 79 chars, otherwise see [PEP8](https://www.python.org/dev/peps/pep-0008/))
 - For the rest a bit as it comes :)
