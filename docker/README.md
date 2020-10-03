@@ -36,6 +36,7 @@ services:
       - LOGLEVEL=INFO
       - LOGSIZE=2
       - LOGFILE=/var/log/pykms_logserver.log
+    restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./:/var/log:rw
