@@ -399,8 +399,3 @@ Note that you’ll have to install a volume license (VL) version of Office. Offi
 6. Set the connection parameter KMS server port.
 7. Activate installed Office product key.
 8. View license informations (in my case product is now licensed and remaining grace 180 days as expected).
-
-## Supported Products
-Note that it is possible to activate all versions in the VL (Volume License) channel, so long as you provide the proper key to let Windows know that it should be activating against a KMS server. KMS activation can't be used for
-Retail channel products, however you can install a VL product key specific to your edition of Windows even if it was installed as Retail. This effectively converts Retail installation to VL channel and will allow you to activate
-from a KMS server. **However, this is not valid for Office's products**, so Office, Project and Visio must be always volume license versions. Newer version may work as long as the KMS protocol does not change...
