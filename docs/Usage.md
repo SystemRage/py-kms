@@ -301,6 +301,61 @@ You can enable same _pykms_Server.py_ suboptions of `-F`.
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
+### Docker Environment
+This are the currently used `ENV` statements from the dockerfiles. For further references what exactly the parameters mean, please see the start parameters for the server.
+```
+# IP-address
+# The IP address to listen on. The default is "0.0.0.0" (all interfaces).
+ENV IP 0.0.0.0
+
+# TCP-port
+# The network port to listen on. The default is "1688".
+ENV PORT 1688
+
+# ePID
+# Use this flag to manually specify an ePID to use. If no ePID is specified, a random ePID will be generated.
+ENV EPID ""
+
+# lcid
+# Use this flag to manually specify an LCID for use with randomly generated ePIDs. Default is 1033 (en-us).
+ENV LCID 1033
+
+# The current client count
+# Use this flag to specify the current client count. Default is 26.
+# A number >=25 is required to enable activation of client OSes; for server OSes and Office >=5.
+ENV CLIENT_COUNT 26
+
+# The activation interval (in minutes)
+# Use this flag to specify the activation interval (in minutes). Default is 120 minutes (2 hours).
+ENV ACTIVATION_INTERVAL 120
+
+# The renewal interval (in minutes)
+# Use this flag to specify the renewal interval (in minutes). Default is 10080 minutes (7 days).
+ENV RENEWAL_INTERVAL 10080
+
+# Use SQLITE
+# Use this flag to store request information from unique clients in an SQLite database.
+ENV SQLITE false
+
+# hwid
+# Use this flag to specify a HWID. 
+# The HWID must be an 16-character string of hex characters.
+# The default is "364F463A8863D35F" or type "RANDOM" to auto generate the HWID.
+ENV HWID 364F463A8863D35F
+
+# log level ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
+# Use this flag to set a Loglevel. The default is "ERROR".
+ENV LOGLEVEL ERROR
+
+# Log file
+# Use this flag to set an output Logfile. The default is "/var/log/pykms_logserver.log".
+ENV LOGFILE /var/log/pykms_logserver.log
+
+# Log file size in MB
+# Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
+ENV LOGSIZE ""
+```
+
 ## Activation Procedure
 The product asks for a key during installation, so it needs you to enter the GVLK. Then the user can set connection parameters, while KMS server must already be running on server machine. Finally with specific commands, activation occurs automatically and can be extended later every time for another 180 (or 30 or 45) days.
 

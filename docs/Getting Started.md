@@ -24,7 +24,7 @@ latest version you should check something like [watchtower](https://github.com/c
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
 * `latest`, currently the same like `minimal`.
 * `minimal`, which is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support !_
-* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface for management.
+* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface (make sure to expose port 8080) for management.
 
 #### Architectures
 There are currently the following architectures available (if you need an other, feel free to open an issue):
@@ -34,6 +34,48 @@ There are currently the following architectures available (if you need an other,
 * `arm64v8` Raspberry PI 2 (B v1.2), Raspberry PI 3 (A+, B, B+), Raspberry PI 4 (B)
 
 _Please note that any architecture other than the classic `amd64` is slightly bigger (~4 MB), caused by the use of qemu during building._
+
+#### Docker Compose
+You can use docker-compose instead of Dockerfile, so you do not need to respecify your settings again and again. The following compose file will deploy the `latest` image into your local directory.
+```yaml
+version: '3'
+
+services:
+  kms:
+    image: pykmsorg/py-kms:latest
+    ports:
+      - 1688:1688
+    environment:
+      - IP=0.0.0.0
+      - SQLITE=true
+      - HWID=RANDOM
+      - LOGLEVEL=INFO
+      - LOGSIZE=2
+      - LOGFILE=/var/log/pykms_logserver.log
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./:/var/log:rw
+```
+
+#### Parameters
+Below is a fully expanded run command, detailing all the different supported environment variables to set.
+```bash
+docker run -it -d --name py3-kms \
+    -p 8080:8080 \
+    -p 1688:1688 \
+    -e IP=0.0.0.0 \
+    -e PORT=1688 \
+    -e SQLITE=true \
+    -e HWID=RANDOM \
+    -e LOGLEVEL=INFO \
+    -e LOGSIZE=2 \
+    -e LOGFILE=/var/log/pykms_logserver.log \
+    -v /etc/localtime:/etc/localtime:ro \
+    -v /var/log:/var/log:rw \
+    --restart unless-stopped pykmsorg/py-kms:[TAG]
+```
+You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
