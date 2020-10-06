@@ -36,7 +36,7 @@ There are currently the following architectures available (if you need an other,
 _Please note that any architecture other than the classic `amd64` is slightly bigger (~4 MB), caused by the use of qemu during building._
 
 #### Docker Compose
-You can use docker-compose instead of Dockerfile, so you do not need to respecify your settings again and again. The following compose file will deploy the `latest` image into your local directory.
+You can use docker-compose instead of building and running the Dockerfile, so you do not need to respecify your settings again and again. The following Docker Compose file will deploy the `latest` image with the log into your local directory.
 ```yaml
 version: '3'
 
@@ -59,7 +59,7 @@ services:
 ```
 
 #### Parameters
-Below is a fully expanded run command, detailing all the different supported environment variables to set.
+Below is a fully expanded run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](Usage.md#docker-environment) for the docker environment.
 ```bash
 docker run -it -d --name py3-kms \
     -p 8080:8080 \

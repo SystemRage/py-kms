@@ -302,7 +302,7 @@ You can enable same _pykms_Server.py_ suboptions of `-F`.
 > Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
 ### Docker Environment
-This are the currently used `ENV` statements from the dockerfiles. For further references what exactly the parameters mean, please see the start parameters for the server.
+This are the currently used `ENV` statements from the Dockerfile(s). For further references what exactly the parameters mean, please see the start parameters for the [server](Usage.md#pykms-server-py).
 ```
 # IP-address
 # The IP address to listen on. The default is "0.0.0.0" (all interfaces).
