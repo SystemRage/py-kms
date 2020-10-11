@@ -149,7 +149,7 @@ If placed just after `connect` refers to the main address and all additive coupl
 
     -u or --no-reuse
 > Use this subparser `connect` option not to allow binding / listening to the same ip address - port couple specified with `-n`.
-If placed just after `connect` refers to the main address and all additive couples without `-b` or `-u` options. Reusing port is activated by default.
+If placed just after `connect` refers to the main address and all additive couples without `-b` or `-u` options. Reusing port is activated by default (except when running inside the Windows Sandbox and the current user is `WDAGUtilityAccount`).
 
     -d or --dual
 > Use this subparser `connect` option to allow listening to an IPv6 address also accepting connections via IPv4.
