@@ -13,6 +13,7 @@ import pickle
 import socketserver
 import queue as Queue
 import selectors
+import getpass
 from time import monotonic as time
 
 import pykms_RpcBind, pykms_RpcRequest
@@ -515,11 +516,11 @@ def server_check():
                 srv_config['listen'] = addresses
 
 def server_create():
-        # Create address list.
+        # Create address list (when the current user indicates execution inside the Windows Sandbox, then we wont allow port reuse - it is not supported).
         all_address = [(
                         srv_config['ip'], srv_config['port'],
                         (srv_config['backlog_main'] if 'backlog_main' in srv_config else srv_options['backlog']['def']),
-                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else srv_options['reuse']['def'])
+                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else False if getpass.getuser() == 'WDAGUtilityAccount' else srv_options['reuse']['def'])
                         )]
         log_address = "TCP server listening at %s on port %d" %(srv_config['ip'], srv_config['port'])
 
