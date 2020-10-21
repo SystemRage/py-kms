@@ -483,8 +483,8 @@ def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
                                 pos2 = userarg.index(config['listen'][indx + 1])
                                 arguments = userarg[pos1 + 1 : pos2 - 1]
                                 kms_parser_check_optionals(arguments, zeroarg, onearg, msg = 'optional connect')
-                                assign(arguments, indx, ['-b', '--backlog'], config['backlog'], options['backlog']['def'])
-                                assign(arguments, indx, ['-u', '--no-reuse'], config['reuse'], options['reuse']['def'])
+                                assign(arguments, indx, ['-b', '--backlog'], config['backlog'], config['backlog_main'])
+                                assign(arguments, indx, ['-u', '--no-reuse'], config['reuse'], config['reuse_main'])
 
                                 if not arguments:
                                         config['backlog'][indx] = config['backlog_main']
@@ -497,13 +497,12 @@ def kms_parser_check_connect(config, options, userarg, zeroarg, onearg):
                         pos = userarg.index(config['listen'][indx + 1])
                         arguments = userarg[pos + 1:]
                         kms_parser_check_optionals(arguments, zeroarg, onearg, msg = 'optional connect')
-                        assign(arguments, None, ['-b', '--backlog'], config['backlog'], options['backlog']['def'], islast = True)
-                        assign(arguments, None, ['-u', '--no-reuse'], config['reuse'], options['reuse']['def'], islast = True)
+                        assign(arguments, None, ['-b', '--backlog'], config['backlog'], config['backlog_main'], islast = True)
+                        assign(arguments, None, ['-u', '--no-reuse'], config['reuse'], config['reuse_main'], islast = True)
 
                         if not arguments:
                                 config['backlog'][indx + 1] = config['backlog_main']
                                 config['reuse'][indx + 1] = config['reuse_main']
-
                 else:
                         assign_main(userarg[1:], config)
 

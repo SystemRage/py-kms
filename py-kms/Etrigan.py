@@ -18,7 +18,6 @@ __copyright__           = "© Copyright 2020"
 __url__                 = "https://github.com/SystemRage/Etrigan"
 __description__         = "Etrigan: a python daemonizer that rocks."
 
-path = os.path.dirname(os.path.abspath(__file__))
 
 class Etrigan(object):
         """
@@ -517,7 +516,7 @@ class JasonBlood(Etrigan):
                 jasonblood_func()
 
 def jasonblood_func():  
-        with open(os.path.join(path, 'etrigan_test.txt'), 'a') as file:
+        with open(os.path.join('.', 'etrigan_test.txt'), 'a') as file:
                 file.write("Yarva Demonicus Etrigan " + time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()) + '\n')
 
 def Etrigan_parser(parser = None):
@@ -535,7 +534,7 @@ def Etrigan_parser(parser = None):
                             action = "store", dest = "etriganpid", default = "/tmp/etrigan.pid",
                             help = "Choose a pidfile path. Default is \"/tmp/etrigan.pid\".", type = str) #'/var/run/etrigan.pid'
         parser.add_argument("--etrigan-log",
-                            action = "store", dest = "etriganlog", default = os.path.join(path, "etrigan.log"),
+                            action = "store", dest = "etriganlog", default = os.path.join('.', "etrigan.log"),
                             help = "Use this option to choose an output log file; for not logging don't select it. Default is \"etrigan.log\".", type = str)
         parser.add_argument("--etrigan-lev",
                             action = "store", dest = "etriganlev", default = "DEBUG",

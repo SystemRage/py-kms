@@ -13,7 +13,8 @@ import pickle
 import socketserver
 import queue as Queue
 import selectors
-import getpass
+from getpass import getuser
+from tempfile import gettempdir
 from time import monotonic as time
 
 import pykms_RpcBind, pykms_RpcRequest
@@ -393,7 +394,7 @@ class Etrigan(Etrigan):
 
 def server_daemon():
         if 'etrigan' in srv_config.values():
-                path = os.path.join('.', 'pykms_config.pickle')
+                path = os.path.join(gettempdir(), 'pykms_config.pickle')
 
                 if srv_config['operation'] in ['stop', 'restart', 'status'] and len(sys.argv[1:]) > 2:
                         pretty_printer(put_text = "{reverse}{red}{bold}too much arguments with etrigan '%s'. Exiting...{end}" %srv_config['operation'],
@@ -419,7 +420,7 @@ def server_daemon():
                                        logfile = srv_config['etriganlog'], loglevel = srv_config['etriganlev'],
                                        mute = srv_config['etriganmute'], pause_loop = None)
 
-                if srv_config['operation'] == 'start':
+                if srv_config['operation'] in ['start', 'restart']:
                         serverdaemon.want_quit = True
                         if srv_config['gui']:
                                 serverdaemon.funcs_to_daemonize = [server_with_gui]
@@ -428,6 +429,8 @@ def server_daemon():
                                 serverdaemon.funcs_to_daemonize = [server_without_gui.start, server_without_gui.join]
                                 indx_for_clean = lambda: (0, )
                                 serverdaemon.quit_on_stop = [indx_for_clean, server_without_gui.clean]
+                elif srv_config['operation'] == 'stop':
+                        os.remove(path)
 
                 Etrigan_job(srv_config['operation'], serverdaemon)
 
@@ -516,16 +519,19 @@ def server_check():
                 srv_config['listen'] = addresses
 
 def server_create():
-        # Create address list (when the current user indicates execution inside the Windows Sandbox, then we wont allow port reuse - it is not supported).
+        # Create address list (when the current user indicates execution inside the Windows Sandbox,
+        # then we wont allow port reuse - it is not supported).
         all_address = [(
                         srv_config['ip'], srv_config['port'],
                         (srv_config['backlog_main'] if 'backlog_main' in srv_config else srv_options['backlog']['def']),
-                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else False if getpass.getuser() == 'WDAGUtilityAccount' else srv_options['reuse']['def'])
+                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else False if getuser() == 'WDAGUtilityAccount' \
+                         else srv_options['reuse']['def'])
                         )]
         log_address = "TCP server listening at %s on port %d" %(srv_config['ip'], srv_config['port'])
 
         if 'listen' in srv_config:
                 for l, b, r in zip(srv_config['listen'], srv_config['backlog'], srv_config['reuse']):
+                        r = (False if getuser() == 'WDAGUtilityAccount' else r)
                         all_address.append(l + (b,) + (r,))
                         log_address += justify("at %s on port %d" %(l[0], l[1]), indent = 56)
 

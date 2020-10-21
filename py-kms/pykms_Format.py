@@ -7,6 +7,7 @@ from collections import OrderedDict
 import logging
 from io import StringIO
 import queue as Queue
+from tempfile import gettempdir
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -192,8 +193,8 @@ class ShellMessage(object):
             self.put_text = put_text
             self.where = where
             self.plaintext = []
-            self.path_nl = os.path.dirname(os.path.abspath( __file__ )) + '/pykms_newlines.txt'
-            self.path_clean_nl = os.path.dirname(os.path.abspath( __file__ )) + '/pykms_clean_newlines.txt'
+            self.path_nl = os.path.join(gettempdir(), 'pykms_newlines.txt')
+            self.path_clean_nl = os.path.join(gettempdir(), 'pykms_clean_newlines.txt')
             self.queue_get = Queue.Queue()
 
         def formatter(self, msgtofrmt):

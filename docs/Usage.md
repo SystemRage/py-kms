@@ -217,7 +217,17 @@ examples (with fictitious addresses and ports):
             <td>False</td>
             <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
             <td>[10, 15]</td>
-            <td>[True, True]</td>
+            <td>[False, False]</td>
+            <td>False</td>
+        </tr>
+        <tr>
+            <td><pre>python3 pykms_Server.py connect -b 12 -n 1.1.1.1,1699 -u -n 2.2.2.2,1677</pre></td>
+            <td>('0.0.0.0', 1688)</td>
+            <td>12</td>
+            <td>True</td>
+            <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
+            <td>[12, 12]</td>
+            <td>[False, True]</td>
             <td>False</td>
         </tr>
         <tr>
@@ -227,7 +237,7 @@ examples (with fictitious addresses and ports):
             <td>False</td>
             <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
             <td>[8, 12]</td>
-            <td>[False, True]</td>
+            <td>[False, False]</td>
             <td>True</td>
         </tr>
         <tr>
