@@ -140,19 +140,21 @@ You can also enable other suboptions of `-F` doing what is reported in the follo
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
 
+##### subparser `connect`
+
     -n or --listen <'IP,PORT'>
-> Use this subparser `connect` option to add multiple listening ip address - port couples. Note the format with the comma between the ip address and the port number. You can use this option more than once.
+> Use this option to add multiple listening ip address - port couples. Note the format with the comma between the ip address and the port number. You can use this option more than once.
 
     -b or --backlog <BACKLOG>
-> Use this subparser `connect` option to specify the maximum length of the queue of pending connections, referred to a ip address - port couple.
-If placed just after `connect` refers to the main address and all additive couples without `-b` or `-u` options. Default is 5.
+> Use this option to specify the maximum length of the queue of pending connections, referred to a ip address - port couple.
+If placed just after `connect` refers to the main address and all additive couples without `-b` option. Default is 5.
 
     -u or --no-reuse
-> Use this subparser `connect` option not to allow binding / listening to the same ip address - port couple specified with `-n`.
-If placed just after `connect` refers to the main address and all additive couples without `-b` or `-u` options. Reusing port is activated by default (except when running inside the Windows Sandbox and the current user is `WDAGUtilityAccount`).
+> Use this option not to allow binding / listening to the same ip address - port couple specified with `-n`.
+If placed just after `connect` refers to the main address and all additive couples without `-u` option. Reusing port is activated by default (except when running inside the Windows Sandbox and the current user is `WDAGUtilityAccount`).
 
     -d or --dual
-> Use this subparser `connect` option to allow listening to an IPv6 address also accepting connections via IPv4.
+> Use this option to allow listening to an IPv6 address also accepting connections via IPv4.
 If used it refers to all addresses (main and additional). Deactivated by default.
 
 examples (with fictitious addresses and ports):

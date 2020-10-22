@@ -392,19 +392,24 @@ def kms_parser_check_optionals(userarg, zeroarg, onearg, msg = 'optional py-kms 
         allarg = zeroarg + onearg
 
         def is_abbrev(allarg, arg_to_check):
+                extended = []
                 for opt in allarg:
                         if len(opt) > 2 and opt[2] == arg_to_check[2]:
                                 for indx in range(-1, -len(opt), -1):
                                         if opt[:indx] == arg_to_check:
-                                                raise KmsParserException("%s argument `%s` abbreviation not allowed for `%s`" %(msg, arg_to_check, opt))
-                return False
+                                                extended.append(opt)
+                return extended
 
         # Check abbreviations, joining, not existing.
         for arg in userarg:
                 if arg not in allarg:
                         if arg.startswith('-'):
-                                if arg == '--' or arg[:2] != '--' or not is_abbrev(allarg, arg):
+                                if arg == '--' or arg[:2] != '--':
                                         raise KmsParserException("unrecognized %s arguments: `%s`" %(msg, arg))
+                                else:
+                                        extended = is_abbrev(allarg, arg)
+                                        if extended:
+                                                raise KmsParserException("%s argument `%s` abbreviation not allowed for `%s`" %(msg, arg, ', '.join(extended)))
 
         # Check duplicates.
         founds = [i for i in userarg if i in allarg]

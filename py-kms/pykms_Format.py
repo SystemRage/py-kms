@@ -82,32 +82,32 @@ ColorExtraMap = dict(ColorMap, **ExtraMap)
 ColorMapReversed = dict(zip(ColorMap.values(), ColorMap.keys()))
 ExtraMapReversed = dict(zip(ExtraMap.values(), ExtraMap.keys()))
 
-MsgMap = {0  : {'text' : "{yellow}\n\t\t\tClient generating RPC Bind Request...{end}",                               'align' : ()},
-          1  : {'text' : "{white}<==============={end}{yellow}\tClient sending RPC Bind Request...{end}",            'align' : ()},
-          2  : {'text' : "{yellow}Server received RPC Bind Request !!!\t\t\t\t{end}{white}<==============={end}",    'align' : ()},
-          3  : {'text' : "{yellow}Server parsing RPC Bind Request...{end}",                                          'align' : ()},
-          4  : {'text' : "{yellow}Server generating RPC Bind Response...{end}",                                      'align' : ()},
-          5  : {'text' : "{yellow}Server sending RPC Bind Response...\t\t\t\t{end}{white}===============>{end}",     'align' : ()},
-          6  : {'text' : "{green}{bold}\nRPC Bind acknowledged !!!{end}",                                            'align' : ()},
-          7  : {'text' : "{white}===============>{end}{yellow}\tClient received RPC Bind Response !!!{end}",         'align' : ()},
-          8  : {'text' : "{green}{bold}\t\t\tRPC Bind acknowledged !!!{end}",                                        'align' : ()},
-          9  : {'text' : "{blue}\t\t\tClient generating Activation Request dictionary...{end}",                      'align' : ()},
-          10 : {'text' : "{blue}\t\t\tClient generating Activation Request data...{end}",                            'align' : ()},
-          11 : {'text' : "{blue}\t\t\tClient generating RPC Activation Request...{end}",                             'align' : ()},
-          12 : {'text' : "{white}<==============={end}{blue}\tClient sending RPC Activation Request...{end}",        'align' : ()},
-          13 : {'text' : "{blue}Server received RPC Activation Request !!!\t\t\t{end}{white}<==============={end}",  'align' : ()},
-          14 : {'text' : "{blue}Server parsing RPC Activation Request...{end}",                                      'align' : ()},
-          15 : {'text' : "{blue}Server processing KMS Activation Request...{end}",                                   'align' : ()},
-          16 : {'text' : "{blue}Server processing KMS Activation Response...{end}",                                  'align' : ()},
-          17 : {'text' : "{blue}Server generating RPC Activation Response...{end}",                                  'align' : ()},
-          18 : {'text' : "{blue}Server sending RPC Activation Response...\t\t\t{end}{white}===============>{end}",   'align' : ()},
-          19 : {'text' : "{green}{bold}\nServer responded, now in Stand by...\n{end}",                               'align' : ()},
-          20 : {'text' : "{white}===============>{end}{blue}\tClient received Response !!!{end}",                    'align' : ()},
-          21 : {'text' : "{green}{bold}\t\t\tActivation Done !!!{end}",                                              'align' : ()},
-          -1 : {'text' : "{white}Server receiving{end}",                                                             'align' : ()},
-          -2 : {'text' : "{white}\t\t\t\t\t\t\t\tClient sending{end}",                                               'align' : ()},
-          -3 : {'text' : "{white}\t\t\t\t\t\t\t\tClient receiving{end}",                                             'align' : ()},
-          -4 : {'text' : "{white}Server sending{end}",                                                               'align' : ()},
+MsgMap = {0  : {'text' : "{{yellow}}{}{}Client generating RPC Bind Request...{{end}}"                                  .format('\n', '\t' * 3)},
+          1  : {'text' : "{{white}}<==============={{end}}{{yellow}}{}Client sending RPC Bind Request...{{end}}"       .format('\t')},
+          2  : {'text' : "{{yellow}}Server received RPC Bind Request !!!{}{{end}}{{white}}<==============={{end}}"     .format('\t' * 4)},
+          3  : {'text' : "{{yellow}}Server parsing RPC Bind Request...{{end}}"                                         .format()},
+          4  : {'text' : "{{yellow}}Server generating RPC Bind Response...{{end}}"                                     .format()},
+          5  : {'text' : "{{yellow}}Server sending RPC Bind Response...{}{{end}}{{white}}===============>{{end}}"      .format('\t' * 4)},
+          6  : {'text' : "{{green}}{{bold}}{}RPC Bind acknowledged !!!{{end}}"                                         .format('\n')},
+          7  : {'text' : "{{white}}===============>{{end}}{{yellow}}{}Client received RPC Bind Response !!!{{end}}"    .format('\t')},
+          8  : {'text' : "{{green}}{{bold}}{}RPC Bind acknowledged !!!{{end}}"                                         .format('\t' * 3)},
+          9  : {'text' : "{{blue}}{}Client generating Activation Request dictionary...{{end}}"                         .format('\t' * 3)},
+          10 : {'text' : "{{blue}}{}Client generating Activation Request data...{{end}}"                               .format('\t' * 3)},
+          11 : {'text' : "{{blue}}{}Client generating RPC Activation Request...{{end}}"                                .format('\t' * 3)},
+          12 : {'text' : "{{white}}<==============={{end}}{{blue}}{}Client sending RPC Activation Request...{{end}}"   .format('\t')},
+          13 : {'text' : "{{blue}}Server received RPC Activation Request !!!{}{{end}}{{white}}<==============={{end}}" .format('\t' * 3)},
+          14 : {'text' : "{{blue}}Server parsing RPC Activation Request...{{end}}"                                     .format()},
+          15 : {'text' : "{{blue}}Server processing KMS Activation Request...{{end}}"                                  .format()},
+          16 : {'text' : "{{blue}}Server processing KMS Activation Response...{{end}}"                                 .format()},
+          17 : {'text' : "{{blue}}Server generating RPC Activation Response...{{end}}"                                 .format()},
+          18 : {'text' : "{{blue}}Server sending RPC Activation Response...{}{{end}}{{white}}===============>{{end}}"  .format('\t' * 3)},
+          19 : {'text' : "{{green}}{{bold}}{}Server responded, now in Stand by...{}{{end}}"                            .format('\n','\n')},
+          20 : {'text' : "{{white}}===============>{{end}}{{blue}}{}Client received Response !!!{{end}}"               .format('\t')},
+          21 : {'text' : "{{green}}{{bold}}{}Activation Done !!!{{end}}"                                               .format('\t' * 3)},
+          -1 : {'text' : "{{white}}Server receiving{{end}}"                                                            .format()},
+          -2 : {'text' : "{{white}}{}Client sending{{end}}"                                                            .format('\t' * 8)},
+          -3 : {'text' : "{{white}}{}Client receiving{{end}}"                                                          .format('\t' * 8)},
+          -4 : {'text' : "{{white}}Server sending{{end}}"                                                              .format()},
           }
 
 def unformat_message(symbolic_string_list):
@@ -211,7 +211,7 @@ class ShellMessage(object):
                     pass
             self.msgfrmt = msgtofrmt.format(**ColorExtraMap)
             if self.get_text:
-                self.plaintext.append(unshell_message(self.msgfrmt, count = 0)[0]["tag00"]['text'])
+                self.plaintext.append(unshell_message(self.msgfrmt, count = 0)[0]["tag00"]['text'].strip())
 
         def newlines_file(self, mode, *args):
             try:
