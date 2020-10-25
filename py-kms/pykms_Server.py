@@ -292,7 +292,10 @@ def server_options():
                 pykmssrv_zeroarg, pykmssrv_onearg = kms_parser_get(server_parser)
                 etrigan_zeroarg, etrigan_onearg = kms_parser_get(etrigan_parser)
                 connect_zeroarg, connect_onearg = kms_parser_get(connect_parser)
-                subpars = ['etrigan', 'connect']
+                subdict = {'etrigan' : (etrigan_zeroarg, etrigan_onearg, daemon_parser.parse_args),
+                           'connect' : (connect_zeroarg, connect_onearg, connection_parser.parse_args)
+                           }
+                subpars = list(subdict.keys())
                 pykmssrv_zeroarg += subpars # add subparsers
 
                 exclude_kms = ['-F', '--logfile']
@@ -300,75 +303,43 @@ def server_options():
 
                 # Set defaults for server dict config.
                 # example case:
-                #               python3 pykms_Server.py
+                #       python3 pykms_Server.py
                 srv_config.update(vars(server_parser.parse_args([])))
 
-                if all(pars in userarg for pars in subpars):
-                        ## Set `daemon options` and `connect options` for server dict config.
-                        pos_etr = userarg.index('etrigan')
-                        pos_con = userarg.index('connect')
-                        pos = min(pos_etr, pos_con)
+                subindx = sorted([(userarg.index(pars), pars) for pars in subpars if pars in userarg], key = lambda x: x[0])
+                if subindx:
+                        # Set `daemon options` and/or `connect options` for server dict config.
+                        # example cases:
+                        # 1     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals] \
+                        #       connect [--connect_optionals]
+                        #
+                        # 2     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals] etrigan \
+                        #       daemon_positional [--daemon_optionals]
+                        #
+                        # 3     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals]
+                        # 4     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals]
+                        first = subindx[0][0]
+                        # initial.
+                        kms_parser_check_optionals(userarg[0 : first], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
+                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0 : first], force_parse = True)
+                        # middle.
+                        for i in range(len(subindx) - 1):
+                                posi, posf, typ = subindx[i][0], subindx[i + 1][0], subindx[i][1]
+                                kms_parser_check_optionals(userarg[posi : posf], subdict[typ][0], subdict[typ][1], msg = 'optional %s' %typ,
+                                                           exclude_opt_dup = (exclude_dup if typ == 'connect' else []))
+                                kms_parser_check_positionals(srv_config, subdict[typ][2], arguments = userarg[posi : posf], msg = 'positional %s' %typ)
+                        # final.
+                        pos, typ = subindx[-1]
+                        kms_parser_check_optionals(userarg[pos:], subdict[typ][0], subdict[typ][1], msg = 'optional %s' %typ,
+                                                   exclude_opt_dup = (exclude_dup if typ == 'connect' else []))
+                        kms_parser_check_positionals(srv_config, subdict[typ][2], arguments = userarg[pos:], msg = 'positional %s' %typ)
 
-                        kms_parser_check_optionals(userarg[0 : pos], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
-                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0 : pos], force_parse = True)
-
-                        if pos == pos_etr:
-                                # example case:
-                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals] \
-                                #               connect [--connect_optionals]
-                                kms_parser_check_optionals(userarg[pos : pos_con], etrigan_zeroarg, etrigan_onearg,
-                                                           msg = 'optional etrigan')
-                                kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos : pos_con],
-                                                             msg = 'positional etrigan')
-                                kms_parser_check_optionals(userarg[pos_con:], connect_zeroarg, connect_onearg,
-                                                           msg = 'optional connect', exclude_opt_dup = exclude_dup)
-                                kms_parser_check_positionals(srv_config, connection_parser.parse_args, arguments = userarg[pos_con:],
-                                                             msg = 'positional connect')
-                        elif pos == pos_con:
-                                # example case:
-                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals] etrigan \
-                                #               daemon_positional [--daemon_optionals]
-                                kms_parser_check_optionals(userarg[pos : pos_etr], connect_zeroarg, connect_onearg,
-                                                           msg = 'optional connect', exclude_opt_dup = exclude_dup)
-                                kms_parser_check_positionals(srv_config, connection_parser.parse_args, arguments = userarg[pos : pos_etr],
-                                                             msg = 'positional connect')
-                                kms_parser_check_optionals(userarg[pos_etr:], etrigan_zeroarg, etrigan_onearg,
-                                                           msg = 'optional etrigan')
-                                kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos_etr:],
-                                                             msg = 'positional etrigan')
-
-                        srv_config['mode'] = 'etrigan+connect'
-
-                elif any(pars in userarg for pars in subpars):
-                        if 'etrigan' in userarg:
-                                pos = userarg.index('etrigan')
-                        elif 'connect' in userarg:
-                                pos = userarg.index('connect')
-
-                        kms_parser_check_optionals(userarg[0 : pos], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
-                        kms_parser_check_positionals(srv_config, server_parser.parse_args, arguments = userarg[0 : pos], force_parse = True)
-
-                        if 'etrigan' in userarg:
-                                ## Set daemon options for server dict config.
-                                # example case:
-                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals]
-                                kms_parser_check_optionals(userarg[pos:], etrigan_zeroarg, etrigan_onearg,
-                                                           msg = 'optional etrigan')
-                                kms_parser_check_positionals(srv_config, daemon_parser.parse_args, arguments = userarg[pos:],
-                                                             msg = 'positional etrigan')
-
-                        elif 'connect' in userarg:
-                                ## Set connect options for server dict config.
-                                # example case:
-                                #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals]
-                                kms_parser_check_optionals(userarg[pos:], connect_zeroarg, connect_onearg,
-                                                           msg = 'optional connect', exclude_opt_dup = exclude_dup)
-                                kms_parser_check_positionals(srv_config, connection_parser.parse_args, arguments = userarg[pos:],
-                                                             msg = 'positional connect')
+                        if len(set(userarg) & set(subpars)) >= 2:
+                                srv_config['mode'] = '+'.join(subpars)
                 else:
-                        # Update pykms options for dict server config.
+                        # Update `pykms options` for server dict config.
                         # example case:
-                        #               python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals]
+                        # 5     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals]
                         kms_parser_check_optionals(userarg, pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
                         kms_parser_check_positionals(srv_config, server_parser.parse_args)
 
