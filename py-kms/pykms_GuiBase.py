@@ -72,11 +72,12 @@ class KmsGui(tk.Tk):
                 self.validation_float = (self.register(self.validate_float), "%P")
 
                 ## Define fonts and colors.
-                self.btnwinfont = tkFont.Font(family = 'Times', size = 12, weight = 'bold')
-                self.othfont = tkFont.Font(family = 'Times', size = 9, weight = 'bold')
-                self.optfont = tkFont.Font(family = 'Helvetica', size = 11, weight = 'bold')
-                self.optfontredux = tkFont.Font(family = 'Helvetica', size = 9, weight = 'bold')
-                self.msgfont = tkFont.Font(family = 'Monospace', size = 6) # need a monospaced type (like courier, etc..).
+                self.customfonts = {'btn' : tkFont.Font(family = 'Fixedsys', size = 11, weight = 'bold'),
+                                    'oth' : tkFont.Font(family = 'Times', size = 9, weight = 'bold'),
+                                    'opt' : tkFont.Font(family = 'Fixedsys', size = 9, weight = 'bold'),
+                                    'lst' : tkFont.Font(family = 'Fixedsys', size = 8, weight = 'bold', slant = 'italic'),
+                                    'msg' : tkFont.Font(family = 'Monospace', size = 6), # need a monospaced type (like courier, etc..).
+                                    }
 
                 self.customcolors = { 'black'   : '#000000',
                                       'white'   : '#FFFFFF',
@@ -88,17 +89,12 @@ class KmsGui(tk.Tk):
                                       'blue'    : '#1E90FF',
                                       'cyan'    : '#AFEEEE',
                                       'lavender': '#E6E6FA',
+                                      'brown'   : '#A52A2A',
                                       }
 
-                self.option_add('*TCombobox*Listbox.font', self.optfontredux)
+                self.option_add('*TCombobox*Listbox.font', self.customfonts['lst'])
 
                 self.gui_create()
-
-        def browse(self, entrywidget, options):
-                path = filedialog.askdirectory()
-                if os.path.isdir(path):
-                        entrywidget.delete('0', 'end')
-                        entrywidget.insert('end', path + os.sep + os.path.basename(options['lfile']['def']))
 
         def invert(self, widgets = []):
                 for widget in widgets:
@@ -274,107 +270,115 @@ class KmsGui(tk.Tk):
                 self.msgsrvwin.grid_rowconfigure(0, weight = 1)
 
                 ## Create widgets (btnsrvwin) ---------------------------------------------------------------------------------------------------------------
-                self.statesrv = tk.Label(self.btnsrvwin, text = 'Server\nState:\nStopped', font = self.othfont, foreground = self.customcolors['red'])
+                self.statesrv = tk.Label(self.btnsrvwin, text = 'Server\nState:\nStopped', font = self.customfonts['oth'],
+                                         foreground = self.customcolors['red'])
                 self.runbtnsrv = tk.Button(self.btnsrvwin, text = 'START\nSERVER', background = self.customcolors['green'],
-                                           foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.srv_on_start)
+                                           foreground = self.customcolors['white'], relief = 'raised', font = self.customfonts['btn'],
+                                           command = self.srv_on_start)
                 self.shbtnclt = tk.Button(self.btnsrvwin, text = 'SHOW\nCLIENT', background = self.customcolors['magenta'],
-                                          foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.clt_on_show)
+                                          foreground = self.customcolors['white'], relief = 'raised', font = self.customfonts['btn'],
+                                          command = self.clt_on_show)
+                self.defaubtnsrv = tk.Button(self.btnsrvwin, text = 'DEFAULTS', background = self.customcolors['brown'],
+                                             foreground = self.customcolors['white'], relief = 'raised', font = self.customfonts['btn'],
+                                             command = self.on_defaults)
                 self.clearbtnsrv = tk.Button(self.btnsrvwin, text = 'CLEAR', background = self.customcolors['orange'],
-                                             foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont,
+                                             foreground = self.customcolors['white'], relief = 'raised', font = self.customfonts['btn'],
                                              command = lambda: self.on_clear([txsrv, txclt]))
                 self.exitbtnsrv = tk.Button(self.btnsrvwin, text = 'EXIT', background = self.customcolors['black'],
-                                            foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont, command = self.on_exit)
-        
+                                            foreground = self.customcolors['white'], relief = 'raised', font = self.customfonts['btn'],
+                                            command = self.on_exit)
+
                 ## Layout widgets (btnsrvwin)
                 self.statesrv.grid(row = 0, column = 0, padx = 2, pady = 2, sticky = 'ew')
                 self.runbtnsrv.grid(row = 1, column = 0, padx = 2, pady = 2, sticky = 'ew')
                 self.shbtnclt.grid(row = 2, column = 0, padx = 2, pady = 2, sticky = 'ew')
-                self.clearbtnsrv.grid(row = 3, column = 0, padx = 2, pady = 2, sticky = 'ew')
-                self.exitbtnsrv.grid(row = 4, column = 0, padx = 2, pady = 2, sticky = 'ew')                
-                
+                self.defaubtnsrv.grid(row = 3, column = 0, padx = 2, pady = 2, sticky = 'ew')
+                self.clearbtnsrv.grid(row = 4, column = 0, padx = 2, pady = 2, sticky = 'ew')
+                self.exitbtnsrv.grid(row = 5, column = 0, padx = 2, pady = 2, sticky = 'ew')
+
                 ## Create widgets (optsrvwin:Srv:PageWin:PageStart) -----------------------------------------------------------------------------------------
                 # Version.
                 ver = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"],
-                               text = 'You are running server version: ' + srv_version, foreground = self.customcolors['red'],
-                               font = self.othfont)
+                               text = 'You are running server version: ' + srv_version, font = self.customfonts['oth'],
+                               foreground = self.customcolors['red'])
                 # Ip Address.
-                srvipaddlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'IP Address: ', font = self.optfont)
-                self.srvipadd = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                srvipaddlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'IP Address: ', font = self.customfonts['opt'])
+                self.srvipadd = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'ip')
                 self.srvipadd.insert('end', srv_options['ip']['def'])
                 ToolTip(self.srvipadd, text = srv_options['ip']['help'], wraplength = self.wraplength)
                 myipadd = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Your IP address is: {}'.format(get_ip_address()),
-                                   foreground = self.customcolors['red'], font = self.othfont)
+                                   font = self.customfonts['oth'], foreground = self.customcolors['red'])
                 # Port.
-                srvportlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Port: ', font = self.optfont)
-                self.srvport = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                        validatecommand = self.validation_int)
+                srvportlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Port: ', font = self.customfonts['opt'])
+                self.srvport = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'port',
+                                        validate = "key", validatecommand = self.validation_int)
                 self.srvport.insert('end', str(srv_options['port']['def']))
                 ToolTip(self.srvport, text = srv_options['port']['help'], wraplength = self.wraplength)
                 # EPID.
-                epidlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'EPID: ', font = self.optfont)
-                self.epid = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                epidlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'EPID: ', font = self.customfonts['opt'])
+                self.epid = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'epid')
                 self.epid.insert('end', str(srv_options['epid']['def']))
                 ToolTip(self.epid, text = srv_options['epid']['help'], wraplength = self.wraplength)
                 # LCID.
-                lcidlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'LCID: ', font = self.optfont)
-                self.lcid = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                     validatecommand = self.validation_int)
+                lcidlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'LCID: ', font = self.customfonts['opt'])
+                self.lcid = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'lcid',
+                                     validate = "key", validatecommand = self.validation_int)
                 self.lcid.insert('end', str(srv_options['lcid']['def']))
                 ToolTip(self.lcid, text = srv_options['lcid']['help'], wraplength = self.wraplength)
                 # HWID.
-                hwidlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'HWID: ', font = self.optfont)
+                hwidlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'HWID: ', font = self.customfonts['opt'])
                 self.hwid = ttk.Combobox(self.pagewidgets["Srv"]["PageWin"]["PageStart"], values = (str(srv_options['hwid']['def']), 'RANDOM'),
-                                         width = 17, height = 10, font = self.optfontredux)
+                                         width = 17, height = 10, font = self.customfonts['lst'], name = 'hwid')
                 self.hwid.set(str(srv_options['hwid']['def']))
                 ToolTip(self.hwid, text = srv_options['hwid']['help'], wraplength = self.wraplength)
                 # Client Count
-                countlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Client Count: ', font = self.optfont)
-                self.count = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                countlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Client Count: ', font = self.customfonts['opt'])
+                self.count = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'count')
                 self.count.insert('end', str(srv_options['count']['def']))
                 ToolTip(self.count, text = srv_options['count']['help'], wraplength = self.wraplength)
                 # Activation Interval.
-                activlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Activation Interval: ', font = self.optfont)
-                self.activ = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                      validatecommand = self.validation_int)
+                activlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Activation Interval: ', font = self.customfonts['opt'])
+                self.activ = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'activation',
+                                      validate = "key", validatecommand = self.validation_int)
                 self.activ.insert('end', str(srv_options['activation']['def']))
                 ToolTip(self.activ, text = srv_options['activation']['help'], wraplength = self.wraplength)
                 # Renewal Interval.
-                renewlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Renewal Interval: ', font = self.optfont)
-                self.renew = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                      validatecommand = self.validation_int)
+                renewlbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Renewal Interval: ', font = self.customfonts['opt'])
+                self.renew = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'renewal',
+                                      validate = "key", validatecommand = self.validation_int)
                 self.renew.insert('end', str(srv_options['renewal']['def']))
                 ToolTip(self.renew, text = srv_options['renewal']['help'], wraplength = self.wraplength)
                 # Logfile.
-                srvfilelbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Logfile Path / Name: ', font = self.optfont)
-                self.srvfile = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                srvfilelbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Logfile Path / Name: ', font = self.customfonts['opt'])
+                self.srvfile = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'lfile')
                 self.srvfile.insert('end', srv_options['lfile']['def'])
                 self.srvfile.xview_moveto(1)
                 ToolTip(self.srvfile, text = srv_options['lfile']['help'], wraplength = self.wraplength)
-                srvfilebtnwin = tk.Button(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Browse',
-                                       command = lambda: self.browse(self.srvfile, srv_options))
+                srvfilebtnwin = tk.Button(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Browse', font = self.customfonts['opt'],
+                                          command = lambda: self.on_browse(self.srvfile, srv_options))
                 # Loglevel.
-                srvlevellbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Loglevel: ', font = self.optfont)
+                srvlevellbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Loglevel: ', font = self.customfonts['opt'])
                 self.srvlevel = ttk.Combobox(self.pagewidgets["Srv"]["PageWin"]["PageStart"], values = tuple(srv_options['llevel']['choi']),
-                                             width = 10, height = 10, font = self.optfontredux, state = "readonly")
+                                             width = 10, height = 10, font = self.customfonts['lst'], state = "readonly", name = 'llevel')
                 self.srvlevel.set(srv_options['llevel']['def'])
                 ToolTip(self.srvlevel, text = srv_options['llevel']['help'], wraplength = self.wraplength)
                 # Logsize.
-                srvsizelbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Logsize: ', font = self.optfont)
-                self.srvsize = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                        validatecommand = self.validation_float)
+                srvsizelbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Logsize: ', font = self.customfonts['opt'])
+                self.srvsize = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'lsize',
+                                        validate = "key", validatecommand = self.validation_float)
                 self.srvsize.insert('end', srv_options['lsize']['def'])
                 ToolTip(self.srvsize, text = srv_options['lsize']['help'], wraplength = self.wraplength)
                 # Asynchronous messages.
                 self.chkvalsrvasy = tk.BooleanVar()
                 self.chkvalsrvasy.set(srv_options['asyncmsg']['def'])
                 chksrvasy = tk.Checkbutton(self.pagewidgets["Srv"]["PageWin"]["PageStart"], text = 'Async\nMsg',
-                                           font = self.optfontredux, var = self.chkvalsrvasy, relief = 'groove')
+                                           font = self.customfonts['opt'], var = self.chkvalsrvasy, relief = 'groove', name = 'asyncmsg')
                 ToolTip(chksrvasy, text = srv_options['asyncmsg']['help'], wraplength = self.wraplength)
 
                 # Listbox radiobuttons server.
                 self.chksrvfile = ListboxOfRadiobuttons(self.pagewidgets["Srv"]["PageWin"]["PageStart"],
                                                         ['FILE', 'FILEOFF', 'STDOUT', 'STDOUTOFF', 'FILESTDOUT'],
-                                                        self.optfontredux,
+                                                        self.customfonts['lst'],
                                                         changed = [(self.srvfile, srv_options['lfile']['def']),
                                                                    (srvfilebtnwin, ''),
                                                                    (self.srvsize, srv_options['lsize']['def']),
@@ -412,25 +416,25 @@ class KmsGui(tk.Tk):
 
                 ## Create widgets (optsrvwin:Srv:PageWin:PageEnd)-------------------------------------------------------------------------------------------
                 # Timeout connection.
-                srvtimeout0lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.optfont)
-                self.srvtimeout0 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                srvtimeout0lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.customfonts['opt'])
+                self.srvtimeout0 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.customfonts['opt'], name = 'time0')
                 self.srvtimeout0.insert('end', str(srv_options['time0']['def']))
                 ToolTip(self.srvtimeout0, text = srv_options['time0']['help'], wraplength = self.wraplength)
                 # Timeout send/recv.
-                srvtimeout1lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout send-recv: ', font = self.optfont)
-                self.srvtimeout1 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                srvtimeout1lbl = tk.Label(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Timeout send-recv: ', font = self.customfonts['opt'])
+                self.srvtimeout1 = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.customfonts['opt'], name = 'time1')
                 self.srvtimeout1.insert('end', str(srv_options['time1']['def']))
                 ToolTip(self.srvtimeout1, text = srv_options['time1']['help'], wraplength = self.wraplength)
                 # Sqlite database.
                 self.chkvalsql = tk.BooleanVar()
                 self.chkvalsql.set(srv_options['sql']['def'])
-                self.chkfilesql = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                self.chkfilesql = tk.Entry(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], width = 16, font = self.customfonts['opt'], name = 'sql')
                 self.chkfilesql.insert('end', srv_options['sql']['file'])
                 self.chkfilesql.xview_moveto(1)
                 self.chkfilesql.configure(state = 'disabled')
 
                 chksql = tk.Checkbutton(self.pagewidgets["Srv"]["PageWin"]["PageEnd"], text = 'Create Sqlite\nDatabase',
-                                        font = self.optfontredux, var = self.chkvalsql, relief = 'groove',
+                                        font = self.customfonts['opt'], var = self.chkvalsql, relief = 'groove',
                                         command = lambda: self.sql_status())
                 ToolTip(chksql, text = srv_options['sql']['help'], wraplength = self.wraplength)
 
@@ -451,13 +455,15 @@ class KmsGui(tk.Tk):
 
                 ## Create widgets and layout (msgsrvwin) ---------------------------------------------------------------------------------------------------
                 self.textboxsrv = TextDoubleScroll(self.msgsrvwin, background = self.customcolors['black'], wrap = 'none', state = 'disabled',
-                                                   relief = 'ridge', font = self.msgfont)
+                                                   relief = 'ridge', font = self.customfonts['msg'])
                 self.textboxsrv.put()
 
         def sql_status(self):
                 if self.chkvalsql.get():
                         self.chkfilesql.configure(state = 'normal')
                 else:
+                        self.chkfilesql.insert('end', srv_options['sql']['file'])
+                        self.chkfilesql.xview_moveto(1)
                         self.chkfilesql.configure(state = 'disabled')
 
         def always_centered(self, geo, centered, refs):
@@ -509,11 +515,12 @@ class KmsGui(tk.Tk):
                 self.optcltwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
                 self.msgcltwin = tk.Frame(self.masterwin, background = self.customcolors['black'], relief = 'ridge', width = 300, height = 200)
                 self.btncltwin = tk.Canvas(self.masterwin, background = self.customcolors['white'], borderwidth = 3, relief = 'ridge')
-                
+
                 xb, yb, wb, hb = self.get_position(self.btnsrvwin)
-                self.btncltwin_X = xb + 2
-                self.btncltwin_Y = yb + hb + 10
-                self.btncltwin.place(x = self.btncltwin_X, y = self.btncltwin_Y, bordermode = 'inside', anchor = 'nw')
+                self.btncltwin_X = xb
+                self.btncltwin_Y = yb + hb + 6
+                self.btncltwin.place(x = self.btncltwin_X, y = self.btncltwin_Y, bordermode = 'outside', anchor = 'center')
+
                 self.optcltwin.grid(row = 0, column = 4, padx = 2, pady = 2, sticky = 'nsew')
                 self.optcltwin.grid_rowconfigure(0, weight = 1)
                 self.optcltwin.grid_columnconfigure(1, weight = 1)
@@ -530,8 +537,8 @@ class KmsGui(tk.Tk):
 
                 ## Create widgets (btncltwin) ----------------------------------------------------------------------------------------------------------------
                 self.runbtnclt = tk.Button(self.btncltwin, text = 'START\nCLIENT', background = self.customcolors['blue'],
-                                           foreground = self.customcolors['white'], relief = 'flat', font = self.btnwinfont,
-                                           state = 'disabled', command = self.clt_on_start)
+                                           foreground = self.customcolors['white'], relief = 'raised', font = self.customfonts['btn'],
+                                           state = 'disabled', command = self.clt_on_start, width = 8, height = 2)
 
                 ## Layout widgets (btncltwin)
                 self.runbtnclt.grid(row = 0, column = 0, padx = 2, pady = 2, sticky = 'ew')
@@ -539,66 +546,65 @@ class KmsGui(tk.Tk):
                 ## Create widgets (optcltwin:Clt:PageWin:PageStart) ------------------------------------------------------------------------------------------
                 # Version.
                 cltver = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'You are running client version: ' + clt_version,
-                                  foreground = self.customcolors['red'], font = self.othfont)
+                                  font = self.customfonts['oth'], foreground = self.customcolors['red'])
                 # Ip Address.
-                cltipaddlbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'IP Address: ', font = self.optfont)
-                self.cltipadd = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                cltipaddlbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'IP Address: ', font = self.customfonts['opt'])
+                self.cltipadd = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'ip')
                 self.cltipadd.insert('end', clt_options['ip']['def'])
                 ToolTip(self.cltipadd, text = clt_options['ip']['help'], wraplength = self.wraplength)
                 # Port.
-                cltportlbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Port: ', font = self.optfont)
-                self.cltport = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                        validatecommand = self.validation_int)
+                cltportlbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Port: ', font = self.customfonts['opt'])
+                self.cltport = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'port',
+                                        validate = "key", validatecommand = self.validation_int)
                 self.cltport.insert('end', str(clt_options['port']['def']))
                 ToolTip(self.cltport, text = clt_options['port']['help'], wraplength = self.wraplength)
                 # Mode.
-                cltmodelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Mode: ', font = self.optfont)
+                cltmodelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Mode: ', font = self.customfonts['opt'])
                 self.cltmode = ttk.Combobox(self.pagewidgets["Clt"]["PageWin"]["PageStart"], values = tuple(clt_options['mode']['choi']),
-                                            width = 17, height = 10, font = self.optfontredux, state = "readonly")
+                                            width = 17, height = 10, font = self.customfonts['lst'], state = "readonly", name = 'mode')
                 self.cltmode.set(clt_options['mode']['def'])
                 ToolTip(self.cltmode, text = clt_options['mode']['help'], wraplength = self.wraplength)
                 # CMID.
-                cltcmidlbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'CMID: ', font = self.optfont)
-                self.cltcmid = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                cltcmidlbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'CMID: ', font = self.customfonts['opt'])
+                self.cltcmid = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'cmid')
                 self.cltcmid.insert('end', str(clt_options['cmid']['def']))
                 ToolTip(self.cltcmid, text = clt_options['cmid']['help'], wraplength = self.wraplength)
                 # Machine Name.
-                cltnamelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Machine Name: ', font = self.optfont)
-                self.cltname = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                cltnamelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Machine Name: ', font = self.customfonts['opt'])
+                self.cltname = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'name')
                 self.cltname.insert('end', str(clt_options['name']['def']))
                 ToolTip(self.cltname, text = clt_options['name']['help'], wraplength = self.wraplength)
                 # Logfile.
-                cltfilelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Logfile Path / Name: ', font = self.optfont)
-                self.cltfile = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont)
+                cltfilelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Logfile Path / Name: ', font = self.customfonts['opt'])
+                self.cltfile = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'lfile')
                 self.cltfile.insert('end', clt_options['lfile']['def'])
                 self.cltfile.xview_moveto(1)
                 ToolTip(self.cltfile, text = clt_options['lfile']['help'], wraplength = self.wraplength)
-                cltfilebtnwin = tk.Button(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Browse',
-                                          command = lambda: self.browse(self.cltfile, clt_options))
+                cltfilebtnwin = tk.Button(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Browse', font = self.customfonts['opt'],
+                                          command = lambda: self.on_browse(self.cltfile, clt_options))
                 # Loglevel.
-                cltlevellbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Loglevel: ', font = self.optfont)
+                cltlevellbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Loglevel: ', font = self.customfonts['opt'])
                 self.cltlevel = ttk.Combobox(self.pagewidgets["Clt"]["PageWin"]["PageStart"], values = tuple(clt_options['llevel']['choi']),
-                                             width = 10, height = 10, font = self.optfontredux, state = "readonly")
+                                             width = 10, height = 10, font = self.customfonts['lst'], state = "readonly", name = 'llevel')
                 self.cltlevel.set(clt_options['llevel']['def'])
                 ToolTip(self.cltlevel, text = clt_options['llevel']['help'], wraplength = self.wraplength)
-
                 # Logsize.
-                cltsizelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Logsize: ', font = self.optfont)
-                self.cltsize = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.optfont, validate = "key",
-                                        validatecommand = self.validation_float)
+                cltsizelbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Logsize: ', font = self.customfonts['opt'])
+                self.cltsize = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageStart"], width = 10, font = self.customfonts['opt'], name = 'lsize',
+                                        validate = "key", validatecommand = self.validation_float)
                 self.cltsize.insert('end', clt_options['lsize']['def'])
                 ToolTip(self.cltsize, text = clt_options['lsize']['help'], wraplength = self.wraplength)
                 # Asynchronous messages.
                 self.chkvalcltasy = tk.BooleanVar()
                 self.chkvalcltasy.set(clt_options['asyncmsg']['def'])
                 chkcltasy = tk.Checkbutton(self.pagewidgets["Clt"]["PageWin"]["PageStart"], text = 'Async\nMsg',
-                                           font = self.optfontredux, var = self.chkvalcltasy, relief = 'groove')
+                                           font = self.customfonts['opt'], var = self.chkvalcltasy, relief = 'groove', name = 'asyncmsg')
                 ToolTip(chkcltasy, text = clt_options['asyncmsg']['help'], wraplength = self.wraplength)
 
                 # Listbox radiobuttons client.
                 self.chkcltfile = ListboxOfRadiobuttons(self.pagewidgets["Clt"]["PageWin"]["PageStart"],
                                                         ['FILE', 'FILEOFF', 'STDOUT', 'STDOUTOFF', 'FILESTDOUT'],
-                                                        self.optfontredux,
+                                                        self.customfonts['lst'],
                                                         changed = [(self.cltfile, clt_options['lfile']['def']),
                                                                    (cltfilebtnwin, ''),
                                                                    (self.cltsize, clt_options['lsize']['def']),
@@ -634,13 +640,13 @@ class KmsGui(tk.Tk):
 
                 ## Create widgets (optcltwin:Clt:PageWin:PageEnd) -------------------------------------------------------------------------------------------
                 # Timeout connection.
-                clttimeout0lbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.optfont)
-                self.clttimeout0 = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                clttimeout0lbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], text = 'Timeout connection: ', font = self.customfonts['opt'])
+                self.clttimeout0 = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 16, font = self.customfonts['opt'], name = 'time0')
                 self.clttimeout0.insert('end', str(clt_options['time0']['def']))
                 ToolTip(self.clttimeout0, text = clt_options['time0']['help'], wraplength = self.wraplength)
                 # Timeout send/recv.
-                clttimeout1lbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], text = 'Timeout send-recv: ', font = self.optfont)
-                self.clttimeout1 = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 16, font = self.optfont)
+                clttimeout1lbl = tk.Label(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], text = 'Timeout send-recv: ', font = self.customfonts['opt'])
+                self.clttimeout1 = tk.Entry(self.pagewidgets["Clt"]["PageWin"]["PageEnd"], width = 16, font = self.customfonts['opt'], name = 'time1')
                 self.clttimeout1.insert('end', str(clt_options['time1']['def']))
                 ToolTip(self.clttimeout1, text = clt_options['time1']['help'], wraplength = self.wraplength)
 
@@ -659,7 +665,7 @@ class KmsGui(tk.Tk):
                 
                 ## Create widgets and layout (msgcltwin) -----------------------------------------------------------------------------------------------------
                 self.textboxclt = TextDoubleScroll(self.msgcltwin, background = self.customcolors['black'], wrap = 'none', state = 'disabled',
-                                                   relief = 'ridge', font = self.msgfont)
+                                                   relief = 'ridge', font = self.customfonts['msg'])
                 self.textboxclt.put()
                                
         def prep_option(self, value):
@@ -702,12 +708,12 @@ class KmsGui(tk.Tk):
 
         def clt_on_show(self, force_remove = False, force_view = False):
                 if self.optcltwin.winfo_ismapped() or force_remove:
-                        self.shbtnclt['text'] = 'SHOW\nCLIENT'
+                        self.shbtnclt.configure(text = 'SHOW\nCLIENT', relief = 'raised')
                         self.optcltwin.grid_remove()
                         self.msgcltwin.grid_remove()
                         self.btncltwin.place_forget()
                 elif not self.optcltwin.winfo_ismapped() or force_view:
-                        self.shbtnclt['text'] = 'HIDE\nCLIENT'
+                        self.shbtnclt.configure(text = 'HIDE\nCLIENT', relief = 'sunken')
                         self.optcltwin.grid()
                         self.msgcltwin.grid()
                         self.btncltwin.place(x = self.btncltwin_X, y = self.btncltwin_Y, bordermode = 'inside', anchor = 'nw')
@@ -773,13 +779,13 @@ class KmsGui(tk.Tk):
                 self.srv_toggle_state()
                 if on_start:
                         self.runbtnsrv.configure(text = 'STOP\nSERVER', background = self.customcolors['red'],
-                                                 foreground = self.customcolors['white'])
+                                                 foreground = self.customcolors['white'], relief = 'sunken')
                         for widget in self.storewidgets_srv:
                                 widget.configure(state = 'disabled')
                         self.runbtnclt.configure(state = 'normal')
                 else:
                         self.runbtnsrv.configure(text = 'START\nSERVER', background = self.customcolors['green'],
-                                         foreground = self.customcolors['white'])
+                                         foreground = self.customcolors['white'], relief = 'raised')
                         for widget in self.storewidgets_srv:
                                 widget.configure(state = 'normal')
                                 if isinstance(widget, ListboxOfRadiobuttons):
@@ -801,14 +807,16 @@ class KmsGui(tk.Tk):
                         rng, add_newline = self.on_clear_setup()
                         self.on_clear([txsrv, txclt], clear_range = [rng, None], newline_list = [add_newline, False])
 
+                self.runbtnclt.configure(relief = 'sunken')
                 self.clt_actions_start()
                 # run thread for disabling interrupt server and client, when client running.
                 self.clt_eject_thread = threading.Thread(target = self.clt_eject, name = "Thread-CltEjt")
                 self.clt_eject_thread.setDaemon(True)
                 self.clt_eject_thread.start()
 
-                for widget in self.storewidgets_clt + [self.runbtnsrv, self.runbtnclt]:
+                for widget in self.storewidgets_clt + [self.runbtnsrv, self.runbtnclt, self.defaubtnsrv]:
                         widget.configure(state = 'disabled')
+                self.runbtnclt.configure(relief = 'raised')
 
         def clt_actions_start(self):
                 clt_config[clt_options['ip']['des']] = self.cltipadd.get()
@@ -838,7 +846,7 @@ class KmsGui(tk.Tk):
                 while self.clientthread.is_alive():
                         sleep(0.1)
 
-                widgets = self.storewidgets_clt + [self.runbtnclt]
+                widgets = self.storewidgets_clt + [self.runbtnclt] + [self.defaubtnsrv]
                 if not self.onlyclt:
                         widgets += [self.runbtnsrv]
 
@@ -849,6 +857,12 @@ class KmsGui(tk.Tk):
                                 widget.configure(state = 'normal')
                                 if isinstance(widget, ListboxOfRadiobuttons):
                                         widget.change()
+
+        def on_browse(self, entrywidget, options):
+                path = filedialog.askdirectory()
+                if os.path.isdir(path):
+                        entrywidget.delete('0', 'end')
+                        entrywidget.insert('end', path + os.sep + os.path.basename(options['lfile']['def']))
 
         def on_exit(self):
                 if serverthread.is_running_server:
@@ -890,3 +904,45 @@ class KmsGui(tk.Tk):
                         if add_n:
                                 widget.insert('end', '\n')
                         widget.configure(state = 'disabled')
+
+        def on_defaults(self):
+
+                def put_defaults(widgets, chkasy, listofradio, options):
+                        for widget in widgets:
+                                wclass, wname = widget.winfo_class(), widget.winfo_name()
+                                if wname == '!checkbutton':
+                                        continue
+
+                                opt = options[wname]['def']
+                                if wclass == 'Entry':
+                                        widget.delete(0, 'end')
+                                        if wname == 'sql':
+                                                self.chkvalsql.set(opt)
+                                                self.sql_status()
+                                        else:
+                                                widget.insert('end', (opt if isinstance(opt, str) else str(opt)))
+                                elif wclass == 'Checkbutton':
+                                        if wname == 'asyncmsg':
+                                                chkasy.set(opt)
+                                elif wclass == 'TCombobox':
+                                        widget.set(str(opt))
+
+                        # ListboxOfRadiobuttons default.
+                        listofradio.radiovar.set('FILE')
+                        listofradio.textbox.yview_moveto(0)
+                        listofradio.change()
+
+                if self.runbtnsrv['text'] == 'START\nSERVER':
+                        apply_default = zip(["Srv", "Clt"],
+                                            [self.chkvalsrvasy, self.chkvalcltasy],
+                                            [self.chksrvfile, self.chkcltfile],
+                                            [srv_options, clt_options])
+                elif self.runbtnsrv['text'] == 'STOP\nSERVER':
+                        apply_default = zip(*[("Clt",),
+                                              (self.chkvalcltasy,),
+                                              (self.chkcltfile,),
+                                              (clt_options,)])
+
+                for side, chkasy, listofradio, options in apply_default:
+                        widgets = self.gui_store(side = side, typewidgets = ['Entry', 'TCombobox', 'Checkbutton'])
+                        put_defaults(widgets, chkasy, listofradio, options)

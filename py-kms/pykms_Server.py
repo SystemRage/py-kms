@@ -334,8 +334,8 @@ def server_options():
                                                    exclude_opt_dup = (exclude_dup if typ == 'connect' else []))
                         kms_parser_check_positionals(srv_config, subdict[typ][2], arguments = userarg[pos:], msg = 'positional %s' %typ)
 
-                        if len(set(userarg) & set(subpars)) >= 2:
-                                srv_config['mode'] = '+'.join(subpars)
+                        if len(subindx) > 1:
+                                srv_config['mode'] = '+'.join(elem[1] for elem in subindx)
                 else:
                         # Update `pykms options` for server dict config.
                         # example case:

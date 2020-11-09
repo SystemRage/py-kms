@@ -404,7 +404,7 @@ def custom_pages(window, side):
         
         for position in buttons.keys():
                 buttons[position].config(anchor = "center",
-                                         font = window.btnwinfont,
+                                         font = window.customfonts['btn'],
                                          background = window.customcolors['white'],
                                          activebackground = window.customcolors['white'],
                                          borderwidth = 2)
