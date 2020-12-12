@@ -94,48 +94,14 @@ Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
 ```
 
 You can also enable other suboptions of `-F` doing what is reported in the following table:
-<table style="width: 100%;">
-    <thead>
-        <tr>
-            <th>command</th>
-            <th>pretty msg</th>
-            <th>logging msg</th>
-            <th>logfile</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><pre>-F &lt;logfile&gt;</pre></td>
-            <td>ON</td>
-            <td>OFF</td>
-            <td>ON</td>
-        </tr>
-        <tr>
-            <td><pre>-F STDOUT</pre></td>
-            <td>OFF</td>
-            <td>ON</td>
-            <td>OFF</td>
-        </tr>
-        <tr>
-            <td><pre>-F FILESTDOUT &lt;logfile&gt;</pre></td>
-            <td>OFF</td>
-            <td>ON</td>
-            <td>ON</td>
-        </tr>
-        <tr>
-            <td><pre>-F STDOUTOFF &lt;logfile&gt;</pre></td>
-            <td>OFF</td>
-            <td>OFF</td>
-            <td>ON</td>
-        </tr>
-        <tr>
-            <td><pre>-F FILEOFF</pre></td>
-            <td>ON</td>
-            <td>OFF</td>
-            <td>OFF</td>
-        </tr>
-    </tbody>
-</table>
+
+| command | pretty msg | logging msg | logfile |
+| --- | --- | --- | --- |
+| `-F <logfile>` | ON | OFF | ON |
+| `-F STDOUT` | OFF | ON | OFF |
+| `-F FILESTDOUT <logfile>` | OFF | ON | ON |
+| `-F STDOUTOFF <logfile>` | OFF | OFF | ON |
+| `-F FILEOFF` | ON | OFF | OFF |
 
     -S or --logsize <MAXSIZE>
 > Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.
@@ -158,102 +124,17 @@ If placed just after `connect` refers to the main address and all additive coupl
 If used it refers to all addresses (main and additional). Deactivated by default.
 
 examples (with fictitious addresses and ports):
-<table style="width: 100%;">
-    <thead>
-        <tr>
-            <th>command</th>
-            <th>address (main)</th>
-            <th>backlog (main)</th>
-            <th>reuse port (main)</th>
-            <th>address (listen)</th>
-            <th>backlog (listen)</th>
-            <th>reuse port (listen)</th>
-            <th>dualstack (main / listen)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><pre>python3 pykms_Server.py connect -b 12</pre></td>
-            <td>('0.0.0.0', 1688)</td>
-            <td>12</td>
-            <td>True</td>
-            <td>[]</td>
-            <td>[]</td>
-            <td>[]</td>
-            <td>False</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py :: connect -b 12 -u -d</pre></td>
-            <td>('::', 1688)</td>
-            <td>12</td>
-            <td>False</td>
-            <td>[]</td>
-            <td>[]</td>
-            <td>[]</td>
-            <td>True</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py connect -n 1.1.1.1,1699 -b 10</pre></td>
-            <td>('0.0.0.0', 1688)</td>
-            <td>5</td>
-            <td>True</td>
-            <td>[('1.1.1.1', 1699)]</td>
-            <td>[10]</td>
-            <td>[True]</td>
-            <td>False</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py :: 1655 connect -n 2001:db8:0:200::7,1699 -d -b 10 -n 2.2.2.2,1677 -u</pre></td>
-            <td>('::', 1655)</td>
-            <td>5</td>
-            <td>True</td>
-            <td>[('2001:db8:0:200::7', 1699), ('2.2.2.2', 1677)]</td>
-            <td>[10, 5]</td>
-            <td>[True, False]</td>
-            <td>True</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py connect -b 12 -u -n 1.1.1.1,1699 -b 10 -n 2.2.2.2,1677 -b 15</pre></td>
-            <td>('0.0.0.0', 1688)</td>
-            <td>12</td>
-            <td>False</td>
-            <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
-            <td>[10, 15]</td>
-            <td>[False, False]</td>
-            <td>False</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py connect -b 12 -n 1.1.1.1,1699 -u -n 2.2.2.2,1677</pre></td>
-            <td>('0.0.0.0', 1688)</td>
-            <td>12</td>
-            <td>True</td>
-            <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
-            <td>[12, 12]</td>
-            <td>[False, True]</td>
-            <td>False</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py connect -d -u -b 8 -n 1.1.1.1,1699 -n 2.2.2.2,1677 -b 12</pre></td>
-            <td>('0.0.0.0', 1688)</td>
-            <td>8</td>
-            <td>False</td>
-            <td>[('1.1.1.1', 1699), ('2.2.2.2', 1677)]</td>
-            <td>[8, 12]</td>
-            <td>[False, False]</td>
-            <td>True</td>
-        </tr>
-        <tr>
-            <td><pre>python3 pykms_Server.py connect -b 11 -u -n ::,1699 -n 2.2.2.2,1677</pre></td>
-            <td>('0.0.0.0', 1688)</td>
-            <td>11</td>
-            <td>False</td>
-            <td>[('::', 1699), ('2.2.2.2', 1677)]</td>
-            <td>[11, 11]</td>
-            <td>[False, False]</td>
-            <td>False</td>
-        </tr>
-    </tbody>
-</table>
+
+| command | address (main) | backlog (main) | reuse port (main) | address (listen) | backlog (listen) | reuse port (listen) | dualstack (main / listen) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `python3 pykms_Server.py connect -b 12` | ('0.0.0.0', 1688) | 12 | True | [] | [] | [] | False |
+| `python3 pykms_Server.py :: connect -b 12 -u -d` | ('::', 1688) | 12 | False | [] | [] | [] | True |
+| `python3 pykms_Server.py connect -n 1.1.1.1,1699 -b 10` | ('0.0.0.0', 1688) | 5 | True | [('1.1.1.1', 1699)] | [10] | [True] | False |
+| `python3 pykms_Server.py :: 1655 connect -n 2001:db8:0:200::7,1699 -d -b 10 -n 2.2.2.2,1677 -u` | ('::', 1655) | 5 | True | [('2001:db8:0:200::7', 1699), ('2.2.2.2', 1677)] | [10, 5] | [True, False] | True |
+| `python3 pykms_Server.py connect -b 12 -u -n 1.1.1.1,1699 -b 10 -n 2.2.2.2,1677 -b 15` | ('0.0.0.0', 1688) | 12 | False | [('1.1.1.1', 1699), ('2.2.2.2', 1677)] | [10, 15] | [False, False] | False |
+| `python3 pykms_Server.py connect -b 12 -n 1.1.1.1,1699 -u -n 2.2.2.2,1677` | ('0.0.0.0', 1688) | 12 | True | [('1.1.1.1', 1699), ('2.2.2.2', 1677)] | [12, 12] | [False, True] | False |
+| `python3 pykms_Server.py connect -d -u -b 8 -n 1.1.1.1,1699 -n 2.2.2.2,1677 -b 12` | ('0.0.0.0', 1688) | 8 | False | [('1.1.1.1', 1699), ('2.2.2.2', 1677)] | [8, 12] | [False, False] | True |
+| `python3 pykms_Server.py connect -b 11 -u -n ::,1699 -n 2.2.2.2,1677` | ('0.0.0.0', 1688) | 11 | False | [('::', 1699), ('2.2.2.2', 1677)] | [11, 11] | [False, False] | False |
 
 ### pykms_Client.py
 If _py-kms_ server doesn't works correctly, you can test it with the KMS client `pykms_Client.py`, running on the same machine where you started `pykms_Server.py`.

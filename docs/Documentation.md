@@ -59,143 +59,41 @@ Where command line options are:
 #### SLMGR
 Following tables lists _SLMGR_ more relevant options and a brief description of each. Most of the parameters configure the KMS host.
 
-<table width="700" cellspacing="0" cellpadding="0">
-    <colgroup>
-       <col span="1" width="250">
-       <col span="1" width="450">
-    </colgroup>
-    <thead><tr><th>Global options</th><th>Description</th></tr></thead>
-    <tbody>
-         <tr>
-            <td>/ipk <<i>ProductKey</i>></td>
-            <td>Attempts to install a 5×5 <i>ProductKey</i> for Windows or other application identified by the <i>ProductKey</i>. If the key is valid, this is installed. If a key is already installed, it's silently replaced.</td>
-         </tr>
-         <tr>
-            <td>/ato [<i>ActivationID</i>]</td>
-            <td>Prompts Windows to attempt online activation, for retail and volume systems with KMS host key. Specifying the <i>ActivationID</i> parameter isolates the effects of the option to the edition associated with that value.</td>
-         </tr>
-         <tr>
-            <td>/dli [<i>ActivationID</i> | <i>All</i>]</td>
-            <td>Display license information. Specifying the <i>ActivationID</i> parameter displays the license information for the specified edition associated with that <i>ActivationID</i>. Specifying <i>All</i> will display all applicable installed products’ license information. Useful for retrieve the current KMS activation count from the KMS host.</td>
-         </tr>
-         <tr>
-            <td>/dlv [<i>ActivationID</i> | <i>All</i>]</td>
-            <td>Display detailed license information.</td>
-         </tr>
-         <tr>
-            <td>/xpr [<i>ActivationID</i>]</td>
-            <td>Display the activation expiration date for the current license state.</td>
-         </tr>
-    </tbody>
-</table>
+| Global options | Description |
+| --- | --- |
+| `/ipk <ProductKey>` | Attempts to install a 5×5 ProductKey for Windows or other application identified by the ProductKey. If the key is valid, this is installed. If a key is already installed, it's silently replaced. |
+| `/ato [ActivationID]` | Prompts Windows to attempt online activation, for retail and volume systems with KMS host key. Specifying the ActivationID parameter isolates the effects of the option to the edition associated with that value. |
+| `/dli [ActivationID | All]` | Display license information. Specifying the ActivationID parameter displays the license information for the specified edition associated with that ActivationID. Specifying All will display all applicable installed products’ license information. Useful for retrieve the current KMS activation count from the KMS host. |
+| `/dlv [ActivationID | All]` | Display detailed license information. |
+| `/xpr [ActivationID]` | Display the activation expiration date for the current license state. |
 
-<table width="700" cellspacing="0" cellpadding="0">
-    <colgroup>
-       <col span="1" width="250">
-       <col span="1" width="450">
-    </colgroup>
-    <thead><tr><th>Advanced options</th><th>Description</th></tr></thead>
-    <tbody>
-         <tr>
-            <td>/cpky</td>
-            <td>Some servicing operations require the product key to be available in the registry during Out-of-Box Experience (OOBE) operations. So this option removes the product key from the registry to prevent from being stolen by malicious code.</td>
-         </tr>
-         <tr>
-            <td>/ilc <<i>LicenseFile</i>></td>
-            <td>Installs the <i>LicenseFile</i> specified by the required parameter.</td>
-         </tr>
-         <tr>
-            <td>/rilc</td>
-            <td>Reinstalls all licenses stored in <i>%SystemRoot%\system32\oem</i> and <i>%SystemRoot%\System32\spp\tokens</i>.</td>
-         </tr>
-         <tr>
-            <td>/rearm</td>
-            <td>Resets the activation timers.</td>
-         </tr>
-         <tr>
-            <td>/rearm-app <<i>ApplicationID</i>></td>
-            <td>Resets the licensing status of the specified application.</td>
-         </tr>
-         <tr>
-            <td>/rearm-sku <<i>ApplicationID</i>></td>
-            <td>Resets the licensing status of the specified <i>SKU</i>.</td>
-         </tr>
-         <tr>
-            <td>/upk [<i>ActivationID</i>]</td>
-            <td>Uninstalls the product key of the current Windows edition. After a restart, the system will be in an unlicensed state unless a new product key is installed.</td>
-         </tr>
-         <tr>
-            <td>/dti [<i>ActivationID</i>]</td>
-            <td>Displays installation ID for offline activation of the KMS host for Windows (default) or the application that is identified when its <i>ActivationID</i> is provided.</td>
-         </tr>
-         <tr>
-            <td>/atp [<i>ConfirmationID</i>][<i>ActivationID</i>]</td>
-            <td>Activate product with user-provided <i>ConfirmationID</i>.</td>
-         </tr>
-    </tbody>
-</table>
+| Advanced options | Description |
+| --- | --- |
+| `/cpky` | Some servicing operations require the product key to be available in the registry during Out-of-Box Experience (OOBE) operations. So this option removes the product key from the registry to prevent from being stolen by malicious code. |
+| `/ilc <LicenseFile>` | Installs the LicenseFile specified by the required parameter. |
+| `/rilc` | Reinstalls all licenses stored in %SystemRoot%\system32\oem and %SystemRoot%\System32\spp\tokens. |
+| `/rearm` | Resets the activation timers. |
+| `/rearm-app <ApplicationID>` | Resets the licensing status of the specified application. |
+| `/rearm-sku <ApplicationID>` | Resets the licensing status of the specified SKU. |
+| `/upk [ActivationID]` | Uninstalls the product key of the current Windows edition. After a restart, the system will be in an unlicensed state unless a new product key is installed. |
+| `/dti [ActivationID]` | Displays installation ID for offline activation of the KMS host for Windows (default) or the application that is identified when its ActivationID is provided. |
+| `/atp [ConfirmationID][ActivationID]` | Activate product with user-provided ConfirmationID. |
 
-<table width="750" cellspacing="0" cellpadding="0">
-    <colgroup>
-       <col span="1" width="250">
-       <col span="1" width="450">
-    </colgroup>
-    <thead><tr><th>KMS client options</th><th>Description</th></tr></thead>
-    <tbody>
-         <tr>
-            <td>/skms <<i>Name</i>[:<i>Port</i>] | : <i>port</i>> [<i>ActivationID</i>]</td>
-            <td>Specifies the name and the port of the KMS host computer to contact. Setting this value disables auto-detection of the KMS host. If the KMS host uses IPv6 only, the address must be specified in the format [<i>hostname</i>]:<i>port</i>.</td>
-         </tr>
-         <tr>
-            <td>/skms-domain <<i>FQDN</i>> [<i>ActivationID</i>]</td>
-            <td>Sets the specific DNS domain in which all KMS SRV records can be found. This setting has no effect if the specific single KMS host is set with the /skms option. Use this option, especially in disjoint namespace environments, to force KMS to ignore the DNS suffix search list and look for KMS host records in the specified DNS domain instead. </td>
-         </tr>
-         <tr>
-            <td>/ckms [<i>ActivationID</i>]</td>
-            <td>Removes the specified KMS hostname, address, and port information from the registry and restores KMS                   auto-discovery behavior.</td>
-         </tr>
-         <tr>
-            <td>/skhc</td>
-            <td>Enables KMS host caching (default), which blocks the use of DNS priority and weight after the initial discovery of a working KMS host. If the system can no longer contact the working KMS host, discovery will be attempted again.</td>
-         </tr>
-         <tr>
-            <td>/ckhc</td>
-            <td>Disables KMS host caching. This setting instructs the client to use DNS auto-discovery each time it attempts KMS activation (recommended when using priority and weight).</td>
-         </tr>
-         <tr>
-            <td>/sai <<i>ActivationInterval</i>></td>
-            <td>Changes how often a KMS client attempts to activate itself when it cannot find a KMS host. Replace <i>ActivationInterval</i> with a number of minutes between 15 minutes an 30 days. The default setting is 120.</td>
-         </tr>
-         <tr>
-            <td>/sri <<i>RenewalInterval</i>></td>
-            <td>Changes how often a KMS client attempts to renew its activation by contacting a KMS host. Replace <i>RenewalInterval</i> with a number of minutes between 15 minutes an 30 days. The default setting is 10080 (7 days).</td>
-         </tr>
-         <tr>
-            <td>/sprt <<i>PortNumber</i>></td>
-            <td>Sets the TCP communications port on a KMS host. It replaces PortNumber with the TCP port number to use. The default setting is 1688.</td>
-         </tr>
-         <tr>
-            <td>/sdns</td>
-            <td>Enables automatic DNS publishing by the KMS host.</td>
-         </tr>
-         <tr>
-            <td>/cdns</td>
-            <td>Disables automatic DNS publishing by a KMS host.</td>
-         </tr>
-         <tr>
-            <td>/spri</td>
-            <td>Sets the priority of KMS host processes to <i>Normal</i>.</td>
-         </tr>
-         <tr>
-            <td>/cpri</td>
-            <td>Set the KMS priority to <i>Low</i>.</td>
-         </tr>
-         <tr>
-            <td>/act-type [<i>ActivationType</i>] [<i>ActivationID<i/>]</td>
-            <td>Sets a value in the registry that limits volume activation to a single type. <i>ActivationType</i> 1 limits activation to active directory only; 2 limits it to KMS activation; 3 to token-based activation. The 0 option allows any activation type and is the default value.</td>
-         </tr>
-    </tbody>
-</table>
+| KMS client options | Description |
+| --- | --- |
+| `/skms <Name[:Port] | : port> [ActivationID]` | Specifies the name and the port of the KMS host computer to contact. Setting this value disables auto-detection of the KMS host. If the KMS host uses IPv6 only, the address must be specified in the format [hostname]:port. |
+| `/skms-domain <FQDN> [ActivationID]` | Sets the specific DNS domain in which all KMS SRV records can be found. This setting has no effect if the specific single KMS host is set with the /skms option. Use this option, especially in disjoint namespace environments, to force KMS to ignore the DNS suffix search list and look for KMS host records in the specified DNS domain instead.  |
+| `/ckms [ActivationID]` | Removes the specified KMS hostname, address, and port information from the registry and restores KMS                   auto-discovery behavior. |
+| `/skhc` | Enables KMS host caching (default), which blocks the use of DNS priority and weight after the initial discovery of a working KMS host. If the system can no longer contact the working KMS host, discovery will be attempted again. |
+| `/ckhc` | Disables KMS host caching. This setting instructs the client to use DNS auto-discovery each time it attempts KMS activation (recommended when using priority and weight). |
+| `/sai <ActivationInterval>` | Changes how often a KMS client attempts to activate itself when it cannot find a KMS host. Replace ActivationInterval with a number of minutes between 15 minutes an 30 days. The default setting is 120. |
+| `/sri <RenewalInterval>` | Changes how often a KMS client attempts to renew its activation by contacting a KMS host. Replace RenewalInterval with a number of minutes between 15 minutes an 30 days. The default setting is 10080 (7 days). |
+| `/sprt <PortNumber>` | Sets the TCP communications port on a KMS host. It replaces PortNumber with the TCP port number to use. The default setting is 1688. |
+| `/sdns` | Enables automatic DNS publishing by the KMS host. |
+| `/cdns` | Disables automatic DNS publishing by a KMS host. |
+| `/spri` | Sets the priority of KMS host processes to Normal. |
+| `/cpri` | Set the KMS priority to Low. |
+| `/act-type [ActivationType] [ActivationID]` | Sets a value in the registry that limits volume activation to a single type. ActivationType 1 limits activation to active directory only; 2 limits it to KMS activation; 3 to token-based activation. The 0 option allows any activation type and is the default value. |
 
 #### OSPP
 The Office Software Protection Platform script (`ospp.vbs`) can help you to configure and test volume license editions of Office client products. You must open a command prompt by using administrator permissions and navigate to the
@@ -220,109 +118,33 @@ Where command line options are:
 [Password]      Password for the account. If a user account and password are not provided, the current credentials are used.
 ```
 
-<table width="750" cellspacing="0" cellpadding="0">
-    <colgroup>
-       <col span="1" width="250">
-       <col span="1" width="450">
-    </colgroup>
-    <thead><tr><th>Global options</th><th>Description</th></tr></thead>
-    <tbody>
-         <tr>
-            <td>/act</td>
-            <td>Activates installed Office product keys.</td>
-         </tr>
-         <tr>
-            <td>/inpkey:<<i>ProductKey</i>></td>
-            <td>Installs a <i>ProductKey</i> (replaces existing key) with a user-provided <i>ProductKey</i>.</td>
-         </tr>
-         <tr>
-            <td>/unpkey:<<i>ProductKey</i>></td>
-            <td>Uninstalls an installed <i>ProductKey</i> with the last five digits of the <i>ProductKey</i> to uninstall (as displayed by the /dstatus option).</td>
-         </tr>
-         <tr>
-            <td>/inslic:<<i>LicenseFile</i>></td>
-            <td>Installs a <i>LicenseFile</i> with user-provided path of the .xrm-ms license.</td>
-         </tr>
-         <tr>
-            <td>/dstatus</td>
-            <td>Displays license information for installed product keys.</td>
-         </tr>
-         <tr>
-            <td>/dstatusall</td>
-            <td>Displays license information for all installed licenses.</td>
-         </tr>
-         <tr>
-            <td>/dhistoryacterr</td>
-            <td>Displays the failure history for MAK / Retail activation.</td>
-         </tr>
-         <tr>
-            <td>/dinstid</td>
-            <td>Displays Installation ID for offline activation.</td>
-         </tr>
-         <tr>
-            <td>/actcid:<<i>ConfirmationID</i>></td>
-            <td>Activates product with user-provided <i>ConfirmationID</i>.</td>
-         </tr>
-         <tr>
-            <td>/rearm</td>
-            <td>Resets the licensing status for all installed Office product keys.</td>
-         </tr>
-         <tr>
-            <td>/rearm:<<i>ApplicationID</i>></td>
-            <td>Resets the licensing status for an Office license with a user-provided <i>SKUID</i> value. Use this option with the <i>SKUID</i> value specified by using the /dstatus option if you have run out of rearms and have activated Office through KMS or Active Directory-based activation to gain an additional rearm.</td>
-         </tr>
-         <tr>
-            <td>/ddescr:<<i>ErrorCode</i>></td>
-            <td>Displays the description for a user-provided <i>ErrorCode</i>.</td>
-         </tr>
-    </tbody>
-</table>
+| Global options | Description |
+| --- | --- |
+| `/act` | Activates installed Office product keys. |
+| `/inpkey:<ProductKey>` | Installs a ProductKey (replaces existing key) with a user-provided ProductKey. |
+| `/unpkey:<ProductKey>` | Uninstalls an installed ProductKey with the last five digits of the ProductKey to uninstall (as displayed by the /dstatus option). |
+| `/inslic:<LicenseFile>` | Installs a LicenseFile with user-provided path of the .xrm-ms license. |
+| `/dstatus` | Displays license information for installed product keys. |
+| `/dstatusall` | Displays license information for all installed licenses. |
+| `/dhistoryacterr` | Displays the failure history for MAK / Retail activation. |
+| `/dinstid` | Displays Installation ID for offline activation. |
+| `/actcid:<ConfirmationID>` | Activates product with user-provided ConfirmationID. |
+| `/rearm` | Resets the licensing status for all installed Office product keys. |
+| `/rearm:<ApplicationID>` | Resets the licensing status for an Office license with a user-provided SKUID value. Use this option with the SKUID value specified by using the /dstatus option if you have run out of rearms and have activated Office through KMS or Active Directory-based activation to gain an additional rearm. |
+| `/ddescr:<ErrorCode>` | Displays the description for a user-provided ErrorCode. |
 
-<table width="750" cellspacing="0" cellpadding="0">
-    <colgroup>
-       <col span="1" width="250">
-       <col span="1" width="450">
-    </colgroup>
-    <thead><tr><th>KMS client options</th><th>Description</th></tr></thead>
-    <tbody>
-         <tr>
-            <td>/dhistorykms</td>
-            <td>Displays KMS client activation history.</td>
-         </tr>
-         <tr>
-            <td>/dcmid</td>
-            <td>Displays KMS client computer ID (CMID)</td>
-         </tr>
-         <tr>
-            <td>/sethst:<<i>HostName</i>></td>
-            <td>Sets a KMS host name with a user-provided <i>HostName</i>.</td>
-         </tr>
-         <tr>
-            <td>/setprt:<<i>Port</i>></td>
-            <td>Sets a KMS port with a user-provided <i>Port</i> number.</td>
-         </tr>
-         <tr>
-            <td>/remhst</td>
-            <td>Removes KMS hostname (sets port to default).</td>
-         </tr>
-         <tr>
-            <td>/cachst:<<i>Value</i>></td>
-            <td>Allows or denies KMS host caching. Parameter <i>Value</i> can be TRUE or FALSE.</td>
-         </tr>
-         <tr>
-            <td>/actype:<<i>Value</i>></td>
-            <td>(Windows 8 and later only) Sets volume activation type. Parameter <i>Value</i> can be: 1 (for Active Directory-based), 2 (for KMS), 0 (for both).</td>
-         </tr>
-         <tr>
-            <td>/skms-domain:<<i>Value</i>></td>
-            <td>(Windows 8 and later only) Sets the specific DNS domain in which all KMS SRV records can be found. This setting has no effect if the specific single KMS host is set by the /sethst option. Parameter <i>Value</i> is the Fully Qualified Domain Name (FQDN).</td>
-         </tr>
-         <tr>
-            <td>/ckms-domain</td>
-            <td>(Windows 8 and later only) Clears the specific DNS domain in which all KMS SRV records can be found. The specific KMS host is used if it is set by the /sethst option. Otherwise, auto-discovery of the KMS host is used.</td>
-         </tr>
-    </tbody>
-</table>
+| KMS client options | Description |
+| --- | --- |
+| `/dhistorykms` | Displays KMS client activation history. |
+| `/dcmid` | Displays KMS client computer ID (CMID) |
+| `/sethst:<HostName>` | Sets a KMS host name with a user-provided HostName. |
+| `/setprt:<Port>` | Sets a KMS port with a user-provided Port number. |
+| `/remhst` | Removes KMS hostname (sets port to default). |
+| `/cachst:<Value>` | Allows or denies KMS host caching. Parameter Value can be TRUE or FALSE. |
+| `/actype:<Value>` | (Windows 8 and later only) Sets volume activation type. Parameter Value can be: 1 (for Active Directory-based), 2 (for KMS), 0 (for both). |
+| `/skms-domain:<Value>` | (Windows 8 and later only) Sets the specific DNS domain in which all KMS SRV records can be found. This setting has no effect if the specific single KMS host is set by the /sethst option. Parameter Value is the Fully Qualified Domain Name (FQDN). |
+| `/ckms-domain` | (Windows 8 and later only) Clears the specific DNS domain in which all KMS SRV records can be found. The specific KMS host is used if it is set by the /sethst option. Otherwise, auto-discovery of the KMS host is used. |
+
 
 ## Supported Products
 Note that it is possible to activate all versions in the VL (Volume License) channel, so long as you provide the proper key to let Windows know that it should be activating against a KMS server. KMS activation can't be used for
