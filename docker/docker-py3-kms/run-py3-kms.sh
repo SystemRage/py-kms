@@ -6,7 +6,7 @@ docker run -d --name py3-kms \
     -p 1688:1688 \
     -e IP=0.0.0.0 \
     -e PORT=1688 \
-    -e SQLITE=true \
+    -e SQLITE=false \
     -e HWID=RANDOM \
     -e LOGLEVEL=INFO \
     -e LOGFILE=/var/log/pykms_logserver.log \
