@@ -18,7 +18,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 	- Windows 8
 	- Windows 8.1
 	- Windows 10 ( 1511 / 1607 / 1703 / 1709 / 1803 / 1809 )
-    - Windows 10 ( 1903 / 1909 / 20H1 )
+    - Windows 10 ( 1903 / 1909 / 2004 / 20H2 )
 	- Windows Server 2008
 	- Windows Server 2008 R2
 	- Windows Server 2012
