@@ -22,12 +22,13 @@ RUN apk add --no-cache --update \
 	py3-pygments \
 	python3-tkinter \
 	sqlite-libs \
-	py3-pip && \
+	py3-pip \
+	build-base python3-dev && \
     pip3 install peewee tzlocal && \
     git clone https://github.com/SystemRage/py-kms/ /tmp/py-kms && \
     mv /tmp/py-kms/py-kms /home/ && \
     rm -rf /tmp/py-kms && \
-    apk del git
+    apk del git build-base python3-dev
 
 WORKDIR /home/py-kms
 

@@ -23,7 +23,8 @@ RUN apk add --no-cache --update \
 	py3-pygments \
 	python3-tkinter \
 	sqlite-libs \
-	py3-pip && \
+	py3-pip \
+	build-base python3-dev && \
     git clone https://github.com/SystemRage/py-kms.git /tmp/py-kms && \
     git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
     mv /tmp/py-kms/py-kms /home/ && \
@@ -32,7 +33,7 @@ RUN apk add --no-cache --update \
     rm -rf /tmp/sqlite_web && \
     pip3 install peewee tzlocal pysqlite3 && \
     chmod a+x /usr/bin/start.sh && \
-    apk del git
+    apk del git build-base python3-dev
 
 WORKDIR /home/py-kms
 
