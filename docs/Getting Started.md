@@ -55,7 +55,7 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - ./:/var/log:rw
+      - ./logs:/var/log:rw
 ```
 
 #### Parameters
@@ -72,7 +72,7 @@ docker run -it -d --name py3-kms \
     -e LOGSIZE=2 \
     -e LOGFILE=/var/log/pykms_logserver.log \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /var/log:/var/log:rw \
+    -v ./logs:/var/log:rw \
     --restart unless-stopped pykmsorg/py-kms:[TAG]
 ```
 You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
