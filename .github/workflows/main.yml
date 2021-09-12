@@ -1,6 +1,7 @@
 name: Build Image On Release
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
