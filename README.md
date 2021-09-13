@@ -1,7 +1,7 @@
 # Readme
-![repo-size](https://img.shields.io/github/repo-size/SystemRage/py-kms)
-![open-issues](https://img.shields.io/github/issues/SystemRage/py-kms)
-![last-commit](https://img.shields.io/github/last-commit/SystemRage/py-kms/master)
+![repo-size](https://img.shields.io/github/repo-size/Py-KMS-Organization/py-kms)
+![open-issues](https://img.shields.io/github/issues/Py-KMS-Organization/py-kms)
+![last-commit](https://img.shields.io/github/last-commit/Py-KMS-Organization/py-kms/master)
 ![docker-status](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
 ![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
 ![read-the-docs](https://img.shields.io/readthedocs/py-kms)
