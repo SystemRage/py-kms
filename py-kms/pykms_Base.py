@@ -161,6 +161,7 @@ could be detected as not genuine !{end}" %currentClientCount)
                         
                 # Get a name for SkuId, AppId.        
                 kmsdb = kmsDB2Dict()
+                appName, skuName = str(applicationId), str(skuId)
  
                 appitems = kmsdb[2]
                 for appitem in appitems:
