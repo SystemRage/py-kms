@@ -13,4 +13,4 @@ docker run -d --name py3-kms \
     -e LOGSIZE=2 \
     -v /etc/localtime:/etc/localtime:ro \
     -v /var/log:/var/log:rw \
-    --restart unless-stopped pykmsorg/py-kms:python3
+    --restart unless-stopped pykms/pykms:py3-kms

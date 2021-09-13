@@ -13,7 +13,8 @@ ENV LOGLEVEL		ERROR
 ENV LOGFILE		/var/log/pykms_logserver.log
 ENV LOGSIZE		""
 
-COPY start.sh /usr/bin/start.sh
+COPY docker/docker-py3-kms/start.sh /usr/bin/start.sh
+COPY ./py-kms /home/py-kms
 
 RUN apk add --no-cache --update \
 	bash \
@@ -25,11 +26,8 @@ RUN apk add --no-cache --update \
 	sqlite-libs \
 	py3-pip \
 	build-base python3-dev && \
-    git clone https://github.com/Py-KMS-Organization/py-kms.git /tmp/py-kms && \
     git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
-    mv /tmp/py-kms/py-kms /home/ && \
     mv /tmp/sqlite_web/sqlite_web /home/ && \
-    rm -rf /tmp/py-kms && \
     rm -rf /tmp/sqlite_web && \
     pip3 install peewee tzlocal pysqlite3 && \
     chmod a+x /usr/bin/start.sh && \

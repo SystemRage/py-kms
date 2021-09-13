@@ -14,6 +14,8 @@ ENV LOGLEVEL	INFO
 ENV LOGFILE		/var/log/pykms_logserver.log
 ENV LOGSIZE		""
 
+COPY ./py-kms /home/py-kms
+
 RUN apk add --no-cache --update \
 	bash \
 	git \
@@ -25,9 +27,6 @@ RUN apk add --no-cache --update \
 	py3-pip \
 	build-base python3-dev && \
     pip3 install peewee tzlocal && \
-    git clone https://github.com/Py-KMS-Organization/py-kms.git /tmp/py-kms && \
-    mv /tmp/py-kms/py-kms /home/ && \
-    rm -rf /tmp/py-kms && \
     apk del git build-base python3-dev
 
 WORKDIR /home/py-kms
