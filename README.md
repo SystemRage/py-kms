@@ -25,6 +25,7 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 	- Windows Server 2012 R2
 	- Windows Server 2016
 	- Windows Server 2019
+	- Windows Server 2022
 	- Microsoft Office 2010 ( Volume License )
 	- Microsoft Office 2013 ( Volume License )
 	- Microsoft Office 2016 ( Volume License )
