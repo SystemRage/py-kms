@@ -12,7 +12,7 @@ spec:
       protocol: TCP
       name: kms
     - port: {{ .Values.service.httpPort }}
-      targetPort: 80
+      targetPort: 8080
       protocol: TCP
       name: http
   selector:
