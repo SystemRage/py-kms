@@ -130,7 +130,7 @@ class kmsBase:
                                 local_dt = requestDatetime
                 except ImportError:
                         pretty_printer(log_obj = loggersrv.warning,
-                                       put_text = "{reverse}{yellow}{bold}Module 'tzlocal' not available ! Request time not localized.{end}")
+                                       put_text = "{reverse}{yellow}{bold}Module 'tzlocal' or 'pytz' not available ! Request time not localized.{end}")
                         local_dt = requestDatetime
                 except Exception as e:
                     # Just in case something else goes wrong
