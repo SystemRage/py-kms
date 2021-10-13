@@ -119,11 +119,11 @@ class kmsBase:
                                 
                 # Localize the request time, if module "tzlocal" is available.
                 try:
+                        from datetime import datetime
                         from tzlocal import get_localzone
                         from pytz.exceptions import UnknownTimeZoneError
                         try:
-                                tz = get_localzone()
-                                local_dt = tz.localize(requestDatetime)
+                                local_dt = datetime.fromisoformat(str(requestDatetime)).astimezone(get_localzone())
                         except UnknownTimeZoneError:
                                 pretty_printer(log_obj = loggersrv.warning,
                                                put_text = "{reverse}{yellow}{bold}Unknown time zone ! Request time not localized.{end}")
@@ -132,6 +132,11 @@ class kmsBase:
                         pretty_printer(log_obj = loggersrv.warning,
                                        put_text = "{reverse}{yellow}{bold}Module 'tzlocal' not available ! Request time not localized.{end}")
                         local_dt = requestDatetime
+                except Exception as e:
+                    # Just in case something else goes wrong
+                    loggersrv.warning('Okay, something went horribly wrong while localizing the request time (proceeding anyways): ' + str(e))
+                    local_dt = requestDatetime
+                    pass
 
                 # Activation threshold.
                 # https://docs.microsoft.com/en-us/windows/deployment/volume-activation/activate-windows-10-clients-vamt                

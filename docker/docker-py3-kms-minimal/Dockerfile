@@ -26,7 +26,7 @@ RUN apk add --no-cache --update \
 	sqlite-libs \
 	py3-pip \
 	build-base python3-dev && \
-    pip3 install peewee tzlocal && \
+    pip3 install peewee tzlocal pytz && \
     apk del git build-base python3-dev
 
 WORKDIR /home/py-kms

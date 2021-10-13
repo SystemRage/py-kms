@@ -29,7 +29,7 @@ RUN apk add --no-cache --update \
     git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
     mv /tmp/sqlite_web/sqlite_web /home/ && \
     rm -rf /tmp/sqlite_web && \
-    pip3 install peewee tzlocal pysqlite3 && \
+    pip3 install peewee tzlocal pytz pysqlite3 && \
     chmod a+x /usr/bin/start.sh && \
     apk del git build-base python3-dev
 

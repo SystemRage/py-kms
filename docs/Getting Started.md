@@ -15,7 +15,7 @@ If you wish to get _py-kms_ just up and running without installing any dependenc
 Docker also solves problems regarding the explicit IPv4 and IPv6 usage (it just supports both). The following
 command will download, "install" and start _py-kms_ and also keep it alive after any service disruption.
 ```bash
-docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
+docker run -d --name py-kms --restart always -p 1688:1688 -v /etc/localtime:/etc/localtime:ro pykmsorg/py-kms
 ```
 If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
 latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out !
