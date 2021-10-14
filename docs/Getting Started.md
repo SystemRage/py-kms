@@ -37,25 +37,26 @@ _Please note that any architecture other than the classic `amd64` is slightly bi
 
 #### Docker Compose
 You can use `docker-compose` instead of building and running the Dockerfile, so you do not need to respecify your settings again and again. The following Docker Compose file will deploy the `latest` image with the log into your local directory.
+Make sure to take a look into the `entrypoint.py` script to see all supported variable mappings!
 ```yaml
 version: '3'
 
 services:
   kms:
-    image: pykmsorg/py-kms:latest
+    image: pykmsorg/py-kms:python3
     ports:
       - 1688:1688
+      - 8080:8080
     environment:
       - IP=0.0.0.0
       - SQLITE=true
       - HWID=RANDOM
       - LOGLEVEL=INFO
-      - LOGSIZE=2
-      - LOGFILE=/var/log/pykms_logserver.log
+      - LOGFILE=/dev/stdout
     restart: always
     volumes:
+      - ./db:/home/py-kms/db
       - /etc/localtime:/etc/localtime:ro
-      - ./logs:/var/log:rw
 ```
 
 #### Parameters

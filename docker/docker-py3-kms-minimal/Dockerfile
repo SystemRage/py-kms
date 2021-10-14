@@ -2,17 +2,17 @@
 
 FROM alpine:3.12
 
-ENV IP		0.0.0.0
-ENV PORT		1688
-ENV EPID		""
-ENV LCID		1033
-ENV CLIENT_COUNT	26
-ENV ACTIVATION_INTERVAL	120
-ENV RENEWAL_INTERVAL	10080
-ENV HWID		"RANDOM"
-ENV LOGLEVEL	INFO
-ENV LOGFILE		/dev/stdout
-ENV LOGSIZE		""
+ENV IP 0.0.0.0
+ENV PORT 1688
+ENV EPID ""
+ENV LCID 1033
+ENV CLIENT_COUNT 26
+ENV ACTIVATION_INTERVAL 120
+ENV RENEWAL_INTERVAL 10080
+ENV HWID RANDOM
+ENV LOGLEVEL INFO
+ENV LOGFILE /dev/stdout
+ENV LOGSIZE ""
 
 COPY ./py-kms /home/py-kms
 
@@ -37,4 +37,6 @@ WORKDIR /home/py-kms
 
 EXPOSE ${PORT}/tcp
 
-ENTRYPOINT /usr/bin/python3 pykms_Server.py ${IP} ${PORT} -l ${LCID} -c ${CLIENT_COUNT} -a ${ACTIVATION_INTERVAL} -r ${RENEWAL_INTERVAL} -w ${HWID} -V ${LOGLEVEL} -F ${LOGFILE}
+COPY docker/entrypoint.py /usr/bin/entrypoint.py
+RUN chmod a+x /usr/bin/entrypoint.py
+ENTRYPOINT ['/usr/bin/python3', '/usr/bin/entrypoint.py']
