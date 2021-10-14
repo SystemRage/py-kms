@@ -8,9 +8,9 @@ ENV CLIENT_COUNT	26
 ENV ACTIVATION_INTERVAL	120
 ENV RENEWAL_INTERVAL	10080
 ENV SQLITE		false
-ENV HWID		"364F463A8863D35F"
-ENV LOGLEVEL		ERROR
-ENV LOGFILE		/var/log/pykms_logserver.log
+ENV HWID		"RANDOM"
+ENV LOGLEVEL	INFO
+ENV LOGFILE		/dev/stdout
 ENV LOGSIZE		""
 
 COPY docker/docker-py3-kms/start.sh /usr/bin/start.sh
@@ -25,6 +25,7 @@ RUN apk add --no-cache --update \
 	python3-tkinter \
 	sqlite-libs \
 	py3-pip \
+	tzdata \
 	build-base python3-dev && \
     git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
     mv /tmp/sqlite_web/sqlite_web /home/ && \
@@ -32,6 +33,9 @@ RUN apk add --no-cache --update \
     pip3 install peewee tzlocal pytz pysqlite3 && \
     chmod a+x /usr/bin/start.sh && \
     apk del git build-base python3-dev
+
+# Fix undefined timezone, in case the user did not mount the /etc/localtime
+RUN cp /usr/share/zoneinfo/UTC /etc/localtime
 
 WORKDIR /home/py-kms
 

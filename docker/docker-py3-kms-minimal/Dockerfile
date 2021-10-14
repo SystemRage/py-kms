@@ -11,7 +11,7 @@ ENV ACTIVATION_INTERVAL	120
 ENV RENEWAL_INTERVAL	10080
 ENV HWID		"RANDOM"
 ENV LOGLEVEL	INFO
-ENV LOGFILE		/var/log/pykms_logserver.log
+ENV LOGFILE		/dev/stdout
 ENV LOGSIZE		""
 
 COPY ./py-kms /home/py-kms
@@ -25,9 +25,13 @@ RUN apk add --no-cache --update \
 	python3-tkinter \
 	sqlite-libs \
 	py3-pip \
+	tzdata \
 	build-base python3-dev && \
     pip3 install peewee tzlocal pytz && \
     apk del git build-base python3-dev
+
+# Fix undefined timezone, in case the user did not mount the /etc/localtime
+RUN cp /usr/share/zoneinfo/UTC /etc/localtime
 
 WORKDIR /home/py-kms
 
