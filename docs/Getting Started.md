@@ -60,20 +60,13 @@ services:
 ```
 
 #### Parameters
-Below is a fully expanded run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](Usage.html#docker-environment) for the docker environment.
+Below is a little bit more extended run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](Usage.html#docker-environment) for the docker environment.
 ```bash
 docker run -it -d --name py3-kms \
     -p 8080:8080 \
     -p 1688:1688 \
-    -e IP=0.0.0.0 \
-    -e PORT=1688 \
     -e SQLITE=true \
-    -e HWID=RANDOM \
-    -e LOGLEVEL=INFO \
-    -e LOGSIZE=2 \
-    -e LOGFILE=/var/log/pykms_logserver.log \
     -v /etc/localtime:/etc/localtime:ro \
-    -v ./logs:/var/log:rw \
     --restart unless-stopped pykmsorg/py-kms:[TAG]
 ```
 You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
