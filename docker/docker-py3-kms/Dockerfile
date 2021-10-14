@@ -1,4 +1,5 @@
-FROM alpine:3.12
+# Switch to the target image
+FROM alpine:3.14
 
 ENV IP 0.0.0.0
 ENV PORT 1688
@@ -11,39 +12,52 @@ ENV SQLITE true
 ENV SQLITE_PORT	8080
 ENV HWID RANDOM
 ENV LOGLEVEL INFO
-ENV LOGFILE /dev/stdout
+ENV LOGFILE STDOUT
 ENV LOGSIZE ""
+ENV TZ America/Chicago
 
 COPY ./py-kms /home/py-kms
 
+#hadolint ignore=DL3013,DL3018
 RUN apk add --no-cache --update \
-	bash \
-	git \
-	py3-argparse \
-	py3-flask \
-	py3-pygments \
-	python3-tkinter \
-	sqlite-libs \
-	py3-pip \
-	tzdata \
-	build-base python3-dev && \
-    git clone https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web && \
-    cd /tmp/sqlite_web && \
-    git checkout 2e7c85da3d37f80074ed3ae39b5851069b4f301c && \
-    cd / && \
-    mv /tmp/sqlite_web/sqlite_web /home/ && \
-    rm -rf /tmp/sqlite_web && \
-    pip3 install peewee tzlocal pytz pysqlite3 && \
-    apk del git build-base python3-dev
-
-# Fix undefined timezone, in case the user did not mount the /etc/localtime
-RUN cp /usr/share/zoneinfo/UTC /etc/localtime
-
-WORKDIR /home/py-kms
-
-EXPOSE ${SQLITE_PORT}/tcp
-EXPOSE ${PORT}/tcp
+    bash \
+    git \
+    python3 \
+    py3-argparse \
+    py3-flask \
+    py3-pygments \
+    python3-tkinter \
+    sqlite-libs \
+    py3-pip \
+    build-base python3-dev \
+    ca-certificates \
+    duplicity \
+    su-exec \
+    sudo \
+    tzdata \
+    shadow \
+    && git clone --branch master --depth 1 https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web \
+    && mv /tmp/sqlite_web/sqlite_web /home/  \
+    && rm -rf /tmp/sqlite_web \
+    && pip3 install --no-cache-dir peewee tzlocal pytz pysqlite3 wheel \
+    && apk del git build-base python3-dev \
+    && mkdir /db/ \
+    && addgroup power_users  \
+    && adduser -S py-kms -G users -s /bin/bash \
+    && usermod -a -G power_users py-kms \
+    && chown py-kms:users /home/py-kms \
+    # Fix undefined timezone, in case the user did not mount the /etc/localtime
+    && ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
 COPY docker/entrypoint.py /usr/bin/entrypoint.py
-RUN chmod a+x /usr/bin/entrypoint.py
-ENTRYPOINT ["/usr/bin/python3", "/usr/bin/entrypoint.py"]
+COPY docker/start.py /usr/bin/start.py
+
+RUN chmod 755 /usr/bin/entrypoint.py
+
+WORKDIR /home/py-kms
+#USER py-kms
+EXPOSE ${PORT}/tcp
+EXPOSE 8080
+
+ENTRYPOINT [ "/usr/bin/python3", "/usr/bin/entrypoint.py" ]
+CMD ["/usr/bin/start.py"]
