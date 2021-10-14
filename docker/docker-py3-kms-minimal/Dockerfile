@@ -39,4 +39,4 @@ EXPOSE ${PORT}/tcp
 
 COPY docker/entrypoint.py /usr/bin/entrypoint.py
 RUN chmod a+x /usr/bin/entrypoint.py
-ENTRYPOINT ['/usr/bin/python3', '/usr/bin/entrypoint.py']
+ENTRYPOINT ["/usr/bin/python3", "/usr/bin/entrypoint.py"]

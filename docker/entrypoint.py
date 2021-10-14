@@ -27,7 +27,8 @@ for (arg, env) in argumentVariableMapping.items():
         
 enableSQLITE = os.environ.get('SQLITE').lower() == 'true'
 os.makedirs('db', exist_ok=True)
-dbPath = os.path.join(os.environ.get('PWD'), 'db', 'pykms_database.db')
+dbPath = os.path.join('/home/py-kms', 'db', 'pykms_database.db')
+print(dbPath)
 if enableSQLITE:
     command.append('-s')
     command.append(dbPath)
