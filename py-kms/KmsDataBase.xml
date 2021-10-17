@@ -530,6 +530,10 @@
 			<Activate KmsItem="02000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
+        <CsvlkItem DisplayName="Office 2021" VlmcsdIndex="6" GroupId="206" MinKeyId="571000000" MaxKeyId="590999999" IniFileName="Office2021" ReleaseDate="2021-09-16T00:00:00Z" EPid="05426-00206-586-025264-03-1033-9200.0000-2602021" Id="47f3b983-7c53-4d45-abc6-bcd91e2dd90a">
+            <Activate KmsItem="86d50b16-4808-41af-b83b-b338274318b2" />
+        </CsvlkItem>
+
 		<CsvlkItem DisplayName="Office 2019" VlmcsdIndex="5" GroupId="206" MinKeyId="666000000" MaxKeyId="685999999" IniFileName="Office2019" EPid="06401-00206-678-008369-03-1033-9600.0000-2802018" Id="70512334-47b4-44db-a233-be5ea33b914c" InvalidWinBuild="[0,1]">
 			<Activate KmsItem="617d9eb1-ef36-4f82-86e0-a65ae07b96c6" />
 		</CsvlkItem>
@@ -984,6 +988,21 @@
 				<SkuItem DisplayName="Office Word 2019" Id="059834fe-a8ea-4bff-b67b-4d006b5447d3" Gvlk="PBX3G-NWMT6-Q7XBW-PYJGG-WXD33" />
 			</KmsItem>
 
+            <KmsItem DisplayName="Office 2021" Id="86d50b16-4808-41af-b83b-b338274318b2" IsPreview="false" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="6.0" NCountPolicy="5">
+                <SkuItem DisplayName="Office Access LTSC 2021" Id="1fe429d8-3fa7-4a39-b6f0-03dded42fe14" Gvlk="WM8YG-YNGDD-4JHDC-PG3F4-FC4T4" />
+                <SkuItem DisplayName="Office Excel LTSC 2021" Id="ea71effc-69f1-4925-9991-2f5e319bbc24" Gvlk="NWG3X-87C9K-TC7YY-BC2G7-G6RVC" />
+                <SkuItem DisplayName="Office Outlook LTSC 2021" Id="a5799e4c-f83c-4c6e-9516-dfe9b696150b" Gvlk="C9FM6-3N72F-HFJXB-TM3V9-T86R9" />
+                <SkuItem DisplayName="Office Powerpoint LTSC 2021" Id="6e166cc3-495d-438a-89e7-d7c9e6fd4dea" Gvlk="TY7XF-NFRBR-KJ44C-G83KF-GX27K" />
+                <SkuItem DisplayName="Office LTSC Professional Plus 2021" Id="fbdb3e18-a8ef-4fb3-9183-dffd60bd0984" Gvlk="FXYTK-NJJ8C-GB6DW-3DYQT-6F7TH" />
+                <SkuItem DisplayName="Office Project Pro 2021" Id="76881159-155c-43e0-9db7-2d70a9a3a4ca" Gvlk="FTNWT-C6WBT-8HMGF-K9PRX-QV9H8" />
+                <SkuItem DisplayName="Office Project Standard 2021" Id="6dd72704-f752-4b71-94c7-11cec6bfc355" Gvlk="J2JDC-NJCYY-9RGQ4-YXWMH-T3D4T" />
+                <SkuItem DisplayName="Office Publisher LTSC 2021" Id="aa66521f-2370-4ad8-a2bb-c095e3e4338f" Gvlk="2MW9D-N4BXM-9VBPG-Q7W6M-KFBGQ" />
+                <SkuItem DisplayName="Office Skype for Business LTSC 2021" Id="1f32a9af-1274-48bd-ba1e-1ab7508a23e8" Gvlk="HWCXN-K3WBT-WJBKY-R8BD9-XK29P" />
+                <SkuItem DisplayName="Office LTSC Standard 2021" Id="080a45c5-9f9f-49eb-b4b0-c3c610a5ebd3" Gvlk="KDX7X-BNVR8-TXXGX-4Q7Y8-78VT3" />
+                <SkuItem DisplayName="Office Visio LTSC Pro 2021" Id="fb61ac9a-1688-45d2-8f6b-0674dbffa33c" Gvlk="KNH8D-FGHT4-T8RK3-CTDYJ-K2HT4" />
+                <SkuItem DisplayName="Office Visio LTSC Standard 2021" Id="72fce797-1884-48dd-a860-b2f6a5efd3ca" Gvlk="MJVNY-BYWPY-CWV6J-2RKRT-4M8QG" />
+                <SkuItem DisplayName="Office Word LTSC 2021" Id="abe28aea-625a-43b1-8e30-225eb8fbd9e5" Gvlk="TN8H9-M34D3-Y64V9-TR72V-X79KV" />
+            </KmsItem>
 		</AppItem>
 
 	</AppItems>
