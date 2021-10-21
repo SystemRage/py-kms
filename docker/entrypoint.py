@@ -17,6 +17,7 @@ argumentVariableMapping = {
     '-S': 'LOGSIZE',
     '-e': 'EPID'
 }
+sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
 
 # Build the command to execute
 listenIP = os.environ.get('IP', '0.0.0.0')
@@ -27,7 +28,7 @@ for (arg, env) in argumentVariableMapping.items():
         command.append(arg)
         command.append(os.environ.get(env))
         
-enableSQLITE = os.environ.get('SQLITE', 'false').lower() == 'true'
+enableSQLITE = os.path.isfile(sqliteWebPath) and os.environ.get('SQLITE', 'false').lower() == 'true'
 if enableSQLITE:
     print('Storing database file to ' + dbPath)
     dbPath = os.path.join('db', 'pykms_database.db')
@@ -43,7 +44,7 @@ if enableSQLITE:
     if not os.path.isfile(dbPath):
         # Start a dummy activation to ensure the database file is created
         subprocess.run(['/usr/bin/python3', 'pykms_Client.py', listenIP, listenPort, '-m', 'Windows10', '-n', 'DummyClient', '-c', 'ae3a27d1-b73a-4734-9878-70c949815218'])
-    sqliteProcess = subprocess.Popen(['/usr/bin/python3', '/home/sqlite_web/sqlite_web.py', '-H', listenIP, '--read-only', '-x', dbPath, '-p', os.environ.get('SQLITE_PORT', 8080)])
+    sqliteProcess = subprocess.Popen(['/usr/bin/python3', sqliteWebPath, '-H', listenIP, '--read-only', '-x', dbPath, '-p', os.environ.get('SQLITE_PORT', 8080)])
 
 try:
     pykmsProcess.wait()
