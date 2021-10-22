@@ -4,6 +4,20 @@
 
 A Helm chart for Kubernetes
 
+## Deployment
+
+Below is a basic overview of the steps required to deploy the Helm chart to an existing Kubernetes cluster which is accessible via Kubectl
+
+### Create py-kms Namespace (recommended)
+
+`kubectl create ns py-kms`
+
+### Deploy chart with default values.yaml
+
+`helm install -n py-kms -f myvalues.yaml charts/py-kms`
+
+For more information please refer to the Helm Install command documentation located at: https://helm.sh/docs/helm/helm_install/
+
 ## Values
 
 | Key | Type | Default | Description |
