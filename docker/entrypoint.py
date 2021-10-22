@@ -30,8 +30,8 @@ for (arg, env) in argumentVariableMapping.items():
         
 enableSQLITE = os.path.isfile(sqliteWebPath) and os.environ.get('SQLITE', 'false').lower() == 'true'
 if enableSQLITE:
-    print('Storing database file to ' + dbPath)
     dbPath = os.path.join('db', 'pykms_database.db')
+    print('Storing database file to ' + dbPath)
     os.makedirs('db', exist_ok=True)
     command.append('-s')
     command.append(dbPath)
