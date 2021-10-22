@@ -22,7 +22,7 @@ ordered-set==4.0.1
 packaging==20.4
 pep517==0.8.2
 progress==1.5
-Pygments==2.6.1
+Pygments==2.7.4
 pyparsing==2.4.7
 pytoml==0.1.21
 pytz==2020.1
