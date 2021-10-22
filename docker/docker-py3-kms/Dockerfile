@@ -32,8 +32,6 @@ RUN apk add --no-cache --update \
     build-base python3-dev \
     ca-certificates \
     duplicity \
-    su-exec \
-    sudo \
     tzdata \
     shadow \
     && git clone --branch master --depth 1 https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web \
@@ -56,7 +54,7 @@ RUN chmod 755 /usr/bin/entrypoint.py
 
 WORKDIR /home/py-kms
 #USER py-kms
-EXPOSE ${PORT}/tcp
+EXPOSE 1688/tcp
 EXPOSE 8080
 
 ENTRYPOINT [ "/usr/bin/python3", "/usr/bin/entrypoint.py" ]

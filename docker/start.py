@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 # This replaces the old start.sh and ensures all arguments are bound correctly from the environment variables...
-
 import os
 import subprocess
 import time
@@ -19,13 +18,14 @@ argumentVariableMapping = {
   '-S': 'LOGSIZE',
   '-e': 'EPID'
 }
-enableSQLITE = os.getenv('SQLITE', 'false').lower() == 'true'
-dbPath = os.path.join('/db/pykms_database.db')
+
+sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
+enableSQLITE = os.path.isfile(sqliteWebPath) and os.environ.get('SQLITE', 'false').lower() == 'true'
+dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
 log_level = os.getenv('LOGLEVEL', 'INFO')
 
 
 def start_kms_client():
-  time.sleep(5)  # The server may take a while to start
   if not os.path.isfile(dbPath):
     # Start a dummy activation to ensure the database file is created
     client_cmd = [PYTHON3, 'pykms_Client.py', os.environ.get('IP', "0.0.0.0"), os.environ.get('PORT', 1688),
@@ -51,8 +51,6 @@ def start_kms():
       command.append(arg)
       command.append(os.environ.get(env))
 
-  os.makedirs(os.path.dirname(dbPath), exist_ok=True)
-
   if enableSQLITE:
     print('Storing database file to ' + dbPath, flush=True)
     command.append('-s')
@@ -65,6 +63,8 @@ def start_kms():
 
   # In case SQLITE is defined: Start the web interface
   if enableSQLITE:
+    time.sleep(5)  # The server may take a while to start
+    os.system('ls -al ' + dbPath)
     start_kms_client()
     sqlite_cmd = [PYTHON3, '/home/sqlite_web/sqlite_web.py', '-H', os.environ.get('IP'), '--read-only', '-x', dbPath,
                   '-p', os.environ.get('SQLITE_PORT')]
