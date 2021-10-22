@@ -15,10 +15,10 @@ If you wish to get _py-kms_ just up and running without installing any dependenc
 Docker also solves problems regarding the explicit IPv4 and IPv6 usage (it just supports both). The following
 command will download, "install" and start _py-kms_ and also keep it alive after any service disruption.
 ```bash
-docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
+docker run -d --name py-kms --restart always -p 1688:1688 -v /etc/localtime:/etc/localtime:ro ghcr.io/py-kms-organization/py-kms
 ```
-If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
-latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out !
+If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`) or [GitHub Container Registry](https://github.com/Py-KMS-Organization/py-kms/pkgs/container/py-kms) (`ghcr.io/py-kms-organization/py-kms`). To ensure that you are using always the
+latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
 
 #### Tags
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
@@ -37,43 +37,37 @@ _Please note that any architecture other than the classic `amd64` is slightly bi
 
 #### Docker Compose
 You can use `docker-compose` instead of building and running the Dockerfile, so you do not need to respecify your settings again and again. The following Docker Compose file will deploy the `latest` image with the log into your local directory.
+Make sure to take a look into the `entrypoint.py` script to see all supported variable mappings!
 ```yaml
 version: '3'
 
 services:
   kms:
-    image: pykmsorg/py-kms:latest
+    image: ghcr.io/py-kms-organization/py-kms:python3
     ports:
       - 1688:1688
+      - 8080:8080
     environment:
       - IP=0.0.0.0
       - SQLITE=true
       - HWID=RANDOM
       - LOGLEVEL=INFO
-      - LOGSIZE=2
-      - LOGFILE=/var/log/pykms_logserver.log
+      - LOGFILE=/dev/stdout
     restart: always
     volumes:
+      - ./db:/home/py-kms/db
       - /etc/localtime:/etc/localtime:ro
-      - ./logs:/var/log:rw
 ```
 
 #### Parameters
-Below is a fully expanded run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](Usage.html#docker-environment) for the docker environment.
+Below is a little bit more extended run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](Usage.html#docker-environment) for the docker environment.
 ```bash
 docker run -it -d --name py3-kms \
     -p 8080:8080 \
     -p 1688:1688 \
-    -e IP=0.0.0.0 \
-    -e PORT=1688 \
     -e SQLITE=true \
-    -e HWID=RANDOM \
-    -e LOGLEVEL=INFO \
-    -e LOGSIZE=2 \
-    -e LOGFILE=/var/log/pykms_logserver.log \
     -v /etc/localtime:/etc/localtime:ro \
-    -v ./logs:/var/log:rw \
-    --restart unless-stopped pykmsorg/py-kms:[TAG]
+    --restart unless-stopped ghcr.io/py-kms-organization/py-kms:[TAG]
 ```
 You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
 

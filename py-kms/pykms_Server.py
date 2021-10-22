@@ -447,7 +447,7 @@ def server_check():
         # Check sqlite.
         if srv_config['sqlite']:
                 if isinstance(srv_config['sqlite'], str):
-                        check_dir(srv_config['sqlite'], 'srv', log_obj = loggersrv.error, argument = '-s/--sqlite', typefile = '.db')
+                        check_dir(srv_config['sqlite'], 'srv', log_obj = loggersrv.error, argument = '-s/--sqlite')
                 elif srv_config['sqlite'] is True:
                         srv_config['sqlite'] = srv_options['sql']['file']
 

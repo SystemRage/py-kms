@@ -39,37 +39,37 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 | Windows Server 2016 Cloud Storage | `QN4C6-GBJD2-FB422-GHWJK-GJG2R` |
 | Windows Server 2016 Azure Core | `VP34G-4NPPG-79JTQ-864T4-R3MQX`<br>`WNCYY-GFBH2-M4WTT-XQ2FP-PG2K9` |
 
-### Windows 10
+### Windows 10 & Windows 11
 
 | Product | GVLK |
 | --- | --- |
-| Windows 10 Professional Workstation | `NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J` |
-| Windows 10 Professional Workstation N | `9FNHH-K3HBT-3W4TD-6383H-6XYWF` |
-| Windows 10 Enterprise G | `YYVX9-NTFWV-6MDM3-9PT4T-4M68B` |
-| Windows 10 Enterprise G N | `44RPN-FTY23-9VTTB-MP9BX-T84FV` |
+| Windows 10/11 Professional Workstation | `NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J` |
+| Windows 10/11 Professional Workstation N | `9FNHH-K3HBT-3W4TD-6383H-6XYWF` |
+| Windows 10/11 Enterprise G | `YYVX9-NTFWV-6MDM3-9PT4T-4M68B` |
+| Windows 10/11 Enterprise G N | `44RPN-FTY23-9VTTB-MP9BX-T84FV` |
 | Windows 10 Enterprise LTSC 2019 | `M7XTQ-FN8P6-TTKYV-9D4CC-J462D` |
 | Windows 10 Enterprise LTSC 2019 N | `92NFX-8DJQP-P6BBQ-THF9C-7CG2H` |
-| Windows 10 Remote Server | `7NBT4-WGBQX-MP4H7-QXFF8-YP3KX` |
-| Windows 10 Enterprise for Remote Sessions | `CPWHC-NT2C7-VYW78-DHDB2-PG3GK` |
+| Windows 10/11 Remote Server | `7NBT4-WGBQX-MP4H7-QXFF8-YP3KX` |
+| Windows 10/11 Enterprise for Remote Sessions | `CPWHC-NT2C7-VYW78-DHDB2-PG3GK` |
 | Windows 10 S (Lean) | `NBTWJ-3DR69-3C4V8-C26MC-GQ9M6` |
-| Windows 10 Professional | `W269N-WFGWX-YVC9B-4J6C9-T83GX` |
-| Windows 10 Professional N | `MH37W-N47XK-V7XM9-C7227-GCQG9`<br>`HMNWJ-V69R6-B2CDC-8P7VT-2373K` |
-| Windows 10 Professional Education | `6TP4R-GNPTD-KYYHQ-7B7DP-J447Y` |
-| Windows 10 Professional Education N | `YVWGF-BXNMC-HTQYQ-CPQ99-66QFC` |
-| Windows 10 Education | `NW6C2-QMPVW-D7KKK-3GKT6-VCFB2`<br>`F48BJ-8NX82-MRVY9-PF8BW-HMHY2` |
-| Windows 10 Education N | `2WH4N-8QGBV-H22JP-CT43Q-MDWWJ`<br>`PPWGW-8NW9C-J77Q9-8WHB9-QV64W` |
-| Windows 10 Enterprise | `NPPR9-FWDCX-D2C8J-H872K-2YT43`<br>`96YNV-9X4RP-2YYKB-RMQH4-6Q72D`<br>`TN6CM-KCVXP-VVP8X-YVCF7-R9BDH`<br>`3PMKQ-YNVGT-HFJGG-2F4FQ-9D6T7` |
-| Windows 10 Enterprise N | `DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4`<br>`WGGHN-J84D6-QYCPR-T7PJ7-X766F` |
-| Windows 10 Enterprise S | `H76BG-QBNM7-73XY9-V6W2T-684BJ` |
-| Windows 10 Enterprise S N | `X4R4B-NV6WD-PKTVK-F98BH-4C2J8` |
+| Windows 10/11 Professional | `W269N-WFGWX-YVC9B-4J6C9-T83GX` |
+| Windows 10/11 Professional N | `MH37W-N47XK-V7XM9-C7227-GCQG9`<br>`HMNWJ-V69R6-B2CDC-8P7VT-2373K` |
+| Windows 10/11 Professional Education | `6TP4R-GNPTD-KYYHQ-7B7DP-J447Y` |
+| Windows 10/11 Professional Education N | `YVWGF-BXNMC-HTQYQ-CPQ99-66QFC` |
+| Windows 10/11 Education | `NW6C2-QMPVW-D7KKK-3GKT6-VCFB2`<br>`F48BJ-8NX82-MRVY9-PF8BW-HMHY2` |
+| Windows 10/11 Education N | `2WH4N-8QGBV-H22JP-CT43Q-MDWWJ`<br>`PPWGW-8NW9C-J77Q9-8WHB9-QV64W` |
+| Windows 10/11 Enterprise | `NPPR9-FWDCX-D2C8J-H872K-2YT43`<br>`96YNV-9X4RP-2YYKB-RMQH4-6Q72D`<br>`TN6CM-KCVXP-VVP8X-YVCF7-R9BDH`<br>`3PMKQ-YNVGT-HFJGG-2F4FQ-9D6T7` |
+| Windows 10/11 Enterprise N | `DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4`<br>`WGGHN-J84D6-QYCPR-T7PJ7-X766F` |
+| Windows 10/11 Enterprise S | `H76BG-QBNM7-73XY9-V6W2T-684BJ` |
+| Windows 10/11 Enterprise S N | `X4R4B-NV6WD-PKTVK-F98BH-4C2J8` |
 | Windows 10 Enterprise 2015 LTSB | `WNMTR-4C88C-JK8YV-HQ7T2-76DF9` |
 | Windows 10 Enterprise 2015 LTSB N | `2F77B-TNFGY-69QQF-B8YKP-D69TJ`<br>`RW7WN-FMT44-KRGBK-G44WK-QV7YK` |
 | Windows 10 Enterprise 2016 LTSB | `DCPHK-NFMTC-H88MJ-PFHPY-QJ4BJ` |
 | Windows 10 Enterprise 2016 LTSB N | `QFFDN-GRT3P-VKWWX-X7T3R-8B639` |
-| Windows 10 Home<br>Windows 10 Core | `TX9XD-98N7V-6WMQ6-BX7FG-H8Q99`<br>`33QT6-RCNYF-DXB4F-DGP7B-7MHX9` |
-| Windows 10 Home N<br>Windows 10 Core N | `3KHY7-WNT83-DGQKR-F7HPR-844BM`<br>`CP4KF-NG6TC-9K6QF-P6GTT-H8RBM` |
-| Windows 10 Home Single Language<br>Windows 10 Core Single Language | `7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH`<br>`9HGRW-NH2CQ-XQHJD-YCRWB-6VJV7`<br>`4NX46-6DHCG-MR3PH-9FMCX-3RQ3G` |
-| Windows 10 Home Country Specific<br>Windows 10 Core Country Specific | `PVMJN-6DFY6-9CCP6-7BKTT-D3WVR`<br>`JN9HR-MH7K4-DBPDD-TFTXF-Q9MMF` |
+| Windows 10/11 Home<br>Windows 10/11 Core | `TX9XD-98N7V-6WMQ6-BX7FG-H8Q99`<br>`33QT6-RCNYF-DXB4F-DGP7B-7MHX9` |
+| Windows 10/11 Home N<br>Windows 10/11 Core N | `3KHY7-WNT83-DGQKR-F7HPR-844BM`<br>`CP4KF-NG6TC-9K6QF-P6GTT-H8RBM` |
+| Windows 10/11 Home Single Language<br>Windows 10 Core Single Language | `7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH`<br>`9HGRW-NH2CQ-XQHJD-YCRWB-6VJV7`<br>`4NX46-6DHCG-MR3PH-9FMCX-3RQ3G` |
+| Windows 10/11 Home Country Specific<br>Windows 10 Core Country Specific | `PVMJN-6DFY6-9CCP6-7BKTT-D3WVR`<br>`JN9HR-MH7K4-DBPDD-TFTXF-Q9MMF` |
 
 ### Windows Server 2012 R2
 

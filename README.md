@@ -19,7 +19,7 @@ This version of _py-kms_ is for itself a fork of the original implementation by 
 	- Windows 8
 	- Windows 8.1
 	- Windows 10 ( 1511 / 1607 / 1703 / 1709 / 1803 / 1809 )
-    - Windows 10 ( 1903 / 1909 / 20H1 )
+    - Windows 10 ( 1903 / 1909 / 20H1, 20H2, 21H1 )
 	- Windows Server 2008
 	- Windows Server 2008 R2
 	- Windows Server 2012
@@ -41,7 +41,7 @@ The wiki has been completly reworked and is now available on [readthedocs.com](h
        
 ## Quick start
 - To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `0.0.0.0` ( all interfaces ) and the default _PORT_ is `1688`. Note that both the address and port are optional. It's allowed to use IPv4 and IPv6 addresses. If you have a IPv6-capable dual-stack OS, a dual-stack socket is created when using a IPv6 address.
-- To start the server automatically using Docker, execute `docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms`.
+- To start the server automatically using Docker, execute `docker run -d --name py-kms --restart always -p 1688:1688 ghcr.io/py-kms-organization/py-kms`.
 - To show the help pages type: `python3 pykms_Server.py -h` and `python3 pykms_Client.py -h`.
 - For launching _py-kms_ GUI make the file `pykms_Server.py` executable with `chmod +x /path/to/folder/py-kms/pykms_Server.py`, then simply run `pykms_Server.py` by double-clicking.
 

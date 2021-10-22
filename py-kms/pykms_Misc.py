@@ -227,7 +227,7 @@ def logger_create(log_obj, config, mode = 'a'):
         log_obj.setLevel(config['loglevel'])
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------
-def check_dir(path, where, log_obj = None, argument = '-F/--logfile', typefile = '.log'):
+def check_dir(path, where, log_obj = None, argument = '-F/--logfile'):
         filename = os.path.basename(path)
         pathname = os.path.dirname(path)
         extension = os.path.splitext(filename)[1]
@@ -243,9 +243,6 @@ def check_dir(path, where, log_obj = None, argument = '-F/--logfile', typefile =
                         pathname = filename
                 pretty_printer(log_obj = log_obj, where = where, to_exit = True,
                                put_text = msg_dir %(argument, pathname))
-        elif not extension.lower() == typefile:
-                pretty_printer(log_obj = log_obj, where = where, to_exit = True,
-                               put_text = msg_fil %(argument, typefile, extension))
 
 def check_logfile(optionlog, defaultlog, where):
         if not isinstance(optionlog, list):

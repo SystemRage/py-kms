@@ -230,6 +230,10 @@ ENV RENEWAL_INTERVAL 10080
 # Use this flag to store request information from unique clients in an SQLite database.
 ENV SQLITE false
 
+# TCP-port
+# The network port to listen with the web interface on. The default is "8080".
+ENV SQLITE_PORT 8080
+
 # hwid
 # Use this flag to specify a HWID. 
 # The HWID must be an 16-character string of hex characters.
