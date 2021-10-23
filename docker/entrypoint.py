@@ -1,6 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -u
 
-# Need root privileges to change timezone, and user uid/gid
+# Need root privileges to change timezone, and user uid/gid, file/folder ownernship
 
 import grp
 import os
@@ -24,10 +24,10 @@ def change_uid_grp():
   if os.path.isfile(dbPath): os.chown(dbPath, new_uid, new_gid)
   os.system("ls -al /usr/bin/start.py")
   if gid != new_gid:
-    print("Setting gid to " + str(new_gid), flush=True)
+    print("Setting gid to " + str(new_gid))
     os.setgid(gid)
   if uid != new_uid:
-    print("Setting uid to " + str(new_uid), flush=True)
+    print("Setting uid to " + str(new_uid))
     os.setuid(uid)
 
 
@@ -35,7 +35,7 @@ def change_tz():
   tz = os.getenv('TZ', 'etc/UTC')
   # TZ is not symlinked and defined TZ exists
   if tz not in os.readlink('/etc/localtime') and os.path.isfile('/usr/share/zoneinfo/' + tz):
-    print("Setting timezone to " + tz, flush=True)
+    print("Setting timezone to " + tz)
     os.remove('/etc/localtime')
     os.symlink(os.path.join('/usr/share/zoneinfo/', tz), '/etc/localtime')
 
@@ -43,4 +43,4 @@ def change_tz():
 # Main
 if (__name__ == "__main__"):
   change_tz()
-  subprocess.call(PYTHON3 + " /usr/bin/start.py", preexec_fn=change_uid_grp(), shell=True)
+  subprocess.call(PYTHON3 + " -u /usr/bin/start.py", preexec_fn=change_uid_grp(), shell=True)

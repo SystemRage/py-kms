@@ -1,11 +1,10 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -u
 
 # This replaces the old start.sh and ensures all arguments are bound correctly from the environment variables...
 import os
 import subprocess
 import time
 
-LTIME = '/etc/localtime'
 PYTHON3 = '/usr/bin/python3'
 argumentVariableMapping = {
   '-l': 'LCID',
@@ -28,7 +27,7 @@ log_level = os.getenv('LOGLEVEL', 'INFO')
 def start_kms_client():
   if not os.path.isfile(dbPath):
     # Start a dummy activation to ensure the database file is created
-    client_cmd = [PYTHON3, 'pykms_Client.py', os.environ.get('IP', "0.0.0.0"), os.environ.get('PORT', 1688),
+    client_cmd = [PYTHON3,'-u', 'pykms_Client.py', os.environ.get('IP', "0.0.0.0"), os.environ.get('PORT', 1688),
                   '-m', 'Windows10', '-n', 'DummyClient', '-c', 'ae3a27d1-b73a-4734-9878-70c949815218',
                   '-V', os.environ.get('LOGLEVEL', 'INFO'), '-F', os.environ.get('LOGFILE', 'STDOUT')]
     if os.environ.get('LOGSIZE', '') != "":
@@ -36,28 +35,28 @@ def start_kms_client():
       client_cmd.append(os.environ.get('LOGSIZE'))
 
     if log_level.lower() in ['info', 'debug']:
-      print("Starting a dummy activation to ensure the database file is created", flush=True)
+      print("Starting a dummy activation to ensure the database file is created")
     if log_level.lower() == 'debug':
-      print("client_cmd: " + str(client_cmd), flush=True)
+      print("client_cmd: " + str(client_cmd))
 
     subprocess.run(client_cmd)
 
 
 def start_kms():
   # Build the command to execute
-  command = [PYTHON3, 'pykms_Server.py', os.environ.get('IP'), os.environ.get('PORT')]
+  command = [PYTHON3,'-u', 'pykms_Server.py', os.environ.get('IP'), os.environ.get('PORT')]
   for (arg, env) in argumentVariableMapping.items():
     if env in os.environ and os.environ.get(env) != '':
       command.append(arg)
       command.append(os.environ.get(env))
 
   if enableSQLITE:
-    print('Storing database file to ' + dbPath, flush=True)
+    print('Storing database file to ' + dbPath)
     command.append('-s')
     command.append(dbPath)
 
   if log_level.lower() == 'debug':
-    print("server_cmd: " + str(command), flush=True)
+    print("server_cmd: " + str(command))
 
   pykms_process = subprocess.Popen(command)
 
@@ -66,11 +65,11 @@ def start_kms():
     time.sleep(5)  # The server may take a while to start
     os.system('ls -al ' + dbPath)
     start_kms_client()
-    sqlite_cmd = [PYTHON3, '/home/sqlite_web/sqlite_web.py', '-H', os.environ.get('IP'), '--read-only', '-x', dbPath,
+    sqlite_cmd = [PYTHON3,'-u', '/home/sqlite_web/sqlite_web.py', '-H', os.environ.get('IP'), '--read-only', '-x', dbPath,
                   '-p', os.environ.get('SQLITE_PORT')]
 
     if log_level.lower() == 'debug':
-      print("sqlite_cmd: " + str(sqlite_cmd), flush=True)
+      print("sqlite_cmd: " + str(sqlite_cmd))
 
     sqlite_process = subprocess.Popen(sqlite_cmd)
 
