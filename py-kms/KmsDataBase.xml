@@ -530,9 +530,9 @@
 			<Activate KmsItem="02000000-0000-0000-0000-000000000000" />
 		</CsvlkItem>
 
-        <CsvlkItem DisplayName="Office 2021" VlmcsdIndex="6" GroupId="206" MinKeyId="571000000" MaxKeyId="590999999" IniFileName="Office2021" ReleaseDate="2021-09-16T00:00:00Z" EPid="05426-00206-586-025264-03-1033-9200.0000-2602021" Id="47f3b983-7c53-4d45-abc6-bcd91e2dd90a">
-            <Activate KmsItem="86d50b16-4808-41af-b83b-b338274318b2" />
-        </CsvlkItem>
+		<CsvlkItem DisplayName="Office 2021" VlmcsdIndex="6" GroupId="206" MinKeyId="571000000" MaxKeyId="590999999" IniFileName="Office2021" EPid="05426-00206-586-025264-03-1033-9200.0000-2602021" Id="47f3b983-7c53-4d45-abc6-bcd91e2dd90a" InvalidWinBuild="[0,1]">
+			<Activate KmsItem="86d50b16-4808-41af-b83b-b338274318b2" />
+		</CsvlkItem>
 
 		<CsvlkItem DisplayName="Office 2019" VlmcsdIndex="5" GroupId="206" MinKeyId="666000000" MaxKeyId="685999999" IniFileName="Office2019" EPid="06401-00206-678-008369-03-1033-9600.0000-2802018" Id="70512334-47b4-44db-a233-be5ea33b914c" InvalidWinBuild="[0,1]">
 			<Activate KmsItem="617d9eb1-ef36-4f82-86e0-a65ae07b96c6" />
