@@ -130,3 +130,6 @@ dmypy.json
 
 # Helm
 charts/*/*.tgz
+/.idea/
+docker-compose-*.yml
+*.sh

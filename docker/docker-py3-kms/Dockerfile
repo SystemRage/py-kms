@@ -16,8 +16,7 @@ ENV LOGFILE STDOUT
 ENV LOGSIZE ""
 ENV TZ America/Chicago
 
-COPY ./py-kms /home/py-kms
-
+COPY py-kms /home/py-kms/
 #hadolint ignore=DL3013,DL3018
 RUN apk add --no-cache --update \
     bash \
@@ -34,6 +33,7 @@ RUN apk add --no-cache --update \
     duplicity \
     tzdata \
     shadow \
+    netcat-openbsd \
     && git clone --branch master --depth 1 https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web \
     && mv /tmp/sqlite_web/sqlite_web /home/  \
     && rm -rf /tmp/sqlite_web \
@@ -54,8 +54,10 @@ RUN chmod 755 /usr/bin/entrypoint.py
 
 WORKDIR /home/py-kms
 #USER py-kms
-EXPOSE 1688/tcp
+EXPOSE ${PORT}/tcp
 EXPOSE 8080
 
-ENTRYPOINT [ "/usr/bin/python3", "/usr/bin/entrypoint.py" ]
+HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -t localhost ${PORT} || exit 1
+
+ENTRYPOINT [ "/usr/bin/python3","-u","/usr/bin/entrypoint.py" ]
 CMD ["/usr/bin/start.py"]
