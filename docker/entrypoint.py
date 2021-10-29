@@ -50,6 +50,9 @@ def change_tz():
     loggersrv.info("Setting timzeone to %s" % tz )
     os.remove('/etc/localtime')
     os.symlink(os.path.join('/usr/share/zoneinfo/', tz), '/etc/localtime')
+    f = open("/etc/timezone", "w")
+    f.write(tz)
+    f.close()
 
 
 # Main
