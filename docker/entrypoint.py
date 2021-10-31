@@ -1,57 +1,62 @@
-#!/usr/bin/python3
+#!/usr/bin/python3 -u
 
-# This replaces the old start.sh and ensures all arguments are bound correctly from the environment variables...
+# Need root privileges to change timezone, and user uid/gid, file/folder ownernship
 
+import grp
+import logging
 import os
-import time
+import pwd
 import subprocess
+import sys
 
-argumentVariableMapping = {
-    '-l': 'LCID',
-    '-c': 'CLIENT_COUNT',
-    '-a': 'ACTIVATION_INTERVAL',
-    '-r': 'RENEWAL_INTERVAL',
-    '-w': 'HWID',
-    '-V': 'LOGLEVEL',
-    '-F': 'LOGFILE',
-    '-S': 'LOGSIZE',
-    '-e': 'EPID'
-}
-sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
+PYTHON3 = '/usr/bin/python3'
+dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
+log_level = os.getenv('LOGLEVEL', 'INFO')
 
-# Build the command to execute
-listenIP = os.environ.get('IP', '0.0.0.0')
-listenPort = os.environ.get('PORT', '1688')
-command = ['/usr/bin/python3', 'pykms_Server.py', listenIP, listenPort]
-for (arg, env) in argumentVariableMapping.items():
-    if env in os.environ and os.environ.get(env) != '':
-        command.append(arg)
-        command.append(os.environ.get(env))
-        
-enableSQLITE = os.path.isfile(sqliteWebPath) and os.environ.get('SQLITE', 'false').lower() == 'true'
-if enableSQLITE:
-    dbPath = os.path.join('db', 'pykms_database.db')
-    print('Storing database file to ' + dbPath)
-    os.makedirs('db', exist_ok=True)
-    command.append('-s')
-    command.append(dbPath)
+loggersrv = logging.getLogger('logsrv')
+loggersrv.setLevel(log_level)
+streamhandler = logging.StreamHandler(sys.stdout)
+streamhandler.setLevel(log_level)
+formatter = logging.Formatter(fmt = '\x1b[94m%(asctime)s %(levelname)-8s %(message)s',
+                              datefmt = '%a, %d %b %Y %H:%M:%S',)
+streamhandler.setFormatter(formatter)
+loggersrv.addHandler(streamhandler)
 
-pykmsProcess = subprocess.Popen(command)
 
-# In case SQLITE is defined: Start the web interface
-if enableSQLITE:
-    time.sleep(5) # The server may take a while to start
-    if not os.path.isfile(dbPath):
-        # Start a dummy activation to ensure the database file is created
-        subprocess.run(['/usr/bin/python3', 'pykms_Client.py', listenIP, listenPort, '-m', 'Windows10', '-n', 'DummyClient', '-c', 'ae3a27d1-b73a-4734-9878-70c949815218'])
-    sqliteProcess = subprocess.Popen(['/usr/bin/python3', sqliteWebPath, '-H', listenIP, '--read-only', '-x', dbPath, '-p', os.environ.get('SQLITE_PORT', 8080)])
+def change_uid_grp():
+  user_db_entries = pwd.getpwnam("py-kms")
+  user_grp_db_entries = grp.getgrnam("power_users")
+  uid = int(user_db_entries.pw_uid)
+  gid = int(user_grp_db_entries.gr_gid)
+  new_gid = int(os.getenv('GID', str(gid)))
+  new_uid = int(os.getenv('UID', str(uid)))
+  os.chown("/home/py-kms", new_uid, new_gid)
+  os.chown("/usr/bin/start.py", new_uid, new_gid)
+  if os.path.isfile(dbPath): os.chown(dbPath, new_uid, new_gid)
+  loggersrv.debug("%s" %str(subprocess.check_output("ls -al " + dbPath, shell=True)))
+  if gid != new_gid:
+    loggersrv.info("Setting gid to '%s'." % str(new_gid))
+    os.setgid(gid)
 
-try:
-    pykmsProcess.wait()
-except:
-    # In case of any error - just shut down
-    pass
+  if uid != new_uid:
+    loggersrv.info("Setting uid to '%s'." % str(new_uid))
+    os.setuid(uid)
 
-if enableSQLITE:
-    sqliteProcess.terminate()
-    pykmsProcess.terminate()
+
+def change_tz():
+  tz = os.getenv('TZ', 'etc/UTC')
+  # TZ is not symlinked and defined TZ exists
+  if tz not in os.readlink('/etc/localtime') and os.path.isfile('/usr/share/zoneinfo/' + tz):
+    loggersrv.info("Setting timzeone to %s" % tz )
+    os.remove('/etc/localtime')
+    os.symlink(os.path.join('/usr/share/zoneinfo/', tz), '/etc/localtime')
+    f = open("/etc/timezone", "w")
+    f.write(tz)
+    f.close()
+
+
+# Main
+if (__name__ == "__main__"):
+  loggersrv.info("Log level: %s" % log_level)
+  change_tz()
+  subprocess.call(PYTHON3 + " -u /usr/bin/start.py", preexec_fn=change_uid_grp(), shell=True)

@@ -1,0 +1,8 @@
+log/
+.idea
+.github
+*.db
+*.yml
+*.md
+*.sh
+Makefile
