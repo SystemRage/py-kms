@@ -25,10 +25,11 @@ RUN apk add --no-cache --update \
 	sqlite-libs \
 	py3-pip \
 	tzdata  \
+  shadow \
   netcat-openbsd \
-	build-base python3-dev && \
-  pip3 install --no-cache peewee tzlocal pytz wheel && \
-  apk del git build-base python3-dev && \
+	build-base python3-dev \
+  && pip3 install --no-cache peewee tzlocal pytz wheel \
+  && apk del git build-base python3-dev \
   && addgroup power_users  \
   && adduser -S py-kms -G users -s /bin/bash \
   && usermod -a -G power_users py-kms \
@@ -41,8 +42,10 @@ WORKDIR /home/py-kms
 EXPOSE ${PORT}/tcp
 
 COPY docker/entrypoint.py /usr/bin/entrypoint.py
+COPY docker/start.py /usr/bin/start.py
+
 RUN chmod a+x /usr/bin/entrypoint.py
 HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -t localhost ${PORT} || exit 1
 
 ENTRYPOINT ["/usr/bin/python3", "-u","/usr/bin/entrypoint.py"]
-CMD["/usr/bin/start.py"]
+CMD ["/usr/bin/start.py"]
