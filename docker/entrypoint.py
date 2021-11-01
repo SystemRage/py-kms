@@ -33,8 +33,9 @@ def change_uid_grp():
   os.chown("/home/py-kms", new_uid, new_gid)
   os.chown("/usr/bin/start.py", new_uid, new_gid)
   if os.path.isfile(dbPath):
-      os.chown(dbPath, new_uid, new_gid)
-      loggersrv.debug("%s" %str(subprocess.check_output("ls -al " + dbPath, shell=True)))
+    os.chown(dbPath, new_uid, new_gid)
+    loggersrv.debug("%s" %str(subprocess.check_output("ls -al " + dbPath, shell=True)))
+
   if gid != new_gid:
     loggersrv.info("Setting gid to '%s'." % str(new_gid))
     os.setgid(gid)
