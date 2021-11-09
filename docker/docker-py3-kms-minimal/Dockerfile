@@ -16,18 +16,18 @@ ENV LOGSIZE ""
 COPY ./py-kms /home/py-kms
 
 RUN apk add --no-cache --update \
-	bash \
-	git \
-	py3-argparse \
-	py3-flask \
-	py3-pygments \
-	python3-tkinter \
-	sqlite-libs \
-	py3-pip \
-	tzdata  \
+  bash \
+  git \
+  py3-argparse \
+  py3-flask \
+  py3-pygments \
+  python3-tkinter \
+  sqlite-libs \
+  py3-pip \
+  tzdata  \
   shadow \
   netcat-openbsd \
-	build-base python3-dev \
+  build-base python3-dev \
   && pip3 install --no-cache peewee tzlocal pytz wheel \
   && apk del git build-base python3-dev \
   && addgroup power_users  \
@@ -37,15 +37,16 @@ RUN apk add --no-cache --update \
   # Fix undefined timezone, in case the user did not mount the /etc/localtime
   && ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
+COPY docker/entrypoint.py /usr/bin/entrypoint.py
+COPY docker/start.py /usr/bin/start.py
+
+RUN chmod 755 /usr/bin/entrypoint.py
+
 WORKDIR /home/py-kms
 
 EXPOSE ${PORT}/tcp
 
-COPY docker/entrypoint.py /usr/bin/entrypoint.py
-COPY docker/start.py /usr/bin/start.py
-
-RUN chmod a+x /usr/bin/entrypoint.py
-HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -t localhost ${PORT} || exit 1
+HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -z localhost ${PORT} || exit 1
 
 ENTRYPOINT ["/usr/bin/python3", "-u","/usr/bin/entrypoint.py"]
 CMD ["/usr/bin/start.py"]
