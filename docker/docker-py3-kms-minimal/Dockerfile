@@ -46,7 +46,7 @@ WORKDIR /home/py-kms
 
 EXPOSE ${PORT}/tcp
 
-HEALTHCHECK --interval=5ms --timeout=3s --start-period=10s --retries=4 CMD echo | nc -z localhost ${PORT} || exit 1
+HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -z localhost ${PORT} || exit 1
 
 ENTRYPOINT ["/usr/bin/python3", "-u","/usr/bin/entrypoint.py"]
 CMD ["/usr/bin/start.py"]
