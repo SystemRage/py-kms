@@ -36,13 +36,11 @@ def change_uid_grp():
     os.chown(dbPath, new_uid, new_gid)
     loggersrv.debug("%s" %str(subprocess.check_output("ls -al " + dbPath, shell=True)))
 
-  if gid != new_gid:
-    loggersrv.info("Setting gid to '%s'." % str(new_gid))
-    os.setgid(gid)
+  loggersrv.info("Setting gid to '%s'." % str(new_gid))
+  os.setgid(new_gid)
 
-  if uid != new_uid:
-    loggersrv.info("Setting uid to '%s'." % str(new_uid))
-    os.setuid(uid)
+  loggersrv.info("Setting uid to '%s'." % str(new_uid))
+  os.setuid(new_uid)
 
 
 def change_tz():
