@@ -11,12 +11,13 @@ import sys
 
 PYTHON3 = '/usr/bin/python3'
 dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
-log_level = os.getenv('LOGLEVEL', 'INFO')
-
+log_level_bootstrap = log_level = os.getenv('LOGLEVEL', 'INFO')
+if log_level_bootstrap == "MININFO":
+  log_level_bootstrap = "INFO"
 loggersrv = logging.getLogger('logsrv')
-loggersrv.setLevel(log_level)
+loggersrv.setLevel(log_level_bootstrap)
 streamhandler = logging.StreamHandler(sys.stdout)
-streamhandler.setLevel(log_level)
+streamhandler.setLevel(log_level_bootstrap)
 formatter = logging.Formatter(fmt = '\x1b[94m%(asctime)s %(levelname)-8s %(message)s',
                               datefmt = '%a, %d %b %Y %H:%M:%S',)
 streamhandler.setFormatter(formatter)

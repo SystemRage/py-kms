@@ -23,7 +23,9 @@ argumentVariableMapping = {
 sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
 enableSQLITE = os.path.isfile(sqliteWebPath) and os.environ.get('SQLITE', 'false').lower() == 'true'
 dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
-log_level = os.getenv('LOGLEVEL', 'INFO')
+log_level_bootstrap = log_level = os.getenv('LOGLEVEL', 'INFO')
+if log_level_bootstrap == "MININFO":
+  log_level_bootstrap = "INFO"
 log_file = os.environ.get('LOGFILE', 'STDOUT')
 listen_ip = os.environ.get('IP', '0.0.0.0')
 listen_port = os.environ.get('PORT', '1688')
@@ -87,9 +89,9 @@ def start_kms():
 # Main
 if (__name__ == "__main__"):
   loggersrv = logging.getLogger('logsrv')
-  loggersrv.setLevel(log_level)
+  loggersrv.setLevel(log_level_bootstrap)
   streamhandler = logging.StreamHandler(sys.stdout)
-  streamhandler.setLevel(log_level)
+  streamhandler.setLevel(log_level_bootstrap)
   formatter = logging.Formatter(fmt='\x1b[94m%(asctime)s %(levelname)-8s %(message)s',
                                 datefmt='%a, %d %b %Y %H:%M:%S')
   streamhandler.setFormatter(formatter)
