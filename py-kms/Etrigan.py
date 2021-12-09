@@ -9,7 +9,7 @@ import time
 import signal
 import logging
 import argparse
-from collections import Sequence
+from collections.abc import Sequence
 
 __version__             = "0.1"
 __license__             = "MIT License"
