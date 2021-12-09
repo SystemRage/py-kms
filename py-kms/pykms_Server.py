@@ -629,7 +629,7 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
 
 serverqueue = Queue.Queue(maxsize = 0)
 serverthread = server_thread(serverqueue, name = "Thread-Srv")
-serverthread.setDaemon(True)
+serverthread.daemon = True
 serverthread.start()
 
 if __name__ == "__main__":
