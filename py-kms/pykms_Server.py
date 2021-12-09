@@ -13,7 +13,6 @@ import pickle
 import socketserver
 import queue as Queue
 import selectors
-from getpass import getuser
 from tempfile import gettempdir
 from time import monotonic as time
 
@@ -495,14 +494,12 @@ def server_create():
         all_address = [(
                         srv_config['ip'], srv_config['port'],
                         (srv_config['backlog_main'] if 'backlog_main' in srv_config else srv_options['backlog']['def']),
-                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else False if getuser() == 'WDAGUtilityAccount' \
-                         else srv_options['reuse']['def'])
+                        (srv_config['reuse_main'] if 'reuse_main' in srv_config else srv_options['reuse']['def'])
                         )]
         log_address = "TCP server listening at %s on port %d" %(srv_config['ip'], srv_config['port'])
 
         if 'listen' in srv_config:
                 for l, b, r in zip(srv_config['listen'], srv_config['backlog'], srv_config['reuse']):
-                        r = (False if getuser() == 'WDAGUtilityAccount' else r)
                         all_address.append(l + (b,) + (r,))
                         log_address += justify("at %s on port %d" %(l[0], l[1]), indent = 56)
 
