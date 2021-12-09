@@ -30,7 +30,6 @@ RUN apk add --no-cache --update \
   py3-pip \
   build-base python3-dev \
   ca-certificates \
-  duplicity \
   tzdata \
   shadow \
   netcat-openbsd \
