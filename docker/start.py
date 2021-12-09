@@ -80,6 +80,8 @@ def start_kms():
   except Exception:
     # In case of any error - just shut down
     pass
+  except KeyboardInterrupt:
+    pass
 
   if enableSQLITE:
     if None != sqlite_process: sqlite_process.terminate()
