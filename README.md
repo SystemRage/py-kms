@@ -20,6 +20,7 @@ This version of _py-kms_ is for itself a fork of the original implementation by 
 	- Windows 8.1
 	- Windows 10 ( 1511 / 1607 / 1703 / 1709 / 1803 / 1809 )
     - Windows 10 ( 1903 / 1909 / 20H1, 20H2, 21H1 )
+    - Windows 11 ( 21H2 )
 	- Windows Server 2008
 	- Windows Server 2008 R2
 	- Windows Server 2012
