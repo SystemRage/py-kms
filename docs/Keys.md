@@ -47,8 +47,8 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 | Windows 10/11 Professional Workstation N | `9FNHH-K3HBT-3W4TD-6383H-6XYWF` |
 | Windows 10/11 Enterprise G | `YYVX9-NTFWV-6MDM3-9PT4T-4M68B` |
 | Windows 10/11 Enterprise G N | `44RPN-FTY23-9VTTB-MP9BX-T84FV` |
-| Windows 10 Enterprise LTSC 2019 | `M7XTQ-FN8P6-TTKYV-9D4CC-J462D` |
-| Windows 10 Enterprise LTSC 2019 N | `92NFX-8DJQP-P6BBQ-THF9C-7CG2H` |
+| Windows 10 Enterprise LTSC 2019/2021 | `M7XTQ-FN8P6-TTKYV-9D4CC-J462D` |
+| Windows 10 Enterprise LTSC 2019/2021 N | `92NFX-8DJQP-P6BBQ-THF9C-7CG2H` |
 | Windows 10/11 Remote Server | `7NBT4-WGBQX-MP4H7-QXFF8-YP3KX` |
 | Windows 10/11 Enterprise for Remote Sessions | `CPWHC-NT2C7-VYW78-DHDB2-PG3GK` |
 | Windows 10 S (Lean) | `NBTWJ-3DR69-3C4V8-C26MC-GQ9M6` |
