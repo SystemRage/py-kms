@@ -577,16 +577,16 @@
 			</KmsItem>
 
 			<KmsItem DisplayName="Windows 10 2019 (Volume)" Id="11b15659-e603-4cf1-9c1f-f0ec01b81888" DefaultKmsProtocol="6.0" NCountPolicy="25">
-				<SkuItem DisplayName="Windows 10 Enterprise LTSC 2019" Id="32d2fab3-e4a8-42c2-923b-4bf4fd13e6ee" Gvlk="M7XTQ-FN8P6-TTKYV-9D4CC-J462D" />
-				<SkuItem DisplayName="Windows 10 Enterprise LTSC 2019 N" Id="7103a333-b8c8-49cc-93ce-d37c09687f92" Gvlk="92NFX-8DJQP-P6BBQ-THF9C-7CG2H" />
+				<SkuItem DisplayName="Windows 10 Enterprise LTSC 2019/2021" Id="32d2fab3-e4a8-42c2-923b-4bf4fd13e6ee" Gvlk="M7XTQ-FN8P6-TTKYV-9D4CC-J462D" />
+				<SkuItem DisplayName="Windows 10 Enterprise LTSC 2019/2021 N" Id="7103a333-b8c8-49cc-93ce-d37c09687f92" Gvlk="92NFX-8DJQP-P6BBQ-THF9C-7CG2H" />
 			</KmsItem>
 
 			<KmsItem DisplayName="Windows 10 Unknown (Volume)" Id="d27cd636-1962-44e9-8b4f-27b6c23efb85" DefaultKmsProtocol="6.0" NCountPolicy="25">
             </KmsItem>
 
-			<KmsItem DisplayName="Windows 10 China Government" Id="7ba0bf23-d0f5-4072-91d9-d55af5a481b6" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="6.0" NCountPolicy="25">
-				<SkuItem DisplayName="Windows 10 Enterprise G" Id="e0b2d383-d112-413f-8a80-97f373a5820c" Gvlk="YYVX9-NTFWV-6MDM3-9PT4T-4M68B" />
-				<SkuItem DisplayName="Windows 10 Enterprise G N" Id="e38454fb-41a4-4f59-a5dc-25080e354730" Gvlk="44RPN-FTY23-9VTTB-MP9BX-T84FV" />
+			<KmsItem DisplayName="Windows 10/11 China Government" Id="7ba0bf23-d0f5-4072-91d9-d55af5a481b6" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="6.0" NCountPolicy="25">
+				<SkuItem DisplayName="Windows 10/11 Enterprise G" Id="e0b2d383-d112-413f-8a80-97f373a5820c" Gvlk="YYVX9-NTFWV-6MDM3-9PT4T-4M68B" />
+				<SkuItem DisplayName="Windows 10/11 Enterprise G N" Id="e38454fb-41a4-4f59-a5dc-25080e354730" Gvlk="44RPN-FTY23-9VTTB-MP9BX-T84FV" />
 			</KmsItem>
 
 			<KmsItem DisplayName="Windows 10 2016 (Volume)" Id="969fe3c0-a3ec-491a-9f25-423605deb365" DefaultKmsProtocol="6.0" NCountPolicy="25">
@@ -594,44 +594,44 @@
 				<SkuItem DisplayName="Windows 10 Enterprise 2016 LTSB N" Id="9f776d83-7156-45b2-8a5c-359b9c9f22a3" Gvlk="QFFDN-GRT3P-VKWWX-X7T3R-8B639" />
 			</KmsItem>
 
-			<KmsItem DisplayName="Windows 10 (Retail)" Id="e1c51358-fe3e-4203-a4a2-3b6b20c9734e" IsRetail="true" DefaultKmsProtocol="6.0" NCountPolicy="25">
-				<SkuItem DisplayName="Windows 10 Home / Core" Id="58e97c99-f377-4ef1-81d5-4ad5522b5fd8" Gvlk="TX9XD-98N7V-6WMQ6-BX7FG-H8Q99" />
+			<KmsItem DisplayName="Windows 10/11 (Retail)" Id="e1c51358-fe3e-4203-a4a2-3b6b20c9734e" IsRetail="true" DefaultKmsProtocol="6.0" NCountPolicy="25">
+				<SkuItem DisplayName="Windows 10/11 Home / Core" Id="58e97c99-f377-4ef1-81d5-4ad5522b5fd8" Gvlk="TX9XD-98N7V-6WMQ6-BX7FG-H8Q99" />
 				<SkuItem DisplayName="Windows 10 Home / Core [Pre-Release]" Id="903663f7-d2ab-49c9-8942-14aa9e0a9c72" Gvlk="" />            
-				<SkuItem DisplayName="Windows 10 Home / Core Country Specific" Id="a9107544-f4a0-4053-a96a-1479abdef912" Gvlk="PVMJN-6DFY6-9CCP6-7BKTT-D3WVR" />
+				<SkuItem DisplayName="Windows 10/11 Home / Core Country Specific" Id="a9107544-f4a0-4053-a96a-1479abdef912" Gvlk="PVMJN-6DFY6-9CCP6-7BKTT-D3WVR" />
 				<SkuItem DisplayName="Windows 10 Home / Core Country Specific [Pre-Release]" Id="5fe40dd6-cf1f-4cf2-8729-92121ac2e997" Gvlk="" />
-				<SkuItem DisplayName="Windows 10 Home / Core N" Id="7b9e1751-a8da-4f75-9560-5fadfe3d8e38" Gvlk="3KHY7-WNT83-DGQKR-F7HPR-844BM" />
+				<SkuItem DisplayName="Windows 10/11 Home / Core N" Id="7b9e1751-a8da-4f75-9560-5fadfe3d8e38" Gvlk="3KHY7-WNT83-DGQKR-F7HPR-844BM" />
 				<SkuItem DisplayName="Windows 10 Home / Core N [Pre-Release]" Id="4dfd543d-caa6-4f69-a95f-5ddfe2b89567" Gvlk="" />
-				<SkuItem DisplayName="Windows 10 Home / Core Single Language" Id="cd918a57-a41b-4c82-8dce-1a538e221a83" Gvlk="7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH" />
+				<SkuItem DisplayName="Windows 10/11 Home / Core Single Language" Id="cd918a57-a41b-4c82-8dce-1a538e221a83" Gvlk="7HNRX-D7KGG-3K4RQ-4WPJ4-YTDFH" />
 				<SkuItem DisplayName="Windows 10 Home / Core Single Language [Pre-Release]" Id="2cc171ef-db48-4adc-af09-7c574b37f139" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Home / Core [Technical Preview]" Id="6496e59d-89dc-49eb-a353-09ceb9404845" Gvlk="" />
 			</KmsItem>
 
-			<KmsItem DisplayName="Windows 10 2015 (Volume)" Id="58e2134f-8e11-4d17-9cb2-91069c151148" DefaultKmsProtocol="6.0" NCountPolicy="25">
-				<SkuItem DisplayName="Windows 10 Education" Id="e0c42288-980c-4788-a014-c080d2e1926e" Gvlk="NW6C2-QMPVW-D7KKK-3GKT6-VCFB2" />
+			<KmsItem DisplayName="Windows 10/11 2015 (Volume)" Id="58e2134f-8e11-4d17-9cb2-91069c151148" DefaultKmsProtocol="6.0" NCountPolicy="25">
+				<SkuItem DisplayName="Windows 10/11 Education" Id="e0c42288-980c-4788-a014-c080d2e1926e" Gvlk="NW6C2-QMPVW-D7KKK-3GKT6-VCFB2" />
 				<SkuItem DisplayName="Windows 10 Education [Pre-Release]" Id="af43f7f0-3b1e-4266-a123-1fdb53f4323b" Gvlk="" />
-				<SkuItem DisplayName="Windows 10 Education N" Id="3c102355-d027-42c6-ad23-2e7ef8a02585" Gvlk="2WH4N-8QGBV-H22JP-CT43Q-MDWWJ" />
+				<SkuItem DisplayName="Windows 10/11 Education N" Id="3c102355-d027-42c6-ad23-2e7ef8a02585" Gvlk="2WH4N-8QGBV-H22JP-CT43Q-MDWWJ" />
 				<SkuItem DisplayName="Windows 10 Education N [Pre-Release]" Id="075aca1f-05d7-42e5-a3ce-e349e7be7078" Gvlk="" />
-				<SkuItem DisplayName="Windows 10 Enterprise" Id="73111121-5638-40f6-bc11-f1d7b0d64300" Gvlk="NPPR9-FWDCX-D2C8J-H872K-2YT43" />
+				<SkuItem DisplayName="Windows 10/11 Enterprise" Id="73111121-5638-40f6-bc11-f1d7b0d64300" Gvlk="NPPR9-FWDCX-D2C8J-H872K-2YT43" />
 				<SkuItem DisplayName="Windows 10 Enterprise [Preview]" Id="43f2ab05-7c87-4d56-b27c-44d0f9a3dabd" Gvlk="QNMXX-GCD3W-TCCT4-872RV-G6P4J" IsGeneratedGvlk="true" />
-				<SkuItem DisplayName="Windows 10 Enterprise S" Id="00000000-0000-0000-0000-000000000000" Gvlk="H76BG-QBNM7-73XY9-V6W2T-684BJ" />
+				<SkuItem DisplayName="Windows 10/11 Enterprise S" Id="00000000-0000-0000-0000-000000000000" Gvlk="H76BG-QBNM7-73XY9-V6W2T-684BJ" />
 				<SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB" Id="7b51a46c-0c04-4e8f-9af4-8496cca90d5e" Gvlk="WNMTR-4C88C-JK8YV-HQ7T2-76DF9" />
 				<SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB [Pre-Release]" Id="2cf5af84-abab-4ff0-83f8-f040fb2576eb" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB N" Id="87b838b7-41b6-4590-8318-5797951d8529" Gvlk="2F77B-TNFGY-69QQF-B8YKP-D69TJ" />
 				<SkuItem DisplayName="Windows 10 Enterprise 2015 LTSB N [Pre-Release]" Id="11a37f09-fb7f-4002-bd84-f3ae71d11e90" Gvlk="" />
-				<SkuItem DisplayName="Windows 10 Enterprise N" Id="e272e3e2-732f-4c65-a8f0-484747d0d947" Gvlk="DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4" />
-				<SkuItem DisplayName="Windows 10 Enterprise S N" Id="00000000-0000-0000-0000-000000000000" Gvlk="X4R4B-NV6WD-PKTVK-F98BH-4C2J8" />
+				<SkuItem DisplayName="Windows 10/11 Enterprise N" Id="e272e3e2-732f-4c65-a8f0-484747d0d947" Gvlk="DPH2V-TTNVB-4X9Q3-TJR4H-KHJW4" />
+				<SkuItem DisplayName="Windows 10/11 Enterprise S N" Id="00000000-0000-0000-0000-000000000000" Gvlk="X4R4B-NV6WD-PKTVK-F98BH-4C2J8" />
 				<SkuItem DisplayName="Windows 10 Enterprise N [Pre-Release]" Id="6ae51eeb-c268-4a21-9aae-df74c38b586d" Gvlk="" />
-				<SkuItem DisplayName="Windows 10 Professional Workstation" Id="82bbc092-bc50-4e16-8e18-b74fc486aec3" Gvlk="NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J" />
-				<SkuItem DisplayName="Windows 10 Professional Workstation N" Id="4b1571d3-bafb-4b40-8087-a961be2caf65" Gvlk="9FNHH-K3HBT-3W4TD-6383H-6XYWF" />
-				<SkuItem DisplayName="Windows 10 Professional" Id="2de67392-b7a7-462a-b1ca-108dd189f588" Gvlk="W269N-WFGWX-YVC9B-4J6C9-T83GX" />
-				<SkuItem DisplayName="Windows 10 Professional Education" Id="3f1afc82-f8ac-4f6c-8005-1d233e606eee" Gvlk="6TP4R-GNPTD-KYYHQ-7B7DP-J447Y" />
-				<SkuItem DisplayName="Windows 10 Professional Education N" Id="5300b18c-2e33-4dc2-8291-47ffcec746dd" Gvlk="YVWGF-BXNMC-HTQYQ-CPQ99-66QFC" />
-				<SkuItem DisplayName="Windows 10 Professional N" Id="a80b5abf-76ad-428b-b05d-a47d2dffeebf" Gvlk="MH37W-N47XK-V7XM9-C7227-GCQG9" />
+				<SkuItem DisplayName="Windows 10/11 Professional Workstation" Id="82bbc092-bc50-4e16-8e18-b74fc486aec3" Gvlk="NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J" />
+				<SkuItem DisplayName="Windows 10/11 Professional Workstation N" Id="4b1571d3-bafb-4b40-8087-a961be2caf65" Gvlk="9FNHH-K3HBT-3W4TD-6383H-6XYWF" />
+				<SkuItem DisplayName="Windows 10/11 Professional" Id="2de67392-b7a7-462a-b1ca-108dd189f588" Gvlk="W269N-WFGWX-YVC9B-4J6C9-T83GX" />
+				<SkuItem DisplayName="Windows 10/11 Professional Education" Id="3f1afc82-f8ac-4f6c-8005-1d233e606eee" Gvlk="6TP4R-GNPTD-KYYHQ-7B7DP-J447Y" />
+				<SkuItem DisplayName="Windows 10/11 Professional Education N" Id="5300b18c-2e33-4dc2-8291-47ffcec746dd" Gvlk="YVWGF-BXNMC-HTQYQ-CPQ99-66QFC" />
+				<SkuItem DisplayName="Windows 10/11 Professional N" Id="a80b5abf-76ad-428b-b05d-a47d2dffeebf" Gvlk="MH37W-N47XK-V7XM9-C7227-GCQG9" />
 				<SkuItem DisplayName="Windows 10 Professional N [Pre-Release]" Id="34260150-69ac-49a3-8a0d-4a403ab55763" Gvlk="" />
 				<SkuItem DisplayName="Windows 10 Professional [Preview]" Id="ff808201-fec6-4fd4-ae16-abbddade5706" Gvlk="XQHPH-N4D9W-M8P96-DPDFP-TMVPY" IsGeneratedGvlk="true" />
 				<SkuItem DisplayName="Windows 10 Professional WMC [Pre-Release]" Id="cc17e18a-fa93-43d6-9179-72950a1e931a" Gvlk="NKPM6-TCVPT-3HRFX-Q4H9B-QJ34Y" />
-				<SkuItem DisplayName="Windows 10 Enterprise for Virtual Desktops" Id="ec868e65-fadf-4759-b23e-93fe37f2cc29" Gvlk="CPWHC-NT2C7-VYW78-DHDB2-PG3GK" />
-				<SkuItem DisplayName="Windows 10 Remote Server" Id="e4db50ea-bda1-4566-b047-0ca50abc6f07" Gvlk="7NBT4-WGBQX-MP4H7-QXFF8-YP3KX" />
+				<SkuItem DisplayName="Windows 10/11 Enterprise for Virtual Desktops" Id="ec868e65-fadf-4759-b23e-93fe37f2cc29" Gvlk="CPWHC-NT2C7-VYW78-DHDB2-PG3GK" />
+				<SkuItem DisplayName="Windows 10/11 Remote Server" Id="e4db50ea-bda1-4566-b047-0ca50abc6f07" Gvlk="7NBT4-WGBQX-MP4H7-QXFF8-YP3KX" />
 				<SkuItem DisplayName="Windows 10 S (Lean)" Id="0df4f814-3f57-4b8b-9a9d-fddadcd69fac" Gvlk="NBTWJ-3DR69-3C4V8-C26MC-GQ9M6" />
 				<SkuItem DisplayName="Windows 10 IoT Core [Pre-Release]" Id="b554b49f-4d57-4f08-955e-87886f514d49" Gvlk="7NX88-X6YM3-9Q3YT-CCGBF-KBVQF" />
 				<SkuItem DisplayName="Windows 10 Core Connected [Pre-Release]" Id="827a0032-dced-4609-ab6e-16b9d8a40280" Gvlk="DJMYQ-WN6HG-YJ2YX-82JDB-CWFCW" />
