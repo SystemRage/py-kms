@@ -50,7 +50,7 @@ sometimes even reject it by itself (often due too many uses - in that case try t
 | Windows 10 Enterprise LTSC 2019/2021 | `M7XTQ-FN8P6-TTKYV-9D4CC-J462D` |
 | Windows 10 Enterprise LTSC 2019/2021 N | `92NFX-8DJQP-P6BBQ-THF9C-7CG2H` |
 | Windows 10/11 Remote Server | `7NBT4-WGBQX-MP4H7-QXFF8-YP3KX` |
-| Windows 10/11 Enterprise for Remote Sessions | `CPWHC-NT2C7-VYW78-DHDB2-PG3GK` |
+| Windows 10 Enterprise for Remote Sessions, Windows 10 Enterprise for virtual desktops and Windows 11 Enterprise multi-session | `CPWHC-NT2C7-VYW78-DHDB2-PG3GK` |
 | Windows 10 S (Lean) | `NBTWJ-3DR69-3C4V8-C26MC-GQ9M6` |
 | Windows 10/11 Professional | `W269N-WFGWX-YVC9B-4J6C9-T83GX` |
 | Windows 10/11 Professional N | `MH37W-N47XK-V7XM9-C7227-GCQG9`<br>`HMNWJ-V69R6-B2CDC-8P7VT-2373K` |
