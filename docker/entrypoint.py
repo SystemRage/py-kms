@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 PYTHON3 = '/usr/bin/python3'
-dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
+dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db') # Do not include the database file name, as we must correct the folder permissions (the db file is recursively reachable)
 log_level_bootstrap = log_level = os.getenv('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
   log_level_bootstrap = "INFO"
@@ -34,8 +34,13 @@ def change_uid_grp():
   os.chown("/home/py-kms", new_uid, new_gid)
   os.chown("/usr/bin/start.py", new_uid, new_gid)
   if os.path.isfile(dbPath):
-    os.chown(dbPath, new_uid, new_gid)
-    loggersrv.debug("%s" %str(subprocess.check_output("ls -al " + dbPath, shell=True)))
+    # Corret permissions recursively, as to access the database file, also its parent folder must be accessible
+    for root, dirs, files in os.walk(dbPath):  
+      for dName in dirs:  
+        os.chown(os.path.join(root, dName), new_uid, new_gid)
+      for fName in files:
+        os.chown(os.path.join(root, fName), new_uid, new_gid)
+    loggersrv.debug(str(subprocess.check_output(['ls', '-la', dbPath])))
 
   loggersrv.info("Setting gid to '%s'." % str(new_gid))
   os.setgid(new_gid)
