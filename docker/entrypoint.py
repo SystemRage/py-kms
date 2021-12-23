@@ -33,14 +33,20 @@ def change_uid_grp():
   new_uid = int(os.getenv('UID', str(uid)))
   os.chown("/home/py-kms", new_uid, new_gid)
   os.chown("/usr/bin/start.py", new_uid, new_gid)
-  if os.path.isfile(dbPath):
+  if os.path.isdir(dbPath):
     # Corret permissions recursively, as to access the database file, also its parent folder must be accessible
-    for root, dirs, files in os.walk(dbPath):  
-      for dName in dirs:  
-        os.chown(os.path.join(root, dName), new_uid, new_gid)
+    loggersrv.debug(f'Correcting owner permissions on {dbPath}.')
+    os.chown(dbPath, new_uid, new_gid)
+    for root, dirs, files in os.walk(dbPath):
+      for dName in dirs:
+        dPath = os.path.join(root, dName)
+        loggersrv.debug(f'Correcting owner permissions on {dPath}.')
+        os.chown(dPath, new_uid, new_gid)
       for fName in files:
-        os.chown(os.path.join(root, fName), new_uid, new_gid)
-    loggersrv.debug(str(subprocess.check_output(['ls', '-la', dbPath])))
+        fPath = os.path.join(root, fName)
+        loggersrv.debug(f'Correcting owner permissions on {fPath}.')
+        os.chown(fPath, new_uid, new_gid)
+    loggersrv.debug(subprocess.check_output(['ls', '-la', dbPath]).decode())
   if 'LOGFILE' in os.environ and os.path.exists(os.environ['LOGFILE']):
     # Oh, the user also wants a custom log file -> make sure start.py can access it by setting the correct permissions (777)
     os.chmod(os.environ['LOGFILE'], 777)
