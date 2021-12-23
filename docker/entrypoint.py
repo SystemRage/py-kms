@@ -10,7 +10,7 @@ import subprocess
 import sys
 
 PYTHON3 = '/usr/bin/python3'
-dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
+dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db') # Do not include the database file name, as we must correct the folder permissions (the db file is recursively reachable)
 log_level_bootstrap = log_level = os.getenv('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
   log_level_bootstrap = "INFO"
@@ -33,10 +33,24 @@ def change_uid_grp():
   new_uid = int(os.getenv('UID', str(uid)))
   os.chown("/home/py-kms", new_uid, new_gid)
   os.chown("/usr/bin/start.py", new_uid, new_gid)
-  if os.path.isfile(dbPath):
+  if os.path.isdir(dbPath):
+    # Corret permissions recursively, as to access the database file, also its parent folder must be accessible
+    loggersrv.debug(f'Correcting owner permissions on {dbPath}.')
     os.chown(dbPath, new_uid, new_gid)
-    loggersrv.debug("%s" %str(subprocess.check_output("ls -al " + dbPath, shell=True)))
-
+    for root, dirs, files in os.walk(dbPath):
+      for dName in dirs:
+        dPath = os.path.join(root, dName)
+        loggersrv.debug(f'Correcting owner permissions on {dPath}.')
+        os.chown(dPath, new_uid, new_gid)
+      for fName in files:
+        fPath = os.path.join(root, fName)
+        loggersrv.debug(f'Correcting owner permissions on {fPath}.')
+        os.chown(fPath, new_uid, new_gid)
+    loggersrv.debug(subprocess.check_output(['ls', '-la', dbPath]).decode())
+  if 'LOGFILE' in os.environ and os.path.exists(os.environ['LOGFILE']):
+    # Oh, the user also wants a custom log file -> make sure start.py can access it by setting the correct permissions (777)
+    os.chmod(os.environ['LOGFILE'], 777)
+    loggersrv.error(str(subprocess.check_output(['ls', '-la', os.environ['LOGFILE']])))
   loggersrv.info("Setting gid to '%s'." % str(new_gid))
   os.setgid(new_gid)
 

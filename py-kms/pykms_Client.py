@@ -156,18 +156,25 @@ def client_check():
 def client_update():
         kmsdb = kmsDB2Dict()
 
+        loggerclt.debug(f'Searching in kms database for machine "{clt_config["mode"]}"...')
+
         appitems = kmsdb[2]
         for appitem in appitems:
                 kmsitems = appitem['KmsItems']
                 for kmsitem in kmsitems:                                
-                        name = re.sub('\(.*\)', '', kmsitem['DisplayName']).replace('2015', '').replace(' ', '')
+                        name = re.sub('\(.*\)', '', kmsitem['DisplayName']) # Remove bracets
+                        name = name.replace('2015', '') # Remove specific years
+                        name = name.replace(' ', '') # Ignore whitespaces
+                        name = name.replace('/11', '', 1) # Cut out Windows 11, as it is basically Windows 10
                         if name == clt_config['mode']:
                                 skuitems = kmsitem['SkuItems']
                                 # Select 'Enterprise' for Windows or 'Professional Plus' for Office.
                                 for skuitem in skuitems:
-                                        if skuitem['DisplayName'].replace(' ','') == name + 'Enterprise' or \
-                                           skuitem['DisplayName'].replace(' ','') == name[:6] + 'ProfessionalPlus' + name[6:]:
-
+                                        sName = skuitem['DisplayName']
+                                        sName = sName.replace(' ', '') # Ignore whitespaces
+                                        sName = sName.replace('/11', '', 1) # Cut out Windows 11, as it is basically Windows 10
+                                        if sName == name + 'Enterprise' or \
+                                           sName == name[:6] + 'ProfessionalPlus' + name[6:]:
                                                 clt_config['KMSClientSkuID'] = skuitem['Id']
                                                 clt_config['RequiredClientCount'] = int(kmsitem['NCountPolicy'])
                                                 clt_config['KMSProtocolMajorVersion'] = int(float(kmsitem['DefaultKmsProtocol']))
@@ -175,7 +182,8 @@ def client_update():
                                                 clt_config['KMSClientLicenseStatus'] = 2
                                                 clt_config['KMSClientAppID'] = appitem['Id']
                                                 clt_config['KMSClientKMSCountedID'] = kmsitem['Id']
-                                                break
+                                                return
+        raise RuntimeError(f'Client failed to find machine configuration in kms database - make sure it contains an entry for "{clt_config["mode"]}"')
 
 def client_connect():
         loggerclt.info("Connecting to %s on port %d" % (clt_config['ip'], clt_config['port']))

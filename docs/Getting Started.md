@@ -52,7 +52,6 @@ services:
       - SQLITE=true
       - HWID=RANDOM
       - LOGLEVEL=INFO
-      - LOGFILE=/dev/stdout
     restart: always
     volumes:
       - ./db:/home/py-kms/db

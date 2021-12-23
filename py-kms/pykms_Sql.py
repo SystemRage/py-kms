@@ -18,6 +18,7 @@ loggersrv = logging.getLogger('logsrv')
 def sql_initialize(dbName):
         if not os.path.isfile(dbName):
                 # Initialize the database.
+                loggersrv.debug(f'Initializing database file "{dbName}"...')
                 con = None
                 try:
                         con = sqlite3.connect(dbName)
