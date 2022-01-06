@@ -49,7 +49,7 @@ def change_uid_grp():
     loggersrv.debug(subprocess.check_output(['ls', '-la', dbPath]).decode())
   if 'LOGFILE' in os.environ and os.path.exists(os.environ['LOGFILE']):
     # Oh, the user also wants a custom log file -> make sure start.py can access it by setting the correct permissions (777)
-    os.chmod(os.environ['LOGFILE'], 777)
+    os.chmod(os.environ['LOGFILE'], 0o777)
     loggersrv.error(str(subprocess.check_output(['ls', '-la', os.environ['LOGFILE']])))
   loggersrv.info("Setting gid to '%s'." % str(new_gid))
   os.setgid(new_gid)
