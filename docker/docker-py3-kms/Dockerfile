@@ -1,5 +1,5 @@
 # Switch to the target image
-FROM alpine:3.14
+FROM alpine:3.15
 
 ENV IP 0.0.0.0
 ENV PORT 1688
