@@ -103,6 +103,10 @@
 			<Activate KmsItem="7ba0bf23-d0f5-4072-91d9-d55af5a481b6" />
 		</CsvlkItem>
 
+		<CsvlkItem DisplayName="Windows Server 2022" VlmcsdIndex="0" GroupId="206" MinKeyId="551000000" MaxKeyId="570999999" IniFileName="Windows" EPid="06401-00206-566-174993-03-1033-9600.0000-2802018" Id="ef6cfc9f-8c5d-44ac-9aad-de6a2ea0ae03" InvalidWinBuild="[0,1,2]">
+			<Activate KmsItem="ef6cfc9f-8c5d-44ac-9aad-de6a2ea0ae03" />
+		</CsvlkItem>
+
 		<CsvlkItem DisplayName="Windows Server 2019" VlmcsdIndex="0" GroupId="206" MinKeyId="551000000" MaxKeyId="570999999" IniFileName="Windows" EPid="06401-00206-566-174993-03-1033-9600.0000-2802018" Id="2e7a9ad1-a849-4b56-babe-17d5a29fe4b4" InvalidWinBuild="[0,1,2]">
 			<Activate KmsItem="58e2134f-8e11-4d17-9cb2-91069c151148" />
 			<Activate KmsItem="7fde5219-fbfa-484a-82c9-34d1ad53e856" />
@@ -560,6 +564,11 @@
 
 		<AppItem DisplayName="Windows" VlmcsdIndex="0" Id="55c92734-d682-4d71-983e-d6ec3f16059f" MinActiveClients="50">
 
+			<KmsItem DisplayName="Windows Server 2022" Id="ef6cfc9f-8c5d-44ac-9aad-de6a2ea0ae03" DefaultKmsProtocol="6.0" NCountPolicy="5">
+				<SkuItem DisplayName="Windows Server 2022 Datacenter" Id="ef6cfc9f-8c5d-44ac-9aad-de6a2ea0ae03" Gvlk="WX4NM-KYWYW-QJJR4-XV3QB-6VM33" />
+				<SkuItem DisplayName="Windows Server 2022 Standard" Id="de32eafd-aaee-4662-9444-c1befb41bde2" Gvlk="VDYBN-27WPP-V4HQT-9VMD4-VMK7H" />
+			</KmsItem>
+
 			<KmsItem DisplayName="Windows Server 2019" Id="8449b1fb-f0ea-497a-99ab-66ca96e9a0f5" DefaultKmsProtocol="6.0" NCountPolicy="5">
 				<SkuItem DisplayName="Windows Server 2019 ARM64" Id="8de8eb62-bbe0-40ac-ac17-f75595071ea3" Gvlk="GRFBW-QNDC4-6QBHG-CCK3B-2PR88" />
 				<SkuItem DisplayName="Windows Server 2019 Azure Core" Id="a99cc1f0-7719-4306-9645-294102fbff95" Gvlk="FDNH6-VW9RW-BXPJ7-4XTYG-239TB" />
@@ -982,6 +991,22 @@
 				<SkuItem DisplayName="Office Visio Professional 2019" Id="5b5cf08f-b81a-431d-b080-3450d8620565" Gvlk="9BGNQ-K37YR-RQHF2-38RQ3-7VCBB" />
 				<SkuItem DisplayName="Office Visio Standard 2019" Id="e06d7df3-aad0-419d-8dfb-0ac37e2bdf39" Gvlk="7TQNQ-K3YQQ-3PFH7-CCPPM-X4VQ2" />
 				<SkuItem DisplayName="Office Word 2019" Id="059834fe-a8ea-4bff-b67b-4d006b5447d3" Gvlk="PBX3G-NWMT6-Q7XBW-PYJGG-WXD33" />
+			</KmsItem>
+
+			<KmsItem DisplayName="Office 2021" Id="fbdb3e18-a8ef-4fb3-9183-dffd60bd0984" CanMapToDefaultCsvlk="false" DefaultKmsProtocol="6.0" NCountPolicy="5">
+				<SkuItem DisplayName="Office Access 2021" Id="9e9bceeb-e736-4f26-88de-763f87dcc485" Gvlk="WM8YG-YNGDD-4JHDC-PG3F4-FC4T4" />
+				<SkuItem DisplayName="Office Excel 2021" Id="237854e9-79fc-4497-a0c1-a70969691c6b" Gvlk="NWG3X-87C9K-TC7YY-BC2G7-G6RVC" />
+				<SkuItem DisplayName="Office Outlook 2021" Id="c8f8a301-19f5-4132-96ce-2de9d4adbd33" Gvlk="C9FM6-3N72F-HFJXB-TM3V9-T86R9" />
+				<SkuItem DisplayName="Office Powerpoint 2021" Id="3131fd61-5e4f-4308-8d6d-62be1987c92c" Gvlk="TY7XF-NFRBR-KJ44C-G83KF-GX27K" />
+				<SkuItem DisplayName="Office Professional Plus 2021" Id="85dd8b5f-eaa4-4af3-a628-cce9e77c9a03" Gvlk="FXYTK-NJJ8C-GB6DW-3DYQT-6F7TH" />
+				<SkuItem DisplayName="Office Project Professional 2021" Id="fbdb3e18-a8ef-4fb3-9183-dffd60bd0984" Gvlk="FTNWT-C6WBT-8HMGF-K9PRX-QV9H8" />
+				<SkuItem DisplayName="Office Project Standard 2021" Id="1777f0e3-7392-4198-97ea-8ae4de6f6381" Gvlk="J2JDC-NJCYY-9RGQ4-YXWMH-T3D4T" />
+				<SkuItem DisplayName="Office Publisher 2021" Id="9d3e4cca-e172-46f1-a2f4-1d2107051444" Gvlk="2MW9D-N4BXM-9VBPG-Q7W6M-KFBGQ" />
+				<SkuItem DisplayName="Office Skype for Business 2021" Id="734c6c6e-b0ba-4298-a891-671772b2bd1b" Gvlk="HWCXN-K3WBT-WJBKY-R8BD9-XK29P" />
+				<SkuItem DisplayName="Office Standard 2021" Id="6912a74b-a5fb-401a-bfdb-2e3ab46f4b02" Gvlk="6NWWJ-YQWMR-QKGCB-6TMB3-9D9HK" />
+				<SkuItem DisplayName="Office Visio Professional 2021" Id="fb61ac9a-1688-45d2-8f6b-0674dbffa33c" Gvlk="KNH8D-FGHT4-T8RK3-CTDYJ-K2HT4" />
+				<SkuItem DisplayName="Office Visio Standard 2021" Id="e06d7df3-aad0-419d-8dfb-0ac37e2bdf39" Gvlk="MJVNY-BYWPY-CWV6J-2RKRT-4M8QG" />
+				<SkuItem DisplayName="Office Word 2021" Id="059834fe-a8ea-4bff-b67b-4d006b5447d3" Gvlk="TN8H9-M34D3-Y64V9-TR72V-X79KV" />
 			</KmsItem>
 
 		</AppItem>
