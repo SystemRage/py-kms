@@ -25,10 +25,12 @@ _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.
 	- Windows Server 2012 R2
 	- Windows Server 2016
 	- Windows Server 2019
+	- Windows Server 2022 (at least datacenter)
 	- Microsoft Office 2010 ( Volume License )
 	- Microsoft Office 2013 ( Volume License )
 	- Microsoft Office 2016 ( Volume License )
 	- Microsoft Office 2019 ( Volume License )
+	- Microsoft Office 2021 ( Volume License )
   - It's written in Python (tested with Python 3.6.9).
   - Supports execution by `Docker`, `systemd`, `Upstart` and many more...
   - Includes a GUI for simple managing.
