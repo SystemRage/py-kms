@@ -27,7 +27,7 @@ log_level_bootstrap = log_level = os.getenv('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
   log_level_bootstrap = "INFO"
 log_file = os.environ.get('LOGFILE', 'STDOUT')
-listen_ip = os.environ.get('IP', '0.0.0.0')
+listen_ip = os.environ.get('IP', '0.0.0.0').split()
 listen_port = os.environ.get('PORT', '1688')
 sqlite_port = os.environ.get('SQLITE_PORT', '8080')
 
@@ -35,7 +35,7 @@ sqlite_port = os.environ.get('SQLITE_PORT', '8080')
 def start_kms_client():
   if not os.path.isfile(dbPath):
     # Start a dummy activation to ensure the database file is created
-    client_cmd = [PYTHON3, '-u', 'pykms_Client.py', listen_ip, listen_port,
+    client_cmd = [PYTHON3, '-u', 'pykms_Client.py', listen_ip[0], listen_port,
                   '-m', 'Windows10', '-n', 'DummyClient', '-c', 'ae3a27d1-b73a-4734-9878-70c949815218',
                   '-V', log_level, '-F', log_file]
     if os.environ.get('LOGSIZE', '') != "":
@@ -50,11 +50,16 @@ def start_kms_client():
 def start_kms():
   sqlite_process = None
   # Build the command to execute
-  command = [PYTHON3, '-u', 'pykms_Server.py', listen_ip, listen_port]
+  command = [PYTHON3, '-u', 'pykms_Server.py', listen_ip[0], listen_port]
   for (arg, env) in argumentVariableMapping.items():
     if env in os.environ and os.environ.get(env) != '':
       command.append(arg)
       command.append(os.environ.get(env))
+  if len(listen_ip) > 1:
+    command.append("connect")
+    for i in range(1,len(listen_ip)):
+      command.append("-n")
+      command.append(listen_ip[i] + "," + listen_port)
 
   if enableSQLITE:
     loggersrv.info("Storing database file to %s" % dbPath)
@@ -69,7 +74,7 @@ def start_kms():
   if enableSQLITE:
     time.sleep(5)  # The server may take a while to start
     start_kms_client()
-    sqlite_cmd = [PYTHON3, '-u', '/home/sqlite_web/sqlite_web.py', '-H', listen_ip, '--read-only', '-x',
+    sqlite_cmd = [PYTHON3, '-u', '/home/sqlite_web/sqlite_web.py', '-H', listen_ip[0], '--read-only', '-x',
                   dbPath, '-p', sqlite_port]
 
     loggersrv.debug("sqlite_cmd: %s" % (" ".join(str(x) for x in sqlite_cmd).strip()))
