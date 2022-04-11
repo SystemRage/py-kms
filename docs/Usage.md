@@ -17,7 +17,7 @@ Follows a list of usable parameters:
 Use _EPID_ as Windows _EPID_. If no _EPID_ is specified, a random one will be generated.
 
     -l or --lcid <LCID>
-> Do not randomize the locale ID part of the _EPID_ and use _LCID_ instead.
+> Specify the _LCID_ part of the _EPID_. If an _EPID_ is manually specified, this setting is ignored. Default is 1033 (English - US).
 The Language Code Identifier (_LCID_) describes localizable information in Windows.
 This structure is used to identify specific languages for the purpose of customizing 
 software for particular languages and cultures. For example, it can specify the way dates, 
@@ -26,10 +26,9 @@ The _LCID_ must be specified as a decimal number (example: 1049 for "Russian - R
 By default py-kms generates a valid locale ID but this may lead to a value which is unlikely to occur in your country. 
 You may want to select the locale ID of your country instead. 
 See [here](https://msdn.microsoft.com/en-us/library/cc233982.aspx) for a list of valid _LCIDs_.
-If an _EPID_ is manually specified, this setting is ignored. Default is a fixed _LCID_ of 1033 (English - US). 
 
     -w or --hwid <HWID>
-> Use specified _HWID_ for all products. 
+> Use specified _HWID_ for all products. Use `-w RANDOM` to generate a random HWID. Default is _364F463A8863D35F_.
 Hardware Identification is a security measure used by Microsoft upon the activation of 
 the Windows operating system. As part of the Product Activation system, a unique
 HWID number is generated when the operating system is first installed. The _HWID_ identifies the hardware components that the system 
@@ -39,8 +38,7 @@ to make sure that the operating system is still running on the same device.
 If the two _HWID_ numbers differ too much then the operating system will shut down until Microsoft reactivates the product.
 The theory behind _HWID_ is to ensure that the operating system is not being used on any device other than the one
 for which it was purchased and registered.
-HWID must be an 16-character string of hex characters that are interpreted as a series of 8 bytes (big endian). 
-Default is _364F463A8863D35F_. To auto generate the _HWID_, type `-w RANDOM`.
+HWID must be an 16-character string of hex characters that are interpreted as a series of 8 bytes (big endian).
 
     -c or --client-count <CLIENTCOUNT>
 > Use this flag to specify the current _CLIENTCOUNT_. Default is None. Remember that a number >=25 is 
