@@ -36,7 +36,7 @@ RUN apk add --no-cache --update \
   && git clone --branch master --depth 1 https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web \
   && mv /tmp/sqlite_web/sqlite_web /home/  \
   && rm -rf /tmp/sqlite_web \
-  && pip3 install --no-cache-dir peewee tzlocal pytz pysqlite3 wheel \
+  && pip3 install --no-cache-dir peewee tzlocal pytz pysqlite3 wheel dnspython \
   && apk del git build-base python3-dev \
   && mkdir /db/ \
   && addgroup power_users  \
@@ -52,7 +52,7 @@ COPY docker/start.py /usr/bin/start.py
 RUN chmod 755 /usr/bin/entrypoint.py
 
 WORKDIR /home/py-kms
-#USER py-kms
+
 EXPOSE ${PORT}/tcp
 EXPOSE 8080
 

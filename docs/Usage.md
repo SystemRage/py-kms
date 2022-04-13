@@ -143,6 +143,12 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG
 user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py -V DEBUG
 ```
 
+If you wish to get KMS server from DNS server: (ie perform a DNS resolution on _vlmcs._tcp.domain.tld). If ever there are several answers, only the first one is selected.
+```
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG -F STDOUT -D contoso.com
+user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py -V DEBUG -F STDOUT -D contoso.com
+```
+
 Or if you want better specify:
 ```
 user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py <YOUR_IPADDRESS> 1688 -V DEBUG
