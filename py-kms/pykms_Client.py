@@ -13,7 +13,13 @@ import logging
 import os
 import threading
 
-import pykms_RpcBind, pykms_RpcRequest 
+import dns.message
+import dns.rdataclass
+import dns.rdatatype
+import dns.query
+import dns.resolver
+
+import pykms_RpcBind, pykms_RpcRequest
 from pykms_Filetimes import dt_to_filetime
 from pykms_Dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRequestHeader, MSRPCRespHeader
 from pykms_Base import kmsBase, UUID
@@ -72,6 +78,7 @@ Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previ
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
                       'def' : os.path.join('.', 'pykms_logclient.log'), 'des' : "logfile"},
         'lsize'    : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
+        'discovery' : {'help': 'ask the client to perform a _vlmcs._tcp.domain.tld DNS request to set KMS server.', 'def': None , 'des': 'discovery' },
         }
 
 def client_options():
@@ -99,6 +106,8 @@ def client_options():
                                    default = clt_options['lfile']['def'], help = clt_options['lfile']['help'], type = str)
         client_parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store",
                                    default = clt_options['lsize']['def'], help = clt_options['lsize']['help'], type = float)
+        client_parser.add_argument("-D", "--discovery", dest = clt_options['discovery']['des'], action = "store",
+                                   default = clt_options['discovery']['def'], help = clt_options['discovery']['help'], type = str)
 
         client_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
@@ -186,6 +195,15 @@ def client_update():
         raise RuntimeError(f'Client failed to find machine configuration in kms database - make sure it contains an entry for "{clt_config["mode"]}"')
 
 def client_connect():
+
+        if clt_config['discovery'] is not None:
+          loggerclt.info(f'Using Domain: {clt_config["discovery"]}')
+          r = dns.resolver.query('_vlmcs._tcp.' + clt_config['discovery'], dns.rdatatype.SRV)
+          for a in r:
+            loggerclt.debug(f'answer KMS server: {a.target} , port: {a.port}')
+          clt_config['ip'] = socket.gethostbyname(r[0].target.to_text())
+          clt_config['port'] = r[0].port
+
         loggerclt.info("Connecting to %s on port %d" % (clt_config['ip'], clt_config['port']))
         try:
                 clt_sock = socket.create_connection((clt_config['ip'], clt_config['port']), timeout = clt_config['timeoutidle'])
