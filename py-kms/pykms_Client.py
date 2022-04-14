@@ -198,11 +198,17 @@ def client_connect():
 
         if clt_config['discovery'] is not None:
           loggerclt.info(f'Using Domain: {clt_config["discovery"]}')
-          r = dns.resolver.query('_vlmcs._tcp.' + clt_config['discovery'], dns.rdatatype.SRV)
-          for a in r:
-            loggerclt.debug(f'answer KMS server: {a.target} , port: {a.port}')
-          clt_config['ip'] = socket.gethostbyname(r[0].target.to_text())
-          clt_config['port'] = r[0].port
+          r= None
+          try:
+            r = dns.resolver.resolve('_vlmcs._tcp.' + clt_config['discovery'], dns.rdatatype.SRV)
+            for a in r:
+              loggerclt.debug(f'answer KMS server: {a.target} , port: {a.port}')
+            clt_config['ip'] = socket.gethostbyname(r[0].target.to_text())
+            clt_config['port'] = r[0].port
+          except (dns.exception.Timeout, dns.resolver.NXDOMAIN) as e:
+                pretty_printer(log_obj = loggerclt.warning,
+                           put_text = "{reverse}{red}{bold}Cannot resolve '%s'. Error: '%s'...{end}" %(clt_config['discovery'],
+                                                                                                             str(e)))
 
         loggerclt.info("Connecting to %s on port %d" % (clt_config['ip'], clt_config['port']))
         try:
