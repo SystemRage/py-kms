@@ -143,7 +143,7 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py -V DEBUG
 user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py -V DEBUG
 ```
 
-If you wish to get KMS server from DNS server: (ie perform a DNS resolution on _vlmcs._tcp.domain.tld, if ever there are several answers, only the first one is selected.)
+If you wish to get KMS server from DNS server: (ie perform a DNS resolution on _vlmcs._tcp.domain.tld, if ever there are several answers, only the first one is selected.). Althought that mode is supposed to be specific to devices connect to an Active Directory domain, setting a fully qualified name and a workgroup may help to use that automatic KMS discovery feature.  
 ```
 user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py -V DEBUG -F STDOUT -D contoso.com
 user@host ~/path/to/folder/py-kms $ python3 pykms_Client.py -V DEBUG -F STDOUT -D contoso.com
