@@ -1,0 +1,6 @@
+argparse
+flask
+pygments
+dnspython
+tzlocal
+sqlite-web
