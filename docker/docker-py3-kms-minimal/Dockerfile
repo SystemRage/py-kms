@@ -28,7 +28,7 @@ RUN apk add --no-cache --update \
   shadow \
   netcat-openbsd \
   build-base python3-dev \
-  && pip3 install --no-cache peewee tzlocal pytz wheel \
+  && pip3 install --no-cache-dir peewee tzlocal pytz wheel dnspython \
   && apk del git build-base python3-dev \
   && addgroup power_users  \
   && adduser -S py-kms -G users -s /bin/bash \
