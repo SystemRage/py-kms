@@ -26,9 +26,7 @@ bash \
   tzdata \
   netcat-openbsd \
   && pip3 install --no-cache-dir -r /home/py-kms/requirements.txt \
-  && addgroup power_users  \
   && adduser -S py-kms -G users -s /bin/bash \
-  && usermod -aG power_users py-kms \
   && chown py-kms:users /home/py-kms \
   # Fix undefined timezone, in case the user did not mount the /etc/localtime
   && ln -sf /usr/share/zoneinfo/UTC /etc/localtime

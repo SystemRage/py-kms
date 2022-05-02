@@ -1,6 +1,5 @@
-argparse
-flask
-pygments
-dnspython
-tzlocal
-sqlite-web
+Flask==2.1.2
+Pygments==2.12.0
+dnspython==2.2.1
+tzlocal==4.2
+sqlite-web==0.4.0
