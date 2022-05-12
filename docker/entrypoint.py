@@ -8,6 +8,7 @@ import os
 import pwd
 import subprocess
 import sys
+import signal
 
 PYTHON3 = '/usr/bin/python3'
 dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db') # Do not include the database file name, as we must correct the folder permissions (the db file is recursively reachable)
@@ -69,9 +70,13 @@ def change_tz():
     f.write(tz)
     f.close()
 
-
 # Main
 if (__name__ == "__main__"):
   loggersrv.info("Log level: %s" % log_level)
   change_tz()
-  subprocess.call(PYTHON3 + " -u /usr/bin/start.py", preexec_fn=change_uid_grp(), shell=True)
+  childProcess = subprocess.Popen(PYTHON3 + " -u /usr/bin/start.py", preexec_fn=change_uid_grp(), shell=True)
+  def shutdown(signum, frame):
+    loggersrv.info("Received signal %s, shutting down..." % signum)
+    childProcess.terminate() # This will also cause communicate() from below to continue
+  signal.signal(signal.SIGTERM, shutdown) # This signal will be sent by Docker to request shutdown
+  childProcess.communicate()
