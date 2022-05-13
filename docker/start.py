@@ -95,9 +95,6 @@ def start_kms():
 
 # Main
 if (__name__ == "__main__"):
-  # Do not import for minimal
-  if os.getenv('TYPE', '') != "MINIMAL":
-    import sqlite_web
   loggersrv = logging.getLogger('logsrv')
   loggersrv.setLevel(log_level_bootstrap)
   streamhandler = logging.StreamHandler(sys.stdout)
