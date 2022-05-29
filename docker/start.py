@@ -21,9 +21,9 @@ argumentVariableMapping = {
 }
 
 sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
-enableSQLITE = os.path.isfile(sqliteWebPath) and os.environ.get('SQLITE', 'false').lower() == 'true'
+enableSQLITE = os.environ.get('SQLITE', 'false').lower() == 'true' and  os.environ.get('TYPE') != 'MINIMAL'
 dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
-log_level_bootstrap = log_level = os.getenv('LOGLEVEL', 'INFO')
+log_level_bootstrap = log_level = os.environ.get('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
   log_level_bootstrap = "INFO"
 log_file = os.environ.get('LOGFILE', 'STDOUT')
@@ -57,7 +57,7 @@ def start_kms():
       command.append(os.environ.get(env))
   if len(listen_ip) > 1:
     command.append("connect")
-    for i in range(1,len(listen_ip)):
+    for i in range(1, len(listen_ip)):
       command.append("-n")
       command.append(listen_ip[i] + "," + listen_port)
 
@@ -74,7 +74,7 @@ def start_kms():
   if enableSQLITE:
     time.sleep(5)  # The server may take a while to start
     start_kms_client()
-    sqlite_cmd = [PYTHON3, '-u', '/home/sqlite_web/sqlite_web.py', '-H', listen_ip[0], '--read-only', '-x',
+    sqlite_cmd = ['sqlite_web', '-H', listen_ip[0], '--read-only', '-x',
                   dbPath, '-p', sqlite_port]
 
     loggersrv.debug("sqlite_cmd: %s" % (" ".join(str(x) for x in sqlite_cmd).strip()))
@@ -103,4 +103,5 @@ if (__name__ == "__main__"):
                                 datefmt='%a, %d %b %Y %H:%M:%S')
   streamhandler.setFormatter(formatter)
   loggersrv.addHandler(streamhandler)
+  loggersrv.debug("user id: %s" % os.getuid())
   start_kms()

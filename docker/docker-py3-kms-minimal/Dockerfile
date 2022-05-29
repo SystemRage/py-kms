@@ -12,27 +12,21 @@ ENV HWID RANDOM
 ENV LOGLEVEL INFO
 ENV LOGFILE STDOUT
 ENV LOGSIZE ""
+ENV TYPE MINIMAL
 
 COPY ./py-kms /home/py-kms
-
+COPY docker/requirements_minimal.txt /home/py-kms/requirements.txt
 RUN apk add --no-cache --update \
-  bash \
-  git \
-  py3-argparse \
-  py3-flask \
-  py3-pygments \
-  python3-tkinter \
-  sqlite-libs \
+bash \
+  python3 \
   py3-pip \
-  tzdata  \
+  python3-tkinter \
+  ca-certificates \
   shadow \
+  tzdata \
   netcat-openbsd \
-  build-base python3-dev \
-  && pip3 install --no-cache-dir peewee tzlocal pytz wheel dnspython \
-  && apk del git build-base python3-dev \
-  && addgroup power_users  \
+  && pip3 install --no-cache-dir -r /home/py-kms/requirements.txt \
   && adduser -S py-kms -G users -s /bin/bash \
-  && usermod -a -G power_users py-kms \
   && chown py-kms:users /home/py-kms \
   # Fix undefined timezone, in case the user did not mount the /etc/localtime
   && ln -sf /usr/share/zoneinfo/UTC /etc/localtime

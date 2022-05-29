@@ -17,31 +17,21 @@ ENV LOGSIZE ""
 ENV TZ America/Chicago
 
 COPY py-kms /home/py-kms/
-
+COPY docker/requirements.txt /home/py-kms/
 RUN apk add --no-cache --update \
   bash \
-  git \
   python3 \
-  py3-argparse \
-  py3-flask \
-  py3-pygments \
+  py3-pip \
   python3-tkinter \
   sqlite-libs \
-  py3-pip \
-  build-base python3-dev \
   ca-certificates \
   tzdata \
   shadow \
   netcat-openbsd \
-  && git clone --branch master --depth 1 https://github.com/coleifer/sqlite-web.git /tmp/sqlite_web \
-  && mv /tmp/sqlite_web/sqlite_web /home/  \
-  && rm -rf /tmp/sqlite_web \
-  && pip3 install --no-cache-dir peewee tzlocal pytz pysqlite3 wheel dnspython \
-  && apk del git build-base python3-dev \
+  && pip3 install --no-cache-dir -r /home/py-kms/requirements.txt \
+  #&& apk del git build-base python3-dev \
   && mkdir /db/ \
-  && addgroup power_users  \
   && adduser -S py-kms -G users -s /bin/bash \
-  && usermod -a -G power_users py-kms \
   && chown py-kms:users /home/py-kms \
   # Fix undefined timezone, in case the user did not mount the /etc/localtime
   && ln -sf /usr/share/zoneinfo/UTC /etc/localtime
