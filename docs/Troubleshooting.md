@@ -6,6 +6,7 @@ If you not follow this, do not expect that we can or want to help you!
 
 * Are you activating a legit Windows copy checked with `sha256`, `md5` or is it maybe a warez torrent version ?
 * Did you tried a clean installation (format all) ? You skipped entering any key during installation, turning off internet connection, first activating and then updating Windows (and eventually later upgrading) ?
+* Are you activating Windows or Office on a different machine (physical or virtual) where py-kms runs?
 * Have you installed all latest packages ? Especially before upgrading ? Are you upgrading using the "Update Assistant"/"Media Creation" tool to switch from Windows 7 / 8 / 8.1 to 10 (for me has always worked) ?
 * If isn't a clean install, so far as you have kept activated your Windows copy ? Have you used some other activator (maybe not trusted) that injects or changes .dll files and therefore may have corrupted something ?
 * Have you forgot to reactivate at least once before 180 (45 or 30, depending on your version) days ?
