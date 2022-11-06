@@ -174,7 +174,7 @@ They might be useful to you:
 - Installation example on Ubuntu / Mint:
     - `sudo apt-get update`
     - `sudo apt-get install python3-tk python3-pip`
-    - `sudo pip3 install tzlocal pysqlite3`
+    - `sudo pip3 install tzlocal pysqlite3` (on Ubuntu Server 22, you'll need `pysqlite3-binary` - see [this issue](https://github.com/Py-KMS-Organization/py-kms/issues/76))
 
 ### Startup
 A Linux user with `ip addr` command can get his KMS IP (Windows users can try `ipconfig /all`).
