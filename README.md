@@ -2,10 +2,11 @@
 ![repo-size](https://img.shields.io/github/repo-size/Py-KMS-Organization/py-kms)
 ![open-issues](https://img.shields.io/github/issues/Py-KMS-Organization/py-kms)
 ![last-commit](https://img.shields.io/github/last-commit/Py-KMS-Organization/py-kms/master)
-![docker-status](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
 ![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
 ![read-the-docs](https://img.shields.io/readthedocs/py-kms)
 ***
+
+_Keep in mind that this project is not intended for production use. Feel free to use it to test your own systems or maybe even learn something from the protocol structure. :)_
 
 ## History
 _py-kms_ is a port of node-kms created by [cyrozap](http://forums.mydigitallife.info/members/183074-markedsword), which is a port of either the C#, C++, or .NET implementations of KMS Emulator. The original version was written by [CODYQX4](http://forums.mydigitallife.info/members/89933-CODYQX4) and is derived from the reverse-engineered code of Microsoft's official KMS.
