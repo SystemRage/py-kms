@@ -6,8 +6,6 @@ What follows are some guides how to start the `pykms_Server.py` script, which pr
 You can simply manage a daemon that runs as a background process. This can be achieved by using any of the notes below or by writing your own solution.
 
 ### Docker
-![docker-auto](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
-![docker-status](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
 ![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
 ![docker-size](https://img.shields.io/docker/image-size/pykmsorg/py-kms)
 
