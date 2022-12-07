@@ -556,10 +556,13 @@ def server_main_terminal():
         else:
                 # (with or without GUI) and (with daemon)
                 # Setup daemon (eventually).
+                pretty_printer(log_obj = loggersrv.warning, put_text = "{reverse}{yellow}{bold}Etrigan support is deprecated and will be removed in the future!{end}")
                 server_daemon()
 
 def server_with_gui():
         import pykms_GuiBase
+
+        pretty_printer(log_obj = loggersrv.warning, put_text = "{reverse}{yellow}{bold}Etrigan GUI support is deprecated and will be removed in the future!{end}")
 
         root = pykms_GuiBase.KmsGui()
         root.title(pykms_GuiBase.gui_description + ' (' + pykms_GuiBase.gui_version + ')')
