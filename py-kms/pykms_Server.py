@@ -208,7 +208,7 @@ The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID
                         'def' : None, 'des' : "timeoutsndrcv"},
         'asyncmsg'   : {'help' : 'Prints pretty / logging messages asynchronously. Deactivated by default.',
                         'def' : False, 'des' : "asyncmsg"},
-        'llevel'     : {'help' : 'Use this option to set a log level. The default is \"ERROR\".', 'def' : "ERROR", 'des' : "loglevel",
+        'llevel'     : {'help' : 'Use this option to set a log level. The default is \"WARNING\".', 'def' : "WARNING", 'des' : "loglevel",
                         'choi' : ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "MININFO"]},
         'lfile'      : {'help' : 'Use this option to set an output log file. The default is \"pykms_logserver.log\". \
 Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previous actions. \
