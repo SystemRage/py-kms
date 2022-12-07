@@ -91,7 +91,7 @@ Check syntax with `sudo systemd-analyze verify py3-kms.service`, correct file pe
 start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`. Finally a
 few generic commands useful for interact with your daemon [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
 
-### Etrigan
+### Etrigan (deprecated)
 You can run py-kms daemonized (via [Etrigan](https://github.com/SystemRage/Etrigan)) using a command like `python3 pykms_Server.py etrigan start` and stop it with `python3 pykms_Server.py etrigan stop`. With Etrigan you have another
 way to launch py-kms GUI (specially suitable if you're using a virtualenv), so `python3 pykms_Server.py etrigan start -g` and stop the GUI with `python3 pykms_Server.py etrigan stop` (or interact with the `EXIT` button).
 
@@ -166,7 +166,6 @@ They might be useful to you:
 
 ### Dependencies
 - Python 3.x.
-- Tkinter module (for the GUI).
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the `sqlite3` module, storing activation data in a database so it can be recalled again.
 - Installation example on Ubuntu / Mint:

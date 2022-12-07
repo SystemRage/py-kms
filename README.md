@@ -35,9 +35,8 @@ This version of _py-kms_ is for itself a fork of the original implementation by 
 	- Microsoft Office 2019 ( Volume License )
 	- Microsoft Office 2021 ( Volume License )
   - It's written in Python (tested with Python 3.10.1).
-  - Supports execution by `Docker`, `systemd`, `Upstart` and many more...
-  - Includes a GUI for simple managing.
-  - Uses `sqlite` for persistent data storage.
+  - Supports execution by `Docker`, `systemd` and many more...
+  - Uses `sqlite` for persistent data storage (with a simple web-based explorer).
 
 ## Documentation
 The wiki has been completly reworked and is now available on [readthedocs.com](https://py-kms.readthedocs.io/en/latest/). It should you provide all necessary information how to setup and to use _py-kms_ , all without clumping this readme. The documentation also houses more details about activation with _py-kms_ and how to get GVLK keys.
@@ -46,7 +45,6 @@ The wiki has been completly reworked and is now available on [readthedocs.com](h
 - To start the server, execute `python3 pykms_Server.py [IPADDRESS] [PORT]`, the default _IPADDRESS_ is `0.0.0.0` ( all interfaces ) and the default _PORT_ is `1688`. Note that both the address and port are optional. It's allowed to use IPv4 and IPv6 addresses. If you have a IPv6-capable dual-stack OS, a dual-stack socket is created when using a IPv6 address.
 - To start the server automatically using Docker, execute `docker run -d --name py-kms --restart always -p 1688:1688 ghcr.io/py-kms-organization/py-kms`.
 - To show the help pages type: `python3 pykms_Server.py -h` and `python3 pykms_Client.py -h`.
-- For launching _py-kms_ GUI make the file `pykms_Server.py` executable with `chmod +x /path/to/folder/py-kms/pykms_Server.py`, then simply run `pykms_Server.py` by double-clicking.
 
 ## License
    - _py-kms_ is [![Unlicense](https://img.shields.io/badge/license-unlicense-lightgray.svg)](https://github.com/SystemRage/py-kms/blob/master/LICENSE)
