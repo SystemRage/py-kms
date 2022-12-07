@@ -27,7 +27,7 @@ log_level_bootstrap = log_level = os.environ.get('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
   log_level_bootstrap = "INFO"
 log_file = os.environ.get('LOGFILE', 'STDOUT')
-listen_ip = os.environ.get('IP', '0.0.0.0').split()
+listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
 sqlite_port = os.environ.get('SQLITE_PORT', '8080')
 

@@ -21,7 +21,7 @@ py-kms:
     LOGFILE: /var/log/py-kms.log
     HWID: RANDOM
     SQLITE: true
-    IP: 0.0.0.0
+    IP: '::'
 
 serviceAccount: {}
   # # Specifies whether a service account should be created

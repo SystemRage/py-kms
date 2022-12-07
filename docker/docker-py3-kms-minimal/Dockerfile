@@ -1,7 +1,7 @@
 # This is a minimized version from docker/docker-py3-kms/Dockerfile without SQLite support to further reduce image size
 FROM alpine:3.15
 
-ENV IP 0.0.0.0
+ENV IP ::
 ENV PORT 1688
 ENV EPID ""
 ENV LCID 1033
