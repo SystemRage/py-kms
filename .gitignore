@@ -2,7 +2,6 @@
 pykms_logserver.log*
 pykms_logclient.log*
 pykms_database.db*
-etrigan.log*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
