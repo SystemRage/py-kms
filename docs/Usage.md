@@ -53,7 +53,6 @@ e.g. because it could not reach the server. The default is 120 minutes (2 hours)
 
     -s or --sqlite [<SQLFILE>]
 > Use this option to store request information from unique clients in an SQLite database. Deactivated by default.
-If enabled the default database file is _pykms_database.db_. You can also provide a specific location.
 
     -t0 or --timeout-idle <TIMEOUTIDLE>
 > Maximum inactivity time (in seconds) after which the connection with the client is closed. 

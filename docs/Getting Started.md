@@ -64,7 +64,7 @@ docker run -it -d --name py3-kms \
     -v /etc/localtime:/etc/localtime:ro \
     --restart unless-stopped ghcr.io/py-kms-organization/py-kms:[TAG]
 ```
-You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
+You can omit the `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the `sqlite` module support.
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:

@@ -9,21 +9,20 @@ import uuid
 import logging
 import os
 import threading
-import pickle
 import socketserver
 import queue as Queue
 import selectors
-from tempfile import gettempdir
 from time import monotonic as time
 
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
-from pykms_Misc import check_setup, check_lcid, check_dir, check_other
+from pykms_Misc import check_setup, check_lcid, check_other
 from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
 from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals, kms_parser_check_connect
 from pykms_Format import enco, deco, pretty_printer, justify
 from pykms_Connect import MultipleListener
+from pykms_Sql import sql_initialize
 
 srv_version             = "py-kms_2020-10-01"
 __license__             = "The Unlicense"
@@ -190,8 +189,7 @@ for server OSes and Office >=5', 'def' : None, 'des' : "clientcount"},
                         'def' : 120, 'des': "activation"},
         'renewal'    : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
                         'def' : 1440 * 7, 'des' : "renewal"},
-        'sql'        : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default. \
-If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.', 'def' : False,
+        'sql'        : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default.', 'def' : False,
                         'file': os.path.join('.', 'pykms_database.db'), 'des' : "sqlite"},
         'hwid'       : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
 The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.',
@@ -364,16 +362,19 @@ def server_check():
                                 
         # Check sqlite.
         if srv_config['sqlite']:
-                if isinstance(srv_config['sqlite'], str):
-                        check_dir(srv_config['sqlite'], 'srv', log_obj = loggersrv.error, argument = '-s/--sqlite')
-                elif srv_config['sqlite'] is True:
+                if srv_config['sqlite'] is True: # Resolve bool to the default path
                         srv_config['sqlite'] = srv_options['sql']['file']
+                if os.path.isdir(srv_config['sqlite']):
+                        pretty_printer(log_obj = loggersrv.warning,
+                                put_text = "{reverse}{yellow}{bold}You specified a folder instead of a database file! This behavior is not officially supported anymore, please change your start parameters soon.{end}")
+                        srv_config['sqlite'] = os.path.join(srv_config['sqlite'], 'pykms_database.db')
 
                 try:
                         import sqlite3
+                        sql_initialize(srv_config['sqlite'])
                 except ImportError:
                         pretty_printer(log_obj = loggersrv.warning,
-                                       put_text = "{reverse}{yellow}{bold}Module 'sqlite3' not installed, database support disabled.{end}")
+                                put_text = "{reverse}{yellow}{bold}Module 'sqlite3' not installed, database support disabled.{end}")
                         srv_config['sqlite'] = False
 
         # Check other specific server options.

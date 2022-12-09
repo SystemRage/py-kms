@@ -23,12 +23,10 @@ def sql_initialize(dbName):
                 try:
                         con = sqlite3.connect(dbName)
                         cur = con.cursor()
-                        cur.execute("CREATE TABLE clients(clientMachineId TEXT, machineName TEXT, applicationId TEXT, skuId TEXT, \
-licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCount INTEGER)")
+                        cur.execute("CREATE TABLE clients(clientMachineId TEXT, machineName TEXT, applicationId TEXT, skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCount INTEGER)")
 
                 except sqlite3.Error as e:
-                        pretty_printer(log_obj = loggersrv.error, to_exit = True,
-                                       put_text = "{reverse}{red}{bold}Sqlite Error: %s. Exiting...{end}" %str(e))
+                        pretty_printer(log_obj = loggersrv.error, to_exit = True, put_text = "{reverse}{red}{bold}Sqlite Error: %s. Exiting...{end}" %str(e))
                 finally:
                         if con:
                                 con.commit()
