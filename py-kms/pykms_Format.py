@@ -274,9 +274,7 @@ class ShellMessage(object):
             ShellMessage.indx += 1
 
         def print_logging_setup(self, logger, async_flag, formatter = logging.Formatter('%(name)s %(message)s')):
-            from pykms_GuiBase import gui_redirector
-            stream = gui_redirector(StringIO())
-            handler = logging.StreamHandler(stream)
+            handler = logging.StreamHandler(StringIO())
             handler.name = 'LogStream'
             handler.setLevel(logging.INFO)
             handler.setFormatter(formatter)
@@ -293,9 +291,6 @@ class ShellMessage(object):
 
         def print_logging(self, toprint):
             if (self.nshell and ((0 in self.nshell) or (2 in self.nshell and not ShellMessage.viewclt))) or ShellMessage.indx == 0:
-                from pykms_GuiBase import gui_redirector_setup, gui_redirector_clear
-                gui_redirector_setup()
-                gui_redirector_clear()
                 self.print_logging_setup(ShellMessage.loggersrv_pty, ShellMessage.asyncmsgsrv)
                 self.print_logging_setup(ShellMessage.loggerclt_pty, ShellMessage.asyncmsgclt)
 
