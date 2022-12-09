@@ -17,12 +17,11 @@ ENV LOGSIZE ""
 ENV TZ America/Chicago
 
 COPY py-kms /home/py-kms/
-COPY docker/requirements.txt /home/py-kms/
+COPY docker/docker-py3-kms/requirements.txt /home/py-kms/
 RUN apk add --no-cache --update \
   bash \
   python3 \
   py3-pip \
-  python3-tkinter \
   sqlite-libs \
   ca-certificates \
   tzdata \

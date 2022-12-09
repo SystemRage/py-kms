@@ -15,12 +15,11 @@ ENV LOGSIZE ""
 ENV TYPE MINIMAL
 
 COPY ./py-kms /home/py-kms
-COPY docker/requirements_minimal.txt /home/py-kms/requirements.txt
+COPY docker/docker-py3-kms-minimal/requirements.txt /home/py-kms/requirements.txt
 RUN apk add --no-cache --update \
 bash \
   python3 \
   py3-pip \
-  python3-tkinter \
   ca-certificates \
   shadow \
   tzdata \
