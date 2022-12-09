@@ -29,21 +29,6 @@ listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
 
 
-def start_kms_client():
-  if not os.path.isfile(dbPath):
-    # Start a dummy activation to ensure the database file is created
-    client_cmd = [PYTHON3, '-u', 'pykms_Client.py', listen_ip[0], listen_port,
-                  '-m', 'Windows10', '-n', 'DummyClient', '-c', 'ae3a27d1-b73a-4734-9878-70c949815218',
-                  '-V', log_level, '-F', log_file]
-    if os.environ.get('LOGSIZE', '') != "":
-      client_cmd.append('-S')
-      client_cmd.append(os.environ.get('LOGSIZE'))
-    loggersrv.info("Starting a dummy activation to ensure the database file is created")
-    loggersrv.debug("client_cmd: %s" % (" ".join(str(x) for x in client_cmd).strip()))
-
-    subprocess.run(client_cmd)
-
-
 def start_kms():
   # Build the command to execute
   command = [PYTHON3, '-u', 'pykms_Server.py', listen_ip[0], listen_port]
