@@ -194,9 +194,6 @@ def logger_create(log_obj, config, mode = 'a'):
         frmt_name = '%(name)s '
 
         from pykms_Server import serverthread
-        if serverthread.with_gui:
-                frmt_std = frmt_name + frmt_std
-                frmt_min = frmt_name + frmt_min
 
         def apply_formatter(levelnum, formats, handler, color = False):
                 levelformdict = {}
@@ -521,7 +518,7 @@ def check_setup(config, options, logger, where):
         # Check logfile.
         config['logfile'] = check_logfile(config['logfile'], options['lfile']['def'], where = where)
 
-        # Check logsize (py-kms Gui).
+        # Check logsize
         if config['logsize'] == "":
                 if any(opt in ['STDOUT', 'FILEOFF'] for opt in config['logfile']):
                         # set a recognized size never used.
@@ -530,7 +527,7 @@ def check_setup(config, options, logger, where):
                         pretty_printer(put_text = "{reverse}{red}{bold}argument `-S/--logsize`: invalid with: '%s'. Exiting...{end}" %config['logsize'],
                                        where = where, to_exit = True)
 
-        # Check loglevel (py-kms Gui).
+        # Check loglevel
         if config['loglevel'] == "":
                 # set a recognized level never used.
                 config['loglevel'] = 'ERROR'

@@ -400,7 +400,6 @@ def pretty_printer(**kwargs):
                                    if None `put_text` must be defined for printing process.
                     `to_exit ` --> if True system exit is called.
                     `where`    --> specifies if message is server-side or client-side
-                                   (useful for GUI redirect).
         """
         # Set defaults for not defined options.
         options = {'log_obj'  : None,

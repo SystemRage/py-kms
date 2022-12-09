@@ -134,7 +134,8 @@ class server_thread(threading.Thread):
                 self.name = name
                 self.queue = queue
                 self.server = None
-                self.is_running_server, self.with_gui, self.checked = [False for _ in range(3)]
+                self.is_running_server = False
+                self.checked = False
                 self.is_running_thread = threading.Event()
 
         def terminate_serve(self):
@@ -169,13 +170,7 @@ class server_thread(threading.Thread):
                                                 self.server.pykms_serve()
                                 except (SystemExit, Exception) as e:
                                         self.eject = True
-                                        if not self.with_gui:
-                                                raise
-                                        else:
-                                                if isinstance(e, SystemExit):
-                                                        continue
-                                                else:
-                                                        raise
+                                        raise
 
 ##---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -385,9 +380,6 @@ def server_check():
         opts = [('clientcount', '-c/--client-count'),
                 ('timeoutidle', '-t0/--timeout-idle'),
                 ('timeoutsndrcv', '-t1/--timeout-sndrcv')]
-        if serverthread.with_gui:
-                opts += [('activation', '-a/--activation-interval'),
-                         ('renewal', '-r/--renewal-interval')]
         check_other(srv_config, opts, loggersrv, where = 'srv')
 
         # Check further addresses / ports.
@@ -467,7 +459,6 @@ def server_main_terminal():
         server_check()
         serverthread.checked = True
 
-        # (without GUI) and (without daemon).
         # Run threaded server.
         serverqueue.put('start')
         # Wait to finish.
