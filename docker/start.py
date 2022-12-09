@@ -20,8 +20,6 @@ argumentVariableMapping = {
   '-e': 'EPID'
 }
 
-sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
-enableSQLITE = os.environ.get('SQLITE', 'false').lower() == 'true' and  os.environ.get('TYPE') != 'MINIMAL'
 dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
 log_level_bootstrap = log_level = os.environ.get('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
@@ -29,7 +27,6 @@ if log_level_bootstrap == "MININFO":
 log_file = os.environ.get('LOGFILE', 'STDOUT')
 listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
-sqlite_port = os.environ.get('SQLITE_PORT', '8080')
 
 
 def start_kms_client():
@@ -48,7 +45,6 @@ def start_kms_client():
 
 
 def start_kms():
-  sqlite_process = None
   # Build the command to execute
   command = [PYTHON3, '-u', 'pykms_Server.py', listen_ip[0], listen_port]
   for (arg, env) in argumentVariableMapping.items():
@@ -61,24 +57,8 @@ def start_kms():
       command.append("-n")
       command.append(listen_ip[i] + "," + listen_port)
 
-  if enableSQLITE:
-    loggersrv.info("Storing database file to %s" % dbPath)
-    command.append('-s')
-    command.append(dbPath)
-    os.makedirs(os.path.dirname(dbPath), exist_ok=True)
-
   loggersrv.debug("server_cmd: %s" % (" ".join(str(x) for x in command).strip()))
   pykms_process = subprocess.Popen(command)
-
-  # In case SQLITE is defined: Start the web interface
-  if enableSQLITE:
-    time.sleep(5)  # The server may take a while to start
-    start_kms_client()
-    sqlite_cmd = ['sqlite_web', '-H', listen_ip[0], '--read-only', '-x',
-                  dbPath, '-p', sqlite_port]
-
-    loggersrv.debug("sqlite_cmd: %s" % (" ".join(str(x) for x in sqlite_cmd).strip()))
-    sqlite_process = subprocess.Popen(sqlite_cmd)
 
   try:
     pykms_process.wait()
@@ -88,9 +68,7 @@ def start_kms():
   except KeyboardInterrupt:
     pass
 
-  if enableSQLITE:
-    if None != sqlite_process: sqlite_process.terminate()
-    pykms_process.terminate()
+  pykms_process.terminate()
 
 
 # Main

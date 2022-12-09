@@ -20,7 +20,6 @@ py-kms:
     LOGSIZE: 2
     LOGFILE: /var/log/py-kms.log
     HWID: RANDOM
-    SQLITE: true
     IP: '::'
 
 serviceAccount: {}

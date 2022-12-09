@@ -47,7 +47,6 @@ For more information please refer to the Helm Install command documentation loca
 | py-kms.environment.IP | string | `"::"` |  |
 | py-kms.environment.LOGLEVEL | string | `"INFO"` |  |
 | py-kms.environment.LOGSIZE | int | `2` |  |
-| py-kms.environment.SQLITE | bool | `true` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |

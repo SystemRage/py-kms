@@ -8,8 +8,6 @@ ENV LCID 1033
 ENV CLIENT_COUNT 26
 ENV ACTIVATION_INTERVAL 120
 ENV RENEWAL_INTERVAL 10080
-ENV SQLITE true
-ENV SQLITE_PORT	8080
 ENV HWID RANDOM
 ENV LOGLEVEL INFO
 ENV LOGFILE STDOUT
@@ -43,7 +41,6 @@ RUN chmod 755 /usr/bin/entrypoint.py
 WORKDIR /home/py-kms
 
 EXPOSE ${PORT}/tcp
-EXPOSE 8080
 
 HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -z ${IP%% *} ${PORT} || exit 1
 

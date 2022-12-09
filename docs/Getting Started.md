@@ -47,7 +47,6 @@ services:
       - 8080:8080
     environment:
       - IP='::'
-      - SQLITE=true
       - HWID=RANDOM
       - LOGLEVEL=INFO
     restart: always
@@ -62,7 +61,6 @@ Below is a little bit more extended run command, detailing all the different sup
 docker run -it -d --name py3-kms \
     -p 8080:8080 \
     -p 1688:1688 \
-    -e SQLITE=true \
     -v /etc/localtime:/etc/localtime:ro \
     --restart unless-stopped ghcr.io/py-kms-organization/py-kms:[TAG]
 ```
