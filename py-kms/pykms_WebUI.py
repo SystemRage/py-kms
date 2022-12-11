@@ -84,7 +84,7 @@ def root():
 @app.route('/license')
 def license():
     _increase_serve_count()
-    with open('../LICENSE', 'r') as f:
+    with open(os.environ.get('PYKMS_LICENSE_PATH', '../LICENSE'), 'r') as f:
         return render_template(
             'license.html',
             path='/license/',

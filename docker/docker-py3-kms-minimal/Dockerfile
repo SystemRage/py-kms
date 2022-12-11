@@ -12,9 +12,7 @@ ENV HWID RANDOM
 ENV LOGLEVEL INFO
 ENV LOGFILE STDOUT
 ENV LOGSIZE ""
-ENV TYPE MINIMAL
 
-COPY ./py-kms /home/py-kms
 COPY docker/docker-py3-kms-minimal/requirements.txt /home/py-kms/requirements.txt
 RUN apk add --no-cache --update \
 bash \
@@ -30,6 +28,7 @@ bash \
   # Fix undefined timezone, in case the user did not mount the /etc/localtime
   && ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
+COPY ./py-kms /home/py-kms
 COPY docker/entrypoint.py /usr/bin/entrypoint.py
 COPY docker/start.py /usr/bin/start.py
 

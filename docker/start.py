@@ -28,8 +28,11 @@ log_file = os.environ.get('LOGFILE', 'STDOUT')
 listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
 
-
 def start_kms():
+  # Make sure the full path to the db exists
+  if not os.path.exists(os.path.dirname(dbPath)):
+    os.makedirs(os.path.dirname(dbPath), exist_ok=True)
+
   # Build the command to execute
   command = [PYTHON3, '-u', 'pykms_Server.py', listen_ip[0], listen_port]
   for (arg, env) in argumentVariableMapping.items():
@@ -41,9 +44,21 @@ def start_kms():
     for i in range(1, len(listen_ip)):
       command.append("-n")
       command.append(listen_ip[i] + "," + listen_port)
+  command.append('-s')
+  command.append(dbPath)
 
   loggersrv.debug("server_cmd: %s" % (" ".join(str(x) for x in command).strip()))
   pykms_process = subprocess.Popen(command)
+
+  try:
+    time.sleep(2) # Wait for the server to start up
+    pykms_webui_env = os.environ.copy()
+    pykms_webui_env['PYKMS_SQLITE_DB_PATH'] = dbPath
+    pykms_webui_env['PORT'] = '8080'
+    pykms_webui_env['PYKMS_LICENSE_PATH'] = '/LICENSE'
+    pykms_webui_process = subprocess.Popen(['gunicorn', '--log-level', os.environ.get('LOGLEVEL'), 'pykms_WebUI:app'], env=pykms_webui_env)
+  except Exception as e:
+    loggersrv.error("Failed to start webui: %s" % e)
 
   try:
     pykms_process.wait()
@@ -52,7 +67,7 @@ def start_kms():
     pass
   except KeyboardInterrupt:
     pass
-
+  pykms_webui_process.terminate()
   pykms_process.terminate()
 
 
