@@ -1,5 +1,49 @@
 # Changelog
 
+### py-kms_2022-12-16
+- Added support for new web-gui into Docker
+- Implemented whole-new web-based GUI with Flask
+- Removed old GUI (Etrigan) from code and resources
+- Removed sqliteweb
+- Removed Etrigan (GUI)
+
+### py-kms_2022-12-07
+- Added warning about Etrigan (GUI) being deprecated
+- More docs (do not run on same machine as client)
+- Added Docker support for multiple listen IPs
+- Added graceful Docker shutdowns
+
+### py-kms_2021-12-23
+- More Windows 10/11 keys
+- Fixed some deprecation warnings
+- Fixed SO_REUSEPORT platform checks
+- Fixed loglevel "MININFO" with Docker
+- Added Docker healthcheck
+- Added UID/GID change support for Docker
+- Dependabot alerts
+
+### py-kms_2021-10-22
+- Integrated Office 2021 GLVK keys & database
+- Docker entrypoint fixes
+- Updated docs to include SQLite stuff
+- Fix for undefined timezones
+- Removed LOGFILE extension checks
+- Added support for Windows 11
+
+### py-kms_2021-10-07
+- Helm charts for Kubernetes deployment
+- Windows 2022 updates
+- Faster Github Action builds
+
+### py-kms_2021-11-12
+- Addded GHCR support
+- Docs table reformatted
+- Updated GUI
+- Windows Sandbox fix
+- Added contribution guidelines
+- Docker multiarch
+- Reshot screenshots in docs
+
 ### py-kms_2020-10-01
 - Sql database path customizable.
 - Sql database file keeps different AppId.
