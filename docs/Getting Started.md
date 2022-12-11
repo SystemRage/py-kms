@@ -22,7 +22,7 @@ latest version you should check something like [watchtower](https://github.com/c
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
 * `latest`, currently the same like `minimal`.
 * `minimal`, which is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support !_
-* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface (make sure to expose port 8080) for management.
+* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface (make sure to expose port `8080`) for management.
 
 #### Architectures
 There are currently the following architectures available (if you need an other, feel free to open an issue):

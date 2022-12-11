@@ -82,11 +82,11 @@ Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
 > Creates a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
 example:
 ```
-user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
 ```
 creates _newlogfile.log_ with these initial messages:
 ```
-Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 8080.
+Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 1688.
 Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
 ```
 
