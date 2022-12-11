@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>py-kms web ui</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/bulma.min.css') }}">
+    <style>
+        #content {
+            margin: 1em;
+            overflow-x: auto;
+        }
+        pre.clientMachineId {
+            overflow-x: auto;
+            padding: 0.5em;
+        }
+        th {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        {% if error %}
+        <article class="message is-danger">
+            <div class="message-header">
+                Whoops! Something went wrong...
+            </div>
+            <div class="message-body">
+                {{ error }}
+            </div>
+        </article>
+        {% else %}
+        {% if clients %}
+        <nav class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Clients</p>
+                    <p class="title">{{ count_clients }}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Windows</p>
+                    <p class="title">{{ count_clients_windows }}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Office</p>
+                    <p class="title">{{ count_clients_office }}</p>
+                </div>
+            </div>
+        </nav>
+
+        <hr>
+
+        <table class="table is-striped is-hoverable is-fullwidth">
+            <thead>
+                <tr>
+                    <th>Client ID</th>
+                    <th>Machine Name</th>
+                    <th>Application ID</th>
+                    <th><abbr title="Stock Keeping Unit">SKU</abbr> ID</th>
+                    <th>License Status</th>
+                    <th>Last Seen</th>
+                    <th>KMS <abbr title="Enhanced Privacy ID">EPID</abbr></th>
+                    <th>Seen Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <th><pre class="clientMachineId">{{ client.clientMachineId }}</pre></th>
+                    <td class="machineName">
+                        {% if client.machineName | length > 16 %}
+                        <abbr title="{{ client.machineName }}">{{ client.machineName | truncate(16, True, '...') }}</abbr>
+                        {% else %}
+                        {{ client.machineName }}
+                        {% endif %}
+                    </td>
+                    <td>{{ client.applicationId }}</td>
+                    <td>{{ client.skuId }}</td>
+                    <td>{{ client.licenseStatus }}</td>
+                    <td class="convert_timestamp">{{ client.lastRequestTime }}</td>
+                    <td>
+                        {% if client.kmsEpid | length > 16 %}
+                        <abbr title="{{ client.kmsEpid }}">{{ client.kmsEpid | truncate(16, True, '...') }}</abbr>
+                        {% else %}
+                        {{ client.kmsEpid }}
+                        {% endif %}
+                    </td>
+                    <td>{{ client.requestCount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <article class="message is-warning">
+            <div class="message-header">
+                <p>Whoops?</p>
+            </div>
+            <div class="message-body">
+                This page seems to be empty, because no clients are available. Try to use the server with a compartible client to add it to the database.
+            </div>
+        </article>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>py-kms</strong> is online since <span class="convert_timestamp">{{ start_time }}</span>.
+                This page was rendered {{ serve_count }} times. View this softwares license <a href="{{ url_for('static', filename= 'LICENSE') }}">here</a>.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        for(let element of document.getElementsByClassName('convert_timestamp')) {
+            element.innerText = new Date(element.innerText).toLocaleString();
+        }
+    </script>
+</body>
+</html>

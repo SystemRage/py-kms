@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import datetime
 import os
 import logging
 
@@ -23,7 +24,7 @@ def sql_initialize(dbName):
                 try:
                         con = sqlite3.connect(dbName)
                         cur = con.cursor()
-                        cur.execute("CREATE TABLE clients(clientMachineId TEXT, machineName TEXT, applicationId TEXT, skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCount INTEGER)")
+                        cur.execute("CREATE TABLE clients(clientMachineId TEXT PRIMARY KEY, machineName TEXT, applicationId TEXT, skuId TEXT, licenseStatus TEXT, lastRequestTime INTEGER, kmsEpid TEXT, requestCount INTEGER)")
 
                 except sqlite3.Error as e:
                         pretty_printer(log_obj = loggersrv.error, to_exit = True, put_text = "{reverse}{red}{bold}Sqlite Error: %s. Exiting...{end}" %str(e))
@@ -31,6 +32,26 @@ def sql_initialize(dbName):
                         if con:
                                 con.commit()
                                 con.close()
+
+def sql_get_all(dbName):
+        if not os.path.isfile(dbName):
+                return None
+        with sqlite3.connect(dbName) as con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM clients")
+                clients = []
+                for row in cur.fetchall():
+                        clients.append({
+                                'clientMachineId': row[0],
+                                'machineName': row[1],
+                                'applicationId': row[2],
+                                'skuId': row[3],
+                                'licenseStatus': row[4],
+                                'lastRequestTime': datetime.datetime.fromtimestamp(row[5]).isoformat(),
+                                'kmsEpid': row[6],
+                                'requestCount': row[7]
+                        })
+                return clients
 
 def sql_update(dbName, infoDict):
         con = None

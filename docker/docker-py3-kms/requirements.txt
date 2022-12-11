@@ -1,2 +1,5 @@
 dnspython==2.2.1
 tzlocal==4.2
+
+Flask==2.1.2
+gunicorn==20.1.0
