@@ -162,10 +162,10 @@ They might be useful to you:
 - Python 3.x.
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the `sqlite3` module, storing activation data in a database so it can be recalled again.
-- Installation example on Ubuntu / Mint:
+- Installation example on Ubuntu / Mint (`requirements.txt` is from the sources):
     - `sudo apt-get update`
-    - `sudo apt-get install python3-tk python3-pip`
-    - `sudo pip3 install tzlocal pysqlite3` (on Ubuntu Server 22, you'll need `pysqlite3-binary` - see [this issue](https://github.com/Py-KMS-Organization/py-kms/issues/76))
+    - `sudo apt-get install python3-pip`
+    - `pip3 install -r requirements.txt` (on Ubuntu Server 22, you'll need `pysqlite3-binary` - see [this issue](https://github.com/Py-KMS-Organization/py-kms/issues/76))
 
 ### Startup
 A Linux user with `ip addr` command can get his KMS IP (Windows users can try `ipconfig /all`).
