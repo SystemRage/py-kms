@@ -119,7 +119,7 @@ class AppServerSvc (win32serviceutil.ServiceFramework):
     _svc_name_ = "py-kms"
     _svc_display_name_ = "py-kms"
     _proc = None
-    _cmd = ["C:\Windows\Python27\python.exe", "C:\Windows\Python27\py-kms\pykms_Server.py"]
+    _cmd = ["C:\Windows\Python27\python.exe", "C:\Windows\Python27\py-kms\pykms_Server.py"] # UPDATE THIS - because Python 2.7 is end of life and you will use other parameters anyway
 
     def __init__(self,args):
         win32serviceutil.ServiceFramework.__init__(self,args)
