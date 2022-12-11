@@ -1,6 +1,9 @@
 # Switch to the target image
 FROM alpine:3.15
 
+ARG BUILD_COMMIT=unknown
+ARG BUILD_BRANCH=unknown
+
 ENV IP ::
 ENV PORT 1688
 ENV EPID ""
@@ -35,7 +38,10 @@ RUN apk add --no-cache --update \
 COPY py-kms /home/py-kms/
 COPY docker/entrypoint.py /usr/bin/entrypoint.py
 COPY docker/start.py /usr/bin/start.py
+
+# Web-interface specifics
 COPY LICENSE /LICENSE
+RUN echo "$BUILD_COMMIT" > /VERSION && echo "$BUILD_BRANCH" >> /VERSION
 
 RUN chmod 755 /usr/bin/entrypoint.py
 

@@ -60,6 +60,7 @@ def start_kms():
       pykms_webui_env['PYKMS_SQLITE_DB_PATH'] = db_path
       pykms_webui_env['PORT'] = '8080'
       pykms_webui_env['PYKMS_LICENSE_PATH'] = '/LICENSE'
+      pykms_webui_env['PYKMS_VERSION_PATH'] = '/VERSION'
       pykms_webui_process = subprocess.Popen(['gunicorn', '--log-level', os.environ.get('LOGLEVEL'), 'pykms_WebUI:app'], env=pykms_webui_env)
   except Exception as e:
     loggersrv.error("Failed to start webui: %s" % e)

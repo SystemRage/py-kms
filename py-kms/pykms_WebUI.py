@@ -3,17 +3,16 @@ from flask import Flask, render_template
 from pykms_Sql import sql_get_all
 from pykms_DB2Dict import kmsDB2Dict
 
-serve_count = 0
-
 def _random_uuid():
     return str(uuid.uuid4()).replace('-', '_')
 
+_serve_count = 0
 def _increase_serve_count():
-    global serve_count
-    serve_count += 1
+    global _serve_count
+    _serve_count += 1
 
 def _get_serve_count():
-    return serve_count
+    return _serve_count
 
 _kms_items = None
 _kms_items_ignored = None
@@ -48,6 +47,15 @@ app = Flask('pykms_webui')
 app.jinja_env.globals['start_time'] = datetime.datetime.now()
 app.jinja_env.globals['get_serve_count'] = _get_serve_count
 app.jinja_env.globals['random_uuid'] = _random_uuid
+app.jinja_env.globals['version_info'] = None
+
+_version_info_path = os.environ.get('PYKMS_VERSION_PATH', '../VERSION')
+if os.path.exists(_version_info_path):
+    with open(_version_info_path, 'r') as f:
+        app.jinja_env.globals['version_info'] = {
+            'hash': f.readline(),
+            'branch': f.readline()
+        }
 
 @app.route('/')
 def root():
