@@ -2,13 +2,18 @@ import os, uuid, datetime
 from flask import Flask, render_template
 from pykms_Sql import sql_get_all
 
-app = Flask('pykms_webui')
-
-start_time = datetime.datetime.now()
 serve_count = 0
 
 def _random_uuid():
     return str(uuid.uuid4()).replace('-', '_')
+
+def _get_serve_count():
+    return serve_count
+
+app = Flask('pykms_webui')
+app.jinja_env.globals['start_time'] = datetime.datetime.now()
+app.jinja_env.globals['get_serve_count'] = _get_serve_count
+app.jinja_env.globals['random_uuid'] = _random_uuid
 
 @app.route('/')
 def root():
@@ -33,13 +38,20 @@ def root():
     countClientsWindows = len([c for c in clients if c['applicationId'] == 'Windows']) if clients else 0
     countClientsOffice = countClients - countClientsWindows
     return render_template(
-        'index.html',
-        start_time=start_time.isoformat(),
+        'clients.html',
         error=error,
         clients=clients,
         count_clients=countClients,
         count_clients_windows=countClientsWindows,
-        count_clients_office=countClientsOffice,
-        serve_count=serve_count,
-        random_uuid=_random_uuid
+        count_clients_office=countClientsOffice
     )
+
+@app.route('/license')
+def license():
+    global serve_count
+    serve_count += 1
+    with open('../LICENSE', 'r') as f:
+        return render_template(
+            'license.html',
+            license=f.read()
+        )

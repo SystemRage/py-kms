@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>py-kms {% block title %}{% endblock %}</title>
+    <style>
+        #content {
+            margin: 1em;
+            overflow-x: auto;
+        }
+        {% block style %}{% endblock %}
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/bulma.min.css') }}">
+</head>
+<body>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>py-kms</strong> is online since <span class="convert_timestamp">{{ start_time }}</span>.
+                This instance was accessed {{ get_serve_count() }} times. View this softwares license <a href="/license">here</a>.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        for(let element of document.getElementsByClassName('convert_timestamp')) {
+            element.innerText = new Date(element.innerText).toLocaleString();
+        }
+    </script>
+</body>
+</html>
