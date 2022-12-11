@@ -3,13 +3,9 @@
 {% block title %}clients{% endblock %}
 
 {% block style %}
-    pre.clientMachineId {
-        overflow-x: auto;
-        padding: 0.5em;
-    }
-    th {
-        white-space: nowrap;
-    }
+th {
+    white-space: nowrap;
+}
 {% endblock %}
 
 {% block content %}
@@ -41,6 +37,12 @@
         <div>
             <p class="heading">Office</p>
             <p class="title">{{ count_clients_office }}</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="heading">Products</p>
+            <p class="title"><a href="/products">{{ count_projects }}</a></p>
         </div>
     </div>
 </nav>

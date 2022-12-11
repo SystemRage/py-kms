@@ -3,18 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>py-kms {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/bulma.min.css') }}">
     <style>
         #content {
             margin: 1em;
             overflow-x: auto;
         }
+        pre {
+            overflow-x: auto;
+            padding: 0.5em;
+        }
+        {% if path != '/' %}
+        div.backtohome {
+            display: flex;
+            justify-content: center;
+        }
+        {% endif %}
         {% block style %}{% endblock %}
     </style>
-    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/bulma.min.css') }}">
 </head>
 <body>
     <div id="content">
         {% block content %}{% endblock %}
+
+        {% if path != '/' %}
+        <div class="block backtohome">
+            <a class="button is-normal is-responsive" href="/">
+                Back to home
+            </a>
+        </div>
+        {% endif %}
     </div>
 
     <footer class="footer">
