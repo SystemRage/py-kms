@@ -1,16 +1,13 @@
-name: Build Image On Release
+name: Build release-tags
 
 on:
   workflow_dispatch:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
 
 jobs:
-  bake:
+  bake-latest:
     runs-on: ubuntu-latest
     permissions:
       packages: write
