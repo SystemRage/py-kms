@@ -184,7 +184,7 @@ loggersrv = logging.getLogger('logsrv')
 
 # 'help' string - 'default' value - 'dest' string.
 srv_options = {
-        'ip'         : {'help' : 'The IP address (IPv4 or IPv6) to listen on. The default is \"0.0.0.0\" (all interfaces).', 'def' : "0.0.0.0", 'des' : "ip"},
+        'ip'         : {'help' : 'The IP address (IPv4 or IPv6) to listen on. The default is \"::\" (all interfaces).', 'def' : "::", 'des' : "ip"},
         'port'       : {'help' : 'The network port to listen on. The default is \"1688\".', 'def' : 1688, 'des' : "port"},
         'epid'       : {'help' : 'Use this option to manually specify an ePID to use. If no ePID is specified, a random ePID will be auto generated.',
                         'def' : None, 'des' : "epid"},
@@ -220,7 +220,7 @@ Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to
         'reuse'      : {'help' : 'Do not allows binding / listening to the same address and port. Reusing port is activated by default.', 'def' : True,
                         'des': "reuse"},
         'dual'       : {'help' : 'Allows listening to an IPv6 address also accepting connections via IPv4. Deactivated by default.',
-                        'def' : False, 'des': "dual"}
+                        'def' : True, 'des': "dual"}
         }
 
 def server_options():

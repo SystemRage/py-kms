@@ -44,7 +44,7 @@ For more information please refer to the Helm Install command documentation loca
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | py-kms.environment.HWID | string | `"RANDOM"` |  |
-| py-kms.environment.IP | string | `"0.0.0.0"` |  |
+| py-kms.environment.IP | string | `"::"` |  |
 | py-kms.environment.LOGLEVEL | string | `"INFO"` |  |
 | py-kms.environment.LOGSIZE | int | `2` |  |
 | py-kms.environment.SQLITE | bool | `true` |  |

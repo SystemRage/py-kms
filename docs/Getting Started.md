@@ -46,7 +46,7 @@ services:
       - 1688:1688
       - 8080:8080
     environment:
-      - IP=0.0.0.0
+      - IP='::'
       - SQLITE=true
       - HWID=RANDOM
       - LOGLEVEL=INFO
@@ -82,7 +82,7 @@ Restart=always
 RestartSec=1
 KillMode=process
 User=root
-ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F </path/to/your/log/files/folder>/pykms_logserver.log
+ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Server.py :: 1688 -V DEBUG -F </path/to/your/log/files/folder>/pykms_logserver.log
 
 [Install]
 WantedBy=multi-user.target
@@ -105,7 +105,7 @@ env PYKMSPATH=</path/to/your/pykms/files/folder>/py-kms
 env LOGPATH=</path/to/your/log/files/folder>/pykms_logserver.log
 start on runlevel [2345]
 stop on runlevel [016]
-exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F $LOGPATH
+exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py :: 1688 -V DEBUG -F $LOGPATH
 respawn
 ```
 Check syntax with `sudo init-checkconf -d /etc/init/py3-kms.conf`, then reload upstart to recognise this process `sudo initctl reload-configuration`. Now start the service `sudo start py3-kms`, and you can see the logfile
