@@ -51,3 +51,6 @@ jobs:
           platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7,linux/arm/v6
           push: true
           tags: pykmsorg/py-kms:latest,ghcr.io/py-kms-organization/py-kms:latest,pykmsorg/py-kms:minimal,ghcr.io/py-kms-organization/py-kms:minimal
+          build-args: |
+            BUILD_COMMIT=${{ github.sha }}
+            BUILD_BRANCH=${{ github.ref_name }}

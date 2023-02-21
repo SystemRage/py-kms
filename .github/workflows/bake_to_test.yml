@@ -23,6 +23,9 @@ jobs:
           file: ./docker/docker-py3-kms/Dockerfile
           platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7,linux/arm/v6
           push: false
+          build-args: |
+            BUILD_COMMIT=${{ github.sha }}
+            BUILD_BRANCH=${{ github.ref_name }}
       - name: Build
         uses: docker/build-push-action@v2
         with:
@@ -30,3 +33,6 @@ jobs:
           file: ./docker/docker-py3-kms-minimal/Dockerfile
           platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7,linux/arm/v6
           push: false
+          build-args: |
+            BUILD_COMMIT=${{ github.sha }}
+            BUILD_BRANCH=${{ github.ref_name }}
