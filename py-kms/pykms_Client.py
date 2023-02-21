@@ -45,10 +45,9 @@ class client_thread(threading.Thread):
         def __init__(self, name):
                 threading.Thread.__init__(self)
                 self.name = name
-                self.with_gui = False
 
         def run(self):
-                clt_main(with_gui = self.with_gui)
+                clt_main()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -297,11 +296,10 @@ def client_create(clt_sock):
                 pretty_printer(log_obj = loggerclt.warning, to_exit = True, where = "clt",
                                put_text = "{reverse}{magenta}{bold}Something went wrong. Exiting...{end}")
 
-def clt_main(with_gui = False):
+def clt_main():
         try:
-                if not with_gui:
-                        # Parse options.
-                        client_options()
+                # Parse options.
+                client_options()
 
                 # Check options.
                 client_check()
@@ -393,4 +391,4 @@ def readKmsResponseV6(data):
         return message
 
 if __name__ == "__main__":
-        clt_main(with_gui = False)
+        clt_main()

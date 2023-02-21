@@ -53,7 +53,6 @@ e.g. because it could not reach the server. The default is 120 minutes (2 hours)
 
     -s or --sqlite [<SQLFILE>]
 > Use this option to store request information from unique clients in an SQLite database. Deactivated by default.
-If enabled the default database file is _pykms_database.db_. You can also provide a specific location.
 
     -t0 or --timeout-idle <TIMEOUTIDLE>
 > Maximum inactivity time (in seconds) after which the connection with the client is closed. 
@@ -83,11 +82,11 @@ Mon, 12 Jun 2017 22:09:00 INFO     HWID: 364F463A8863D35F
 > Creates a _LOGFILE.log_ logging file. The default is named _pykms_logserver.log_.
 example:
 ```
-user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 8080 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
+user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688 -F ~/path/to/folder/py-kms/newlogfile.log -V INFO -w RANDOM
 ```
 creates _newlogfile.log_ with these initial messages:
 ```
-Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 8080.
+Mon, 12 Jun 2017 22:09:00 INFO     TCP server listening at 192.168.1.102 on port 1688.
 Mon, 12 Jun 2017 22:09:00 INFO     HWID: 58C4F4E53AE14224
 ```
 
@@ -229,14 +228,6 @@ ENV ACTIVATION_INTERVAL 120
 # The renewal interval (in minutes)
 # Use this flag to specify the renewal interval (in minutes). Default is 10080 minutes (7 days).
 ENV RENEWAL_INTERVAL 10080
-
-# Use SQLITE
-# Use this flag to store request information from unique clients in an SQLite database.
-ENV SQLITE false
-
-# TCP-port
-# The network port to listen with the web interface on. The default is "8080".
-ENV SQLITE_PORT 8080
 
 # hwid
 # Use this flag to specify a HWID. 

@@ -9,22 +9,20 @@ import uuid
 import logging
 import os
 import threading
-import pickle
 import socketserver
 import queue as Queue
 import selectors
-from tempfile import gettempdir
 from time import monotonic as time
 
 import pykms_RpcBind, pykms_RpcRequest
 from pykms_RpcBase import rpcBase
 from pykms_Dcerpc import MSRPCHeader
-from pykms_Misc import check_setup, check_lcid, check_dir, check_other
+from pykms_Misc import check_setup, check_lcid, check_other
 from pykms_Misc import KmsParser, KmsParserException, KmsParserHelp
 from pykms_Misc import kms_parser_get, kms_parser_check_optionals, kms_parser_check_positionals, kms_parser_check_connect
 from pykms_Format import enco, deco, pretty_printer, justify
-from Etrigan import Etrigan, Etrigan_parser, Etrigan_check, Etrigan_job
 from pykms_Connect import MultipleListener
+from pykms_Sql import sql_initialize
 
 srv_version             = "py-kms_2020-10-01"
 __license__             = "The Unlicense"
@@ -135,7 +133,8 @@ class server_thread(threading.Thread):
                 self.name = name
                 self.queue = queue
                 self.server = None
-                self.is_running_server, self.with_gui, self.checked = [False for _ in range(3)]
+                self.is_running_server = False
+                self.checked = False
                 self.is_running_thread = threading.Event()
 
         def terminate_serve(self):
@@ -170,13 +169,7 @@ class server_thread(threading.Thread):
                                                 self.server.pykms_serve()
                                 except (SystemExit, Exception) as e:
                                         self.eject = True
-                                        if not self.with_gui:
-                                                raise
-                                        else:
-                                                if isinstance(e, SystemExit):
-                                                        continue
-                                                else:
-                                                        raise
+                                        raise
 
 ##---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -196,8 +189,7 @@ for server OSes and Office >=5', 'def' : None, 'des' : "clientcount"},
                         'def' : 120, 'des': "activation"},
         'renewal'    : {'help' : 'Use this option to specify the renewal interval (in minutes). Default is \"10080\" minutes (7 days).',
                         'def' : 1440 * 7, 'des' : "renewal"},
-        'sql'        : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default. \
-If enabled the default .db file is \"pykms_database.db\". You can also provide a specific location.', 'def' : False,
+        'sql'        : {'help' : 'Use this option to store request information from unique clients in an SQLite database. Deactivated by default.', 'def' : False,
                         'file': os.path.join('.', 'pykms_database.db'), 'des' : "sqlite"},
         'hwid'       : {'help' : 'Use this option to specify a HWID. The HWID must be an 16-character string of hex characters. \
 The default is \"364F463A8863D35F\" or type \"RANDOM\" to auto generate the HWID.',
@@ -256,15 +248,6 @@ def server_options():
 
         server_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
-        ## Daemon (Etrigan) parsing.
-        daemon_parser = KmsParser(description = "daemon options inherited from Etrigan", add_help = False)
-        daemon_subparser = daemon_parser.add_subparsers(dest = "mode")
-
-        etrigan_parser = daemon_subparser.add_parser("etrigan", add_help = False)
-        etrigan_parser.add_argument("-g", "--gui", action = "store_const", dest = 'gui', const = True, default = False,
-                                    help = "Enable py-kms GUI usage.")
-        etrigan_parser = Etrigan_parser(parser = etrigan_parser)
-
         ## Connection parsing.
         connection_parser = KmsParser(description = "connect options", add_help = False)
         connection_subparser = connection_parser.add_subparsers(dest = "mode")
@@ -284,16 +267,14 @@ def server_options():
 
                 # Run help.
                 if any(arg in ["-h", "--help"] for arg in userarg):
-                        KmsParserHelp().printer(parsers = [server_parser, (daemon_parser, etrigan_parser),
-                                                           (connection_parser, connect_parser)])
+                        KmsParserHelp().printer(parsers = [server_parser, (connection_parser, connect_parser)])
 
                 # Get stored arguments.
                 pykmssrv_zeroarg, pykmssrv_onearg = kms_parser_get(server_parser)
-                etrigan_zeroarg, etrigan_onearg = kms_parser_get(etrigan_parser)
                 connect_zeroarg, connect_onearg = kms_parser_get(connect_parser)
-                subdict = {'etrigan' : (etrigan_zeroarg, etrigan_onearg, daemon_parser.parse_args),
-                           'connect' : (connect_zeroarg, connect_onearg, connection_parser.parse_args)
-                           }
+                subdict = {
+                        'connect' : (connect_zeroarg, connect_onearg, connection_parser.parse_args)
+                }
                 subpars = list(subdict.keys())
                 pykmssrv_zeroarg += subpars # add subparsers
 
@@ -309,14 +290,7 @@ def server_options():
                 if subindx:
                         # Set `daemon options` and/or `connect options` for server dict config.
                         # example cases:
-                        # 1     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals] \
-                        #       connect [--connect_optionals]
-                        #
-                        # 2     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals] etrigan \
-                        #       daemon_positional [--daemon_optionals]
-                        #
-                        # 3     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] etrigan daemon_positional [--daemon_optionals]
-                        # 4     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals]
+                        # 1     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals] connect [--connect_optionals]
                         first = subindx[0][0]
                         # initial.
                         kms_parser_check_optionals(userarg[0 : first], pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
@@ -338,7 +312,7 @@ def server_options():
                 else:
                         # Update `pykms options` for server dict config.
                         # example case:
-                        # 5     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals]
+                        # 2     python3 pykms_Server.py [1.2.3.4] [1234] [--pykms_optionals]
                         kms_parser_check_optionals(userarg, pykmssrv_zeroarg, pykmssrv_onearg, exclude_opt_len = exclude_kms)
                         kms_parser_check_positionals(srv_config, server_parser.parse_args)
 
@@ -346,63 +320,6 @@ def server_options():
 
         except KmsParserException as e:
                 pretty_printer(put_text = "{reverse}{red}{bold}%s. Exiting...{end}" %str(e), to_exit = True)
-
-class Etrigan_Check(Etrigan_check):
-        def emit_opt_err(self, msg):
-                pretty_printer(put_text = "{reverse}{red}{bold}%s{end}" %msg, to_exit = True)
-
-class Etrigan(Etrigan):
-        def emit_message(self, message, to_exit = False):
-                if not self.mute:
-                        pretty_printer(put_text = "{reverse}{green}{bold}%s{end}" %message)
-                if to_exit:
-                        sys.exit(0)
-
-        def emit_error(self, message, to_exit = True):
-                if not self.mute:
-                        pretty_printer(put_text = "{reverse}{red}{bold}%s{end}" %message, to_exit = True)
-
-def server_daemon():
-        if 'etrigan' in srv_config.values():
-                path = os.path.join(gettempdir(), 'pykms_config.pickle')
-
-                if srv_config['operation'] in ['stop', 'restart', 'status'] and len(sys.argv[1:]) > 2:
-                        pretty_printer(put_text = "{reverse}{red}{bold}too much arguments with etrigan '%s'. Exiting...{end}" %srv_config['operation'],
-                                       to_exit = True)
-
-                # Check file arguments.
-                Etrigan_Check().checkfile(srv_config['etriganpid'], '--etrigan-pid', '.pid')
-                Etrigan_Check().checkfile(srv_config['etriganlog'], '--etrigan-log', '.log')
-
-                if srv_config['gui']:
-                        pass
-                else:
-                        if srv_config['operation'] == 'start':
-                                with open(path, 'wb') as file:
-                                        pickle.dump(srv_config, file, protocol = pickle.HIGHEST_PROTOCOL)
-                        elif srv_config['operation'] in ['stop', 'status', 'restart']:
-                                with open(path, 'rb') as file:
-                                        old_srv_config = pickle.load(file)
-                                old_srv_config = {x: old_srv_config[x] for x in old_srv_config if x not in ['operation']}
-                                srv_config.update(old_srv_config)
-
-                serverdaemon = Etrigan(srv_config['etriganpid'],
-                                       logfile = srv_config['etriganlog'], loglevel = srv_config['etriganlev'],
-                                       mute = srv_config['etriganmute'], pause_loop = None)
-
-                if srv_config['operation'] in ['start', 'restart']:
-                        serverdaemon.want_quit = True
-                        if srv_config['gui']:
-                                serverdaemon.funcs_to_daemonize = [server_with_gui]
-                        else:
-                                server_without_gui = ServerWithoutGui()
-                                serverdaemon.funcs_to_daemonize = [server_without_gui.start, server_without_gui.join]
-                                indx_for_clean = lambda: (0, )
-                                serverdaemon.quit_on_stop = [indx_for_clean, server_without_gui.clean]
-                elif srv_config['operation'] == 'stop':
-                        os.remove(path)
-
-                Etrigan_job(srv_config['operation'], serverdaemon)
 
 def server_check():
         # Setup and some checks.
@@ -445,25 +362,25 @@ def server_check():
                                 
         # Check sqlite.
         if srv_config['sqlite']:
-                if isinstance(srv_config['sqlite'], str):
-                        check_dir(srv_config['sqlite'], 'srv', log_obj = loggersrv.error, argument = '-s/--sqlite')
-                elif srv_config['sqlite'] is True:
+                if srv_config['sqlite'] is True: # Resolve bool to the default path
                         srv_config['sqlite'] = srv_options['sql']['file']
+                if os.path.isdir(srv_config['sqlite']):
+                        pretty_printer(log_obj = loggersrv.warning,
+                                put_text = "{reverse}{yellow}{bold}You specified a folder instead of a database file! This behavior is not officially supported anymore, please change your start parameters soon.{end}")
+                        srv_config['sqlite'] = os.path.join(srv_config['sqlite'], 'pykms_database.db')
 
                 try:
                         import sqlite3
+                        sql_initialize(srv_config['sqlite'])
                 except ImportError:
                         pretty_printer(log_obj = loggersrv.warning,
-                                       put_text = "{reverse}{yellow}{bold}Module 'sqlite3' not installed, database support disabled.{end}")
+                                put_text = "{reverse}{yellow}{bold}Module 'sqlite3' not installed, database support disabled.{end}")
                         srv_config['sqlite'] = False
 
         # Check other specific server options.
         opts = [('clientcount', '-c/--client-count'),
                 ('timeoutidle', '-t0/--timeout-idle'),
                 ('timeoutsndrcv', '-t1/--timeout-sndrcv')]
-        if serverthread.with_gui:
-                opts += [('activation', '-a/--activation-interval'),
-                         ('renewal', '-r/--renewal-interval')]
         check_other(srv_config, opts, loggersrv, where = 'srv')
 
         # Check further addresses / ports.
@@ -543,35 +460,14 @@ def server_main_terminal():
         server_check()
         serverthread.checked = True
 
-        if 'etrigan' not in srv_config.values():
-                # (without GUI) and (without daemon).
-                # Run threaded server.
-                serverqueue.put('start')
-                # Wait to finish.
-                try:
-                        while serverthread.is_alive():
-                                serverthread.join(timeout = 0.5)
-                except (KeyboardInterrupt, SystemExit):
-                        server_terminate(serverthread, exit_server = True, exit_thread = True)
-        else:
-                # (with or without GUI) and (with daemon)
-                # Setup daemon (eventually).
-                pretty_printer(log_obj = loggersrv.warning, put_text = "{reverse}{yellow}{bold}Etrigan support is deprecated and will be removed in the future!{end}")
-                server_daemon()
-
-def server_with_gui():
-        import pykms_GuiBase
-
-        pretty_printer(log_obj = loggersrv.warning, put_text = "{reverse}{yellow}{bold}Etrigan GUI support is deprecated and will be removed in the future!{end}")
-
-        root = pykms_GuiBase.KmsGui()
-        root.title(pykms_GuiBase.gui_description + ' (' + pykms_GuiBase.gui_version + ')')
-        root.mainloop()
-
-def server_main_no_terminal():
-        # Run tkinter GUI.
-        # (with GUI) and (without daemon).
-        server_with_gui()
+        # Run threaded server.
+        serverqueue.put('start')
+        # Wait to finish.
+        try:
+                while serverthread.is_alive():
+                        serverthread.join(timeout = 0.5)
+        except (KeyboardInterrupt, SystemExit):
+                server_terminate(serverthread, exit_server = True, exit_thread = True)
 
 class kmsServerHandler(socketserver.BaseRequestHandler):
         def setup(self):
@@ -636,10 +532,4 @@ serverthread.daemon = True
 serverthread.start()
 
 if __name__ == "__main__":
-        if sys.stdout.isatty():
-                server_main_terminal()
-        else:
-                try:
-                        server_main_no_terminal()
-                except:
-                        server_main_terminal()
+        server_main_terminal()

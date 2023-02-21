@@ -22,7 +22,11 @@ latest version you should check something like [watchtower](https://github.com/c
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
 * `latest`, currently the same like `minimal`.
 * `minimal`, which is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support !_
-* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface (make sure to expose port 8080) for management.
+* `python3`, which is fully configurable and equipped with `sqlite` support and a web-interface (make sure to expose port `8080`) for management.
+
+Wait... Web-interface? Yes! `py-kms` now comes with a simple web-ui to let you browse the known clients or its supported products. In case you wonder, here is a screenshot of the web-ui (*note that this screenshot may not reflect the current state of the ui*):
+
+![web-ui](img/webinterface.png)
 
 #### Architectures
 There are currently the following architectures available (if you need an other, feel free to open an issue):
@@ -47,7 +51,6 @@ services:
       - 8080:8080
     environment:
       - IP='::'
-      - SQLITE=true
       - HWID=RANDOM
       - LOGLEVEL=INFO
     restart: always
@@ -62,11 +65,10 @@ Below is a little bit more extended run command, detailing all the different sup
 docker run -it -d --name py3-kms \
     -p 8080:8080 \
     -p 1688:1688 \
-    -e SQLITE=true \
     -v /etc/localtime:/etc/localtime:ro \
     --restart unless-stopped ghcr.io/py-kms-organization/py-kms:[TAG]
 ```
-You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
+You can omit the `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the `sqlite` module support.
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
@@ -90,10 +92,6 @@ WantedBy=multi-user.target
 Check syntax with `sudo systemd-analyze verify py3-kms.service`, correct file permission (if needed) `sudo chmod 644 /etc/systemd/system/py3-kms.service`, then reload systemd manager configuration `sudo systemctl daemon-reload`,
 start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`. Finally a
 few generic commands useful for interact with your daemon [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
-
-### Etrigan (deprecated)
-You can run py-kms daemonized (via [Etrigan](https://github.com/SystemRage/Etrigan)) using a command like `python3 pykms_Server.py etrigan start` and stop it with `python3 pykms_Server.py etrigan stop`. With Etrigan you have another
-way to launch py-kms GUI (specially suitable if you're using a virtualenv), so `python3 pykms_Server.py etrigan start -g` and stop the GUI with `python3 pykms_Server.py etrigan stop` (or interact with the `EXIT` button).
 
 ### Upstart (deprecated)
 If you are running a Linux distro using `upstart` (deprecated), create the file: `sudo nano /etc/init/py3-kms.conf`, then add the following (change it where needed) and save:
@@ -125,7 +123,7 @@ class AppServerSvc (win32serviceutil.ServiceFramework):
     _svc_name_ = "py-kms"
     _svc_display_name_ = "py-kms"
     _proc = None
-    _cmd = ["C:\Windows\Python27\python.exe", "C:\Windows\Python27\py-kms\pykms_Server.py"]
+    _cmd = ["C:\Windows\Python27\python.exe", "C:\Windows\Python27\py-kms\pykms_Server.py"] # UPDATE THIS - because Python 2.7 is end of life and you will use other parameters anyway
 
     def __init__(self,args):
         win32serviceutil.ServiceFramework.__init__(self,args)
@@ -168,10 +166,10 @@ They might be useful to you:
 - Python 3.x.
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the `sqlite3` module, storing activation data in a database so it can be recalled again.
-- Installation example on Ubuntu / Mint:
+- Installation example on Ubuntu / Mint (`requirements.txt` is from the sources):
     - `sudo apt-get update`
-    - `sudo apt-get install python3-tk python3-pip`
-    - `sudo pip3 install tzlocal pysqlite3` (on Ubuntu Server 22, you'll need `pysqlite3-binary` - see [this issue](https://github.com/Py-KMS-Organization/py-kms/issues/76))
+    - `sudo apt-get install python3-pip`
+    - `pip3 install -r requirements.txt` (on Ubuntu Server 22, you'll need `pysqlite3-binary` - see [this issue](https://github.com/Py-KMS-Organization/py-kms/issues/76))
 
 ### Startup
 A Linux user with `ip addr` command can get his KMS IP (Windows users can try `ipconfig /all`).

@@ -4,13 +4,12 @@ import binascii
 import logging
 import time
 import uuid
-import socket
 
 from pykms_Structure import Structure
 from pykms_DB2Dict import kmsDB2Dict
 from pykms_PidGenerator import epidGenerator
 from pykms_Filetimes import filetime_to_dt
-from pykms_Sql import sql_initialize, sql_update, sql_update_epid
+from pykms_Sql import sql_update, sql_update_epid
 from pykms_Format import justify, byterize, enco, deco, pretty_printer
 
 #--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -214,7 +213,6 @@ could be detected as not genuine !{end}" %currentClientCount)
                                                        'product' : infoDict["skuId"]})
                 # Create database.
                 if self.srv_config['sqlite']:
-                        sql_initialize(self.srv_config['sqlite'])
                         sql_update(self.srv_config['sqlite'], infoDict)
 
                 return self.createKmsResponse(kmsRequest, currentClientCount, appName)

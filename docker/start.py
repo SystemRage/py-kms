@@ -20,35 +20,20 @@ argumentVariableMapping = {
   '-e': 'EPID'
 }
 
-sqliteWebPath = '/home/sqlite_web/sqlite_web.py'
-enableSQLITE = os.environ.get('SQLITE', 'false').lower() == 'true' and  os.environ.get('TYPE') != 'MINIMAL'
-dbPath = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
+db_path = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
 log_level_bootstrap = log_level = os.environ.get('LOGLEVEL', 'INFO')
 if log_level_bootstrap == "MININFO":
   log_level_bootstrap = "INFO"
 log_file = os.environ.get('LOGFILE', 'STDOUT')
 listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
-sqlite_port = os.environ.get('SQLITE_PORT', '8080')
-
-
-def start_kms_client():
-  if not os.path.isfile(dbPath):
-    # Start a dummy activation to ensure the database file is created
-    client_cmd = [PYTHON3, '-u', 'pykms_Client.py', listen_ip[0], listen_port,
-                  '-m', 'Windows10', '-n', 'DummyClient', '-c', 'ae3a27d1-b73a-4734-9878-70c949815218',
-                  '-V', log_level, '-F', log_file]
-    if os.environ.get('LOGSIZE', '') != "":
-      client_cmd.append('-S')
-      client_cmd.append(os.environ.get('LOGSIZE'))
-    loggersrv.info("Starting a dummy activation to ensure the database file is created")
-    loggersrv.debug("client_cmd: %s" % (" ".join(str(x) for x in client_cmd).strip()))
-
-    subprocess.run(client_cmd)
-
+want_webui = os.environ.get('WEBUI', '0')
 
 def start_kms():
-  sqlite_process = None
+  # Make sure the full path to the db exists
+  if want_webui and not os.path.exists(os.path.dirname(db_path)):
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
   # Build the command to execute
   command = [PYTHON3, '-u', 'pykms_Server.py', listen_ip[0], listen_port]
   for (arg, env) in argumentVariableMapping.items():
@@ -60,25 +45,25 @@ def start_kms():
     for i in range(1, len(listen_ip)):
       command.append("-n")
       command.append(listen_ip[i] + "," + listen_port)
-
-  if enableSQLITE:
-    loggersrv.info("Storing database file to %s" % dbPath)
+  if want_webui:
     command.append('-s')
-    command.append(dbPath)
-    os.makedirs(os.path.dirname(dbPath), exist_ok=True)
+    command.append(db_path)
 
   loggersrv.debug("server_cmd: %s" % (" ".join(str(x) for x in command).strip()))
   pykms_process = subprocess.Popen(command)
+  pykms_webui_process = None
 
-  # In case SQLITE is defined: Start the web interface
-  if enableSQLITE:
-    time.sleep(5)  # The server may take a while to start
-    start_kms_client()
-    sqlite_cmd = ['sqlite_web', '-H', listen_ip[0], '--read-only', '-x',
-                  dbPath, '-p', sqlite_port]
-
-    loggersrv.debug("sqlite_cmd: %s" % (" ".join(str(x) for x in sqlite_cmd).strip()))
-    sqlite_process = subprocess.Popen(sqlite_cmd)
+  try:
+    if want_webui:
+      time.sleep(2) # Wait for the server to start up
+      pykms_webui_env = os.environ.copy()
+      pykms_webui_env['PYKMS_SQLITE_DB_PATH'] = db_path
+      pykms_webui_env['PORT'] = '8080'
+      pykms_webui_env['PYKMS_LICENSE_PATH'] = '/LICENSE'
+      pykms_webui_env['PYKMS_VERSION_PATH'] = '/VERSION'
+      pykms_webui_process = subprocess.Popen(['gunicorn', '--log-level', os.environ.get('LOGLEVEL'), 'pykms_WebUI:app'], env=pykms_webui_env)
+  except Exception as e:
+    loggersrv.error("Failed to start webui: %s" % e)
 
   try:
     pykms_process.wait()
@@ -88,9 +73,9 @@ def start_kms():
   except KeyboardInterrupt:
     pass
 
-  if enableSQLITE:
-    if None != sqlite_process: sqlite_process.terminate()
-    pykms_process.terminate()
+  if pykms_webui_process:
+    pykms_webui_process.terminate()
+  pykms_process.terminate()
 
 
 # Main

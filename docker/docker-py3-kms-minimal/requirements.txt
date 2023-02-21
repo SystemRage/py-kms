@@ -1,0 +1,2 @@
+dnspython==2.2.1
+tzlocal==4.2
