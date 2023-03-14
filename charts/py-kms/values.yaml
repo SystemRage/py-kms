@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: pykmsorg/py-kms
+  repository: ghcr.io/py-kms-organization/py-kms
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: python3

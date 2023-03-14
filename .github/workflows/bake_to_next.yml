@@ -39,7 +39,7 @@ jobs:
           file: ./docker/docker-py3-kms/Dockerfile
           platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7,linux/arm/v6
           push: true
-          tags: pykmsorg/py-kms:python3-next,ghcr.io/py-kms-organization/py-kms:python3-next
+          tags: ghcr.io/py-kms-organization/py-kms:python3-next
           build-args: |
             BUILD_COMMIT=${{ github.sha }}
             BUILD_BRANCH=${{ github.ref_name }}
@@ -50,7 +50,7 @@ jobs:
           file: ./docker/docker-py3-kms-minimal/Dockerfile
           platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7,linux/arm/v6
           push: true
-          tags: pykmsorg/py-kms:latest-next,ghcr.io/py-kms-organization/py-kms:latest-next,pykmsorg/py-kms:minimal-next,ghcr.io/py-kms-organization/py-kms:minimal-next
+          tags: ghcr.io/py-kms-organization/py-kms:latest-next,ghcr.io/py-kms-organization/py-kms:minimal-next
           build-args: |
             BUILD_COMMIT=${{ github.sha }}
             BUILD_BRANCH=${{ github.ref_name }}

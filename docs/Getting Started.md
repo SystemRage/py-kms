@@ -6,17 +6,13 @@ What follows are some guides how to start the `pykms_Server.py` script, which pr
 You can simply manage a daemon that runs as a background process. This can be achieved by using any of the notes below or by writing your own solution.
 
 ### Docker
-![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
-![docker-size](https://img.shields.io/docker/image-size/pykmsorg/py-kms)
-
 If you wish to get _py-kms_ just up and running without installing any dependencies or writing own scripts: Just use Docker !
 Docker also solves problems regarding the explicit IPv4 and IPv6 usage (it just supports both). The following
 command will download, "install" and start _py-kms_ and also keep it alive after any service disruption.
 ```bash
 docker run -d --name py-kms --restart always -p 1688:1688 -v /etc/localtime:/etc/localtime:ro ghcr.io/py-kms-organization/py-kms
 ```
-If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`) or [GitHub Container Registry](https://github.com/Py-KMS-Organization/py-kms/pkgs/container/py-kms) (`ghcr.io/py-kms-organization/py-kms`). To ensure that you are using always the
-latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
+If you just want to use the image and don't want to build them yourself, you can always use the official image at the [GitHub Container Registry](https://github.com/Py-KMS-Organization/py-kms/pkgs/container/py-kms) (`ghcr.io/py-kms-organization/py-kms`). To ensure that you are using always the latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
 
 #### Tags
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
