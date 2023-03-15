@@ -57,17 +57,21 @@ if os.path.exists(_version_info_path):
             'branch': f.readline()
         }
 
+_dbEnvVarName = 'PYKMS_SQLITE_DB_PATH'
+def _env_check():
+    if _dbEnvVarName not in os.environ:
+        raise Exception(f'Environment variable is not set: {_dbEnvVarName}')
+
 @app.route('/')
 def root():
     _increase_serve_count()
     error = None
     # Get the db name / path
     dbPath = None
-    envVarName = 'PYKMS_SQLITE_DB_PATH'
-    if envVarName in os.environ:
-        dbPath = os.environ.get(envVarName)
+    if _dbEnvVarName in os.environ:
+        dbPath = os.environ.get(_dbEnvVarName)
     else:
-        error = f'Environment variable is not set: {envVarName}'
+        error = f'Environment variable is not set: {_dbEnvVarName}'
     # Fetch all clients from the database.
     clients = None
     try:
@@ -87,7 +91,26 @@ def root():
         count_clients_windows=countClientsWindows,
         count_clients_office=countClientsOffice,
         count_projects=len(_get_kms_items_cache()[0])
-    )
+    ), 200 if error is None else 500
+
+@app.route('/readyz')
+def readyz():
+    try:
+        _env_check()
+    except Exception as e:
+        return f'Whooops! {e}', 503
+    if (datetime.datetime.now() - app.jinja_env.globals['start_time']).seconds > 10: # Wait 10 seconds before accepting requests
+        return 'OK', 200
+    else:
+        return 'Not ready', 503
+
+@app.route('/livez')
+def livez():
+    try:
+        _env_check()
+        return 'OK', 200 # There are no checks for liveness, so we just return OK
+    except Exception as e:
+        return f'Whooops! {e}', 503
 
 @app.route('/license')
 def license():
