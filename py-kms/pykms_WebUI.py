@@ -53,8 +53,8 @@ _version_info_path = os.environ.get('PYKMS_VERSION_PATH', '../VERSION')
 if os.path.exists(_version_info_path):
     with open(_version_info_path, 'r') as f:
         app.jinja_env.globals['version_info'] = {
-            'hash': f.readline(),
-            'branch': f.readline()
+            'hash': f.readline().strip(),
+            'branch': f.readline().strip()
         }
 
 _dbEnvVarName = 'PYKMS_SQLITE_DB_PATH'
