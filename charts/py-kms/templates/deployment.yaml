@@ -45,14 +45,17 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          startupProbe:
+            httpGet:
+              port: http
+              path: /readyz
+            failureThreshold: 30 # 30 seconds seem to be enough under heavy workloads
+            periodSeconds: 1
           livenessProbe:
             httpGet:
-              path: /
+              path: /livez
               port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            periodSeconds: 20
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
