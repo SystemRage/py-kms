@@ -21,15 +21,12 @@ argumentVariableMapping = {
 }
 
 db_path = os.path.join(os.sep, 'home', 'py-kms', 'db', 'pykms_database.db')
-log_level_bootstrap = log_level = os.environ.get('LOGLEVEL', 'INFO')
-if log_level_bootstrap == "MININFO":
-  log_level_bootstrap = "INFO"
 log_file = os.environ.get('LOGFILE', 'STDOUT')
 listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
 want_webui = os.environ.get('WEBUI', '0') == '1' # if the variable is not provided, we assume the user does not want the webui
 
-def start_kms():
+def start_kms(logger):
   # Make sure the full path to the db exists
   if want_webui and not os.path.exists(os.path.dirname(db_path)):
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
@@ -49,7 +46,7 @@ def start_kms():
       command.append("-n")
       command.append(listen_ip[i] + "," + listen_port)
 
-  loggersrv.debug("server_cmd: %s" % (" ".join(str(x) for x in command).strip()))
+  logger.debug("server_cmd: %s" % (" ".join(str(x) for x in command).strip()))
   pykms_process = subprocess.Popen(command)
   pykms_webui_process = None
 
@@ -63,7 +60,7 @@ def start_kms():
       pykms_webui_env['PYKMS_VERSION_PATH'] = '/VERSION'
       pykms_webui_process = subprocess.Popen(['gunicorn', '--log-level', os.environ.get('LOGLEVEL'), 'pykms_WebUI:app'], env=pykms_webui_env)
   except Exception as e:
-    loggersrv.error("Failed to start webui (ignoring and continuing anyways): %s" % e)
+    logger.error("Failed to start webui (ignoring and continuing anyways): %s" % e)
 
   try:
     pykms_process.wait()
@@ -79,14 +76,17 @@ def start_kms():
 
 
 # Main
-if (__name__ == "__main__"):
-  loggersrv = logging.getLogger('logsrv')
+if __name__ == "__main__":
+  log_level_bootstrap = log_level = os.environ.get('LOGLEVEL', 'INFO')
+  if log_level_bootstrap == "MININFO":
+    log_level_bootstrap = "INFO"
+  loggersrv = logging.getLogger('start.py')
   loggersrv.setLevel(log_level_bootstrap)
   streamhandler = logging.StreamHandler(sys.stdout)
   streamhandler.setLevel(log_level_bootstrap)
-  formatter = logging.Formatter(fmt='\x1b[94m%(asctime)s %(levelname)-8s %(message)s',
-                                datefmt='%a, %d %b %Y %H:%M:%S')
+  formatter = logging.Formatter(fmt='\x1b[94m%(asctime)s %(levelname)-8s %(message)s', datefmt='%a, %d %b %Y %H:%M:%S')
   streamhandler.setFormatter(formatter)
   loggersrv.addHandler(streamhandler)
   loggersrv.debug("user id: %s" % os.getuid())
-  start_kms()
+
+  start_kms(loggersrv)

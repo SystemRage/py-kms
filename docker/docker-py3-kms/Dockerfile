@@ -27,7 +27,6 @@ RUN apk add --no-cache --update \
   ca-certificates \
   tzdata \
   shadow \
-  netcat-openbsd \
   && pip3 install --no-cache-dir -r /home/py-kms/requirements.txt \
   #&& apk del git build-base python3-dev \
   && mkdir /db/ \
@@ -38,19 +37,19 @@ RUN apk add --no-cache --update \
 
 COPY py-kms /home/py-kms/
 COPY docker/entrypoint.py /usr/bin/entrypoint.py
+COPY docker/healthcheck.py /usr/bin/healthcheck.py
 COPY docker/start.py /usr/bin/start.py
+RUN chmod 555 /usr/bin/entrypoint.py /usr/bin/healthcheck.py /usr/bin/start.py
 
 # Web-interface specifics
 COPY LICENSE /LICENSE
 RUN echo "$BUILD_COMMIT" > /VERSION && echo "$BUILD_BRANCH" >> /VERSION
-
-RUN chmod 755 /usr/bin/entrypoint.py
 
 WORKDIR /home/py-kms
 
 EXPOSE ${PORT}/tcp
 EXPOSE 8080/tcp
 
-HEALTHCHECK --interval=5m --timeout=3s --start-period=10s --retries=4 CMD echo | nc -z ${IP%% *} ${PORT} || exit 1
+HEALTHCHECK --interval=5m --timeout=10s --start-period=10s --retries=3 CMD /usr/bin/python3 /usr/bin/healthcheck.py
 
 ENTRYPOINT [ "/usr/bin/python3", "-u", "/usr/bin/entrypoint.py" ]
