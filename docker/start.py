@@ -27,7 +27,7 @@ if log_level_bootstrap == "MININFO":
 log_file = os.environ.get('LOGFILE', 'STDOUT')
 listen_ip = os.environ.get('IP', '::').split()
 listen_port = os.environ.get('PORT', '1688')
-want_webui = os.environ.get('WEBUI', '0')
+want_webui = os.environ.get('WEBUI', '0') == '1' # if the variable is not provided, we assume the user does not want the webui
 
 def start_kms():
   # Make sure the full path to the db exists
@@ -40,14 +40,14 @@ def start_kms():
     if env in os.environ and os.environ.get(env) != '':
       command.append(arg)
       command.append(os.environ.get(env))
+  if want_webui: # add this command directly before the "connect" subparser - otherwise you'll get silent crashes!
+    command.append('-s')
+    command.append(db_path)
   if len(listen_ip) > 1:
     command.append("connect")
     for i in range(1, len(listen_ip)):
       command.append("-n")
       command.append(listen_ip[i] + "," + listen_port)
-  if want_webui:
-    command.append('-s')
-    command.append(db_path)
 
   loggersrv.debug("server_cmd: %s" % (" ".join(str(x) for x in command).strip()))
   pykms_process = subprocess.Popen(command)
@@ -63,7 +63,7 @@ def start_kms():
       pykms_webui_env['PYKMS_VERSION_PATH'] = '/VERSION'
       pykms_webui_process = subprocess.Popen(['gunicorn', '--log-level', os.environ.get('LOGLEVEL'), 'pykms_WebUI:app'], env=pykms_webui_env)
   except Exception as e:
-    loggersrv.error("Failed to start webui: %s" % e)
+    loggersrv.error("Failed to start webui (ignoring and continuing anyways): %s" % e)
 
   try:
     pykms_process.wait()
