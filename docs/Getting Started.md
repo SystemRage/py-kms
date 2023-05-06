@@ -46,9 +46,9 @@ services:
       - 1688:1688
       - 8080:8080
     environment:
-      - IP='::'
-      - HWID=RANDOM
-      - LOGLEVEL=INFO
+      IP: "::"
+      HWID: RANDOM
+      LOGLEVEL: INFO
     restart: always
     volumes:
       - ./db:/home/py-kms/db
