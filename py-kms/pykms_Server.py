@@ -481,7 +481,7 @@ class kmsServerHandler(socketserver.BaseRequestHandler):
                         try:
                                 self.data = self.request.recv(1024)
                                 if self.data == '' or not self.data:
-                                        pretty_printer(log_obj = loggersrv.warning,
+                                        pretty_printer(log_obj = loggersrv.debug, # use debug, as the healthcheck will spam this
                                                        put_text = "{reverse}{yellow}{bold}No data received.{end}")
                                         break
                         except socket.error as e:
