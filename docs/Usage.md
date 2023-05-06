@@ -28,7 +28,7 @@ You may want to select the locale ID of your country instead.
 See [here](https://msdn.microsoft.com/en-us/library/cc233982.aspx) for a list of valid _LCIDs_.
 
     -w or --hwid <HWID>
-> Use specified _HWID_ for all products. Use `-w RANDOM` to generate a random HWID. Default is _364F463A8863D35F_.
+> Use specified _HWID_ for all products. Use `-w RANDOM` to generate a random HWID. Default is random.
 Hardware Identification is a security measure used by Microsoft upon the activation of 
 the Windows operating system. As part of the Product Activation system, a unique
 HWID number is generated when the operating system is first installed. The _HWID_ identifies the hardware components that the system 
@@ -232,8 +232,8 @@ ENV RENEWAL_INTERVAL 10080
 # hwid
 # Use this flag to specify a HWID. 
 # The HWID must be an 16-character string of hex characters.
-# The default is "364F463A8863D35F" or type "RANDOM" to auto generate the HWID.
-ENV HWID 364F463A8863D35F
+# The default is "RANDOM" to auto-generate the HWID or type a specific value.
+ENV HWID RANDOM
 
 # log level ("CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG")
 # Use this flag to set a Loglevel. The default is "ERROR".
