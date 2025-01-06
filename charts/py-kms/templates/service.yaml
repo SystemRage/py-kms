@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "py-kms.fullname" . }}
+  labels:
+    {{- include "py-kms.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.kmsPort }}
+      targetPort: 1688
+      protocol: TCP
+      name: kms
+    - port: {{ .Values.service.httpPort }}
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "py-kms.selectorLabels" . | nindent 4 }}

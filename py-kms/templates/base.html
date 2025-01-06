@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>py-kms {% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/bulma.min.css') }}">
+    <style>
+        #content {
+            margin: 1em;
+            overflow-x: auto;
+        }
+        pre {
+            overflow-x: auto;
+            padding: 0.5em;
+        }
+        {% if path != '/' %}
+        div.backtohome {
+            display: flex;
+            justify-content: center;
+        }
+        {% endif %}
+        {% block style %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div id="content">
+        {% block content %}{% endblock %}
+
+        {% if path != '/' %}
+        <div class="block backtohome">
+            <a class="button is-normal is-responsive" href="/">
+                Back to home
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <p>
+                <strong>py-kms</strong> is online since <span class="convert_timestamp">{{ start_time }}</span>.
+                This instance was accessed {{ get_serve_count() }} times. View this softwares license <a href="/license">here</a>.
+                {% if version_info %}
+                <br>This instance is running version "{{ version_info['hash'] }}" from branch "{{ version_info['branch'] }}" of py-kms.
+                {% endif %}
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        for(let element of document.getElementsByClassName('convert_timestamp')) {
+            element.innerText = new Date(element.innerText).toLocaleString();
+        }
+    </script>
+</body>
+</html>

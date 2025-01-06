@@ -4,6 +4,9 @@ import os
 import socket
 import selectors
 import ipaddress
+import logging
+from pykms_Format import pretty_printer
+loggersrv = logging.getLogger('logsrv')
 
 # https://github.com/python/cpython/blob/master/Lib/socket.py
 def has_dualstack_ipv6():
@@ -27,12 +30,13 @@ def create_server_sock(address, *, family = socket.AF_INET, backlog = None, reus
         
             *family*          should be either AF_INET or AF_INET6.
             *backlog*         is the queue size passed to socket.listen().
-            *reuse_port*      dictates whether to use the SO_REUSEPORT socket option.
+            *reuse_port*      if True and the platform supports it, we will use the SO_REUSEPORT socket option.
             *dualstack_ipv6*  if True and the platform supports it, it will create an AF_INET6 socket able to accept both IPv4 or IPv6 connections;
                               when False it will explicitly disable this option on platforms that enable it by default (e.g. Linux).
         """
         if reuse_port and not hasattr(socket._socket, "SO_REUSEPORT"):
-                raise ValueError("SO_REUSEPORT not supported on this platform")
+                pretty_printer(log_obj = loggersrv.warning, put_text = "{reverse}{yellow}{bold}SO_REUSEPORT not supported on this platform - ignoring socket option.{end}")
+                reuse_port = False
         
         if dualstack_ipv6:
                 if not has_dualstack_ipv6():

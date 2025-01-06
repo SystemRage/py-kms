@@ -13,7 +13,13 @@ import logging
 import os
 import threading
 
-import pykms_RpcBind, pykms_RpcRequest 
+import dns.message
+import dns.rdataclass
+import dns.rdatatype
+import dns.query
+import dns.resolver
+
+import pykms_RpcBind, pykms_RpcRequest
 from pykms_Filetimes import dt_to_filetime
 from pykms_Dcerpc import MSRPCHeader, MSRPCBindNak, MSRPCRequestHeader, MSRPCRespHeader
 from pykms_Base import kmsBase, UUID
@@ -39,10 +45,9 @@ class client_thread(threading.Thread):
         def __init__(self, name):
                 threading.Thread.__init__(self)
                 self.name = name
-                self.with_gui = False
 
         def run(self):
-                clt_main(with_gui = self.with_gui)
+                clt_main()
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -50,7 +55,7 @@ loggerclt = logging.getLogger('logclt')
 
 # 'help' string - 'default' value - 'dest' string.
 clt_options = {
-        'ip'       : {'help' : 'The IP address or hostname of the KMS server.', 'def' : "0.0.0.0", 'des' : "ip"},
+        'ip'       : {'help' : 'The IP address or hostname of the KMS server.', 'def' : "::", 'des' : "ip"},
         'port'     : {'help' : 'The port the KMS service is listening on. The default is \"1688\".', 'def' : 1688, 'des' : "port"},
         'mode'     : {'help' : 'Use this flag to manually specify a Microsoft product for testing the server. The default is \"Windows81\"',
                       'def' : "Windows8.1", 'des' : "mode",
@@ -72,6 +77,7 @@ Type \"STDOUT\" to view log info on stdout. Type \"FILESTDOUT\" to combine previ
 Use \"STDOUTOFF\" to disable stdout messages. Use \"FILEOFF\" if you not want to create logfile.',
                       'def' : os.path.join('.', 'pykms_logclient.log'), 'des' : "logfile"},
         'lsize'    : {'help' : 'Use this flag to set a maximum size (in MB) to the output log file. Deactivated by default.', 'def' : 0, 'des': "logsize"},
+        'discovery' : {'help': 'ask the client to perform a _vlmcs._tcp.domain.tld DNS request to set KMS server.', 'def': None , 'des': 'discovery' },
         }
 
 def client_options():
@@ -99,6 +105,8 @@ def client_options():
                                    default = clt_options['lfile']['def'], help = clt_options['lfile']['help'], type = str)
         client_parser.add_argument("-S", "--logsize", dest = clt_options['lsize']['des'], action = "store",
                                    default = clt_options['lsize']['def'], help = clt_options['lsize']['help'], type = float)
+        client_parser.add_argument("-D", "--discovery", dest = clt_options['discovery']['des'], action = "store",
+                                   default = clt_options['discovery']['def'], help = clt_options['discovery']['help'], type = str)
 
         client_parser.add_argument("-h", "--help", action = "help", help = "show this help message and exit")
 
@@ -156,18 +164,25 @@ def client_check():
 def client_update():
         kmsdb = kmsDB2Dict()
 
+        loggerclt.debug(f'Searching in kms database for machine "{clt_config["mode"]}"...')
+
         appitems = kmsdb[2]
         for appitem in appitems:
                 kmsitems = appitem['KmsItems']
                 for kmsitem in kmsitems:                                
-                        name = re.sub('\(.*\)', '', kmsitem['DisplayName']).replace('2015', '').replace(' ', '')
+                        name = re.sub('\(.*\)', '', kmsitem['DisplayName']) # Remove bracets
+                        name = name.replace('2015', '') # Remove specific years
+                        name = name.replace(' ', '') # Ignore whitespaces
+                        name = name.replace('/11', '', 1) # Cut out Windows 11, as it is basically Windows 10
                         if name == clt_config['mode']:
                                 skuitems = kmsitem['SkuItems']
                                 # Select 'Enterprise' for Windows or 'Professional Plus' for Office.
                                 for skuitem in skuitems:
-                                        if skuitem['DisplayName'].replace(' ','') == name + 'Enterprise' or \
-                                           skuitem['DisplayName'].replace(' ','') == name[:6] + 'ProfessionalPlus' + name[6:]:
-
+                                        sName = skuitem['DisplayName']
+                                        sName = sName.replace(' ', '') # Ignore whitespaces
+                                        sName = sName.replace('/11', '', 1) # Cut out Windows 11, as it is basically Windows 10
+                                        if sName == name + 'Enterprise' or \
+                                           sName == name[:6] + 'ProfessionalPlus' + name[6:]:
                                                 clt_config['KMSClientSkuID'] = skuitem['Id']
                                                 clt_config['RequiredClientCount'] = int(kmsitem['NCountPolicy'])
                                                 clt_config['KMSProtocolMajorVersion'] = int(float(kmsitem['DefaultKmsProtocol']))
@@ -175,9 +190,25 @@ def client_update():
                                                 clt_config['KMSClientLicenseStatus'] = 2
                                                 clt_config['KMSClientAppID'] = appitem['Id']
                                                 clt_config['KMSClientKMSCountedID'] = kmsitem['Id']
-                                                break
+                                                return
+        raise RuntimeError(f'Client failed to find machine configuration in kms database - make sure it contains an entry for "{clt_config["mode"]}"')
 
 def client_connect():
+
+        if clt_config['discovery'] is not None:
+          loggerclt.info(f'Using Domain: {clt_config["discovery"]}')
+          r= None
+          try:
+            r = dns.resolver.resolve('_vlmcs._tcp.' + clt_config['discovery'], dns.rdatatype.SRV)
+            for a in r:
+              loggerclt.debug(f'answer KMS server: {a.target} , port: {a.port}')
+            clt_config['ip'] = socket.gethostbyname(r[0].target.to_text())
+            clt_config['port'] = r[0].port
+          except (dns.exception.Timeout, dns.resolver.NXDOMAIN) as e:
+                pretty_printer(log_obj = loggerclt.warning,
+                           put_text = "{reverse}{red}{bold}Cannot resolve '%s'. Error: '%s'...{end}" %(clt_config['discovery'],
+                                                                                                             str(e)))
+
         loggerclt.info("Connecting to %s on port %d" % (clt_config['ip'], clt_config['port']))
         try:
                 clt_sock = socket.create_connection((clt_config['ip'], clt_config['port']), timeout = clt_config['timeoutidle'])
@@ -265,11 +296,10 @@ def client_create(clt_sock):
                 pretty_printer(log_obj = loggerclt.warning, to_exit = True, where = "clt",
                                put_text = "{reverse}{magenta}{bold}Something went wrong. Exiting...{end}")
 
-def clt_main(with_gui = False):
+def clt_main():
         try:
-                if not with_gui:
-                        # Parse options.
-                        client_options()
+                # Parse options.
+                client_options()
 
                 # Check options.
                 client_check()
@@ -361,4 +391,4 @@ def readKmsResponseV6(data):
         return message
 
 if __name__ == "__main__":
-        clt_main(with_gui = False)
+        clt_main()

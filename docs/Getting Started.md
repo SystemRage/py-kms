@@ -2,29 +2,26 @@
 What follows are some guides how to start the `pykms_Server.py` script, which provides the emulated server.
 
 ## Running as a service
-***
 You can simply manage a daemon that runs as a background process. This can be achieved by using any of the notes below or by writing your own solution.
 
 ### Docker
-![docker-auto](https://img.shields.io/docker/cloud/automated/pykmsorg/py-kms)
-![docker-status](https://img.shields.io/docker/cloud/build/pykmsorg/py-kms)
-![docker-pulls](https://img.shields.io/docker/pulls/pykmsorg/py-kms)
-![docker-size](https://img.shields.io/docker/image-size/pykmsorg/py-kms)
-
 If you wish to get _py-kms_ just up and running without installing any dependencies or writing own scripts: Just use Docker !
 Docker also solves problems regarding the explicit IPv4 and IPv6 usage (it just supports both). The following
 command will download, "install" and start _py-kms_ and also keep it alive after any service disruption.
 ```bash
-docker run -d --name py-kms --restart always -p 1688:1688 pykmsorg/py-kms
+docker run -d --name py-kms --restart always -p 1688:1688 -v /etc/localtime:/etc/localtime:ro ghcr.io/py-kms-organization/py-kms
 ```
-If you just want to use the image and don't want to build them yourself, you can always use the official image at the [Docker Hub](https://hub.docker.com/r/pykmsorg/py-kms) (`pykmsorg/py-kms`). To ensure that you are using always the
-latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out !
+If you just want to use the image and don't want to build them yourself, you can always use the official image at the [GitHub Container Registry](https://github.com/Py-KMS-Organization/py-kms/pkgs/container/py-kms) (`ghcr.io/py-kms-organization/py-kms`). To ensure that you are using always the latest version you should check something like [watchtower](https://github.com/containrrr/watchtower) out!
 
 #### Tags
 There are currently three tags of the image available (select one just by appending `:<tag>` to the image from above):
 * `latest`, currently the same like `minimal`.
 * `minimal`, which is based on the python3 minimal configuration of py-kms. _This tag does NOT include `sqlite` support !_
-* `python3`, which is fully configurable and equipped with `sqlite` support and a web interface (make sure to expose port 8080) for management.
+* `python3`, which is fully configurable and equipped with `sqlite` support and a web-interface (make sure to expose port `8080`) for management.
+
+Wait... Web-interface? Yes! `py-kms` now comes with a simple web-ui to let you browse the known clients or its supported products. In case you wonder, here is a screenshot of the web-ui (*note that this screenshot may not reflect the current state of the ui*):
+
+![web-ui](img/webinterface.png)
 
 #### Architectures
 There are currently the following architectures available (if you need an other, feel free to open an issue):
@@ -37,45 +34,36 @@ _Please note that any architecture other than the classic `amd64` is slightly bi
 
 #### Docker Compose
 You can use `docker-compose` instead of building and running the Dockerfile, so you do not need to respecify your settings again and again. The following Docker Compose file will deploy the `latest` image with the log into your local directory.
+Make sure to take a look into the `entrypoint.py` script to see all supported variable mappings!
 ```yaml
 version: '3'
 
 services:
   kms:
-    image: pykmsorg/py-kms:latest
+    image: ghcr.io/py-kms-organization/py-kms:python3
     ports:
-      - 1688:1688
+      - 1688:1688 # kms
+      - 8080:8080 # web-interface
     environment:
-      - IP=0.0.0.0
-      - SQLITE=true
-      - HWID=RANDOM
-      - LOGLEVEL=INFO
-      - LOGSIZE=2
-      - LOGFILE=/var/log/pykms_logserver.log
+      IP: "::"
+      HWID: RANDOM
+      LOGLEVEL: INFO
     restart: always
     volumes:
+      - ./db:/home/py-kms/db
       - /etc/localtime:/etc/localtime:ro
-      - ./:/var/log:rw
 ```
 
 #### Parameters
-Below is a fully expanded run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](Usage.html#docker-environment) for the docker environment.
+Below is a little bit more extended run command, detailing all the different supported environment variables to set. For further reference see the [start parameters](#docker-environment) for the docker environment.
 ```bash
 docker run -it -d --name py3-kms \
     -p 8080:8080 \
     -p 1688:1688 \
-    -e IP=0.0.0.0 \
-    -e PORT=1688 \
-    -e SQLITE=true \
-    -e HWID=RANDOM \
-    -e LOGLEVEL=INFO \
-    -e LOGSIZE=2 \
-    -e LOGFILE=/var/log/pykms_logserver.log \
     -v /etc/localtime:/etc/localtime:ro \
-    -v /var/log:/var/log:rw \
-    --restart unless-stopped pykmsorg/py-kms:[TAG]
+    --restart unless-stopped ghcr.io/py-kms-organization/py-kms:[TAG]
 ```
-You can omit the `-e SQLITE=...` and `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the respective module support.
+You can omit the `-p 8080:8080` option if you plan to use the `minimal` or `latest` image, which does not include the `sqlite` module support.
 
 ### Systemd
 If you are running a Linux distro using `systemd`, create the file: `sudo nano /etc/systemd/system/py3-kms.service`, then add the following (change it where needed) and save:
@@ -91,7 +79,7 @@ Restart=always
 RestartSec=1
 KillMode=process
 User=root
-ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F </path/to/your/log/files/folder>/pykms_logserver.log
+ExecStart=/usr/bin/python3 </path/to/your/pykms/files/folder>/py-kms/pykms_Server.py :: 1688 -V DEBUG -F </path/to/your/log/files/folder>/pykms_logserver.log
 
 [Install]
 WantedBy=multi-user.target
@@ -99,10 +87,6 @@ WantedBy=multi-user.target
 Check syntax with `sudo systemd-analyze verify py3-kms.service`, correct file permission (if needed) `sudo chmod 644 /etc/systemd/system/py3-kms.service`, then reload systemd manager configuration `sudo systemctl daemon-reload`,
 start the daemon `sudo systemctl start py3-kms.service` and view its status `sudo systemctl status py3-kms.service`. Check if daemon is correctly running with `cat </path/to/your/log/files/folder>/pykms_logserver.log`. Finally a
 few generic commands useful for interact with your daemon [here](https://linoxide.com/linux-how-to/enable-disable-services-ubuntu-systemd-upstart/).
-
-### Etrigan
-You can run py-kms daemonized (via [Etrigan](https://github.com/SystemRage/Etrigan)) using a command like `python3 pykms_Server.py etrigan start` and stop it with `python3 pykms_Server.py etrigan stop`. With Etrigan you have another
-way to launch py-kms GUI (specially suitable if you're using a virtualenv), so `python3 pykms_Server.py etrigan start -g` and stop the GUI with `python3 pykms_Server.py etrigan stop` (or interact with the `EXIT` button).
 
 ### Upstart (deprecated)
 If you are running a Linux distro using `upstart` (deprecated), create the file: `sudo nano /etc/init/py3-kms.conf`, then add the following (change it where needed) and save:
@@ -114,7 +98,7 @@ env PYKMSPATH=</path/to/your/pykms/files/folder>/py-kms
 env LOGPATH=</path/to/your/log/files/folder>/pykms_logserver.log
 start on runlevel [2345]
 stop on runlevel [016]
-exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py 0.0.0.0 1688 -V DEBUG -F $LOGPATH
+exec $PYTHONPATH/python3 $PYKMSPATH/pykms_Server.py :: 1688 -V DEBUG -F $LOGPATH
 respawn
 ```
 Check syntax with `sudo init-checkconf -d /etc/init/py3-kms.conf`, then reload upstart to recognise this process `sudo initctl reload-configuration`. Now start the service `sudo start py3-kms`, and you can see the logfile
@@ -134,7 +118,7 @@ class AppServerSvc (win32serviceutil.ServiceFramework):
     _svc_name_ = "py-kms"
     _svc_display_name_ = "py-kms"
     _proc = None
-    _cmd = ["C:\Windows\Python27\python.exe", "C:\Windows\Python27\py-kms\pykms_Server.py"]
+    _cmd = ["C:\Windows\Python27\python.exe", "C:\Windows\Python27\py-kms\pykms_Server.py"] # UPDATE THIS - because Python 2.7 is end of life and you will use other parameters anyway
 
     def __init__(self,args):
         win32serviceutil.ServiceFramework.__init__(self,args)
@@ -171,17 +155,15 @@ They might be useful to you:
 -  [FreeBSD](https://github.com/SystemRage/py-kms/issues/89)
 
 ## Manual Execution
-***
 
 ### Dependencies
 - Python 3.x.
-- Tkinter module (for the GUI).
 - If the `tzlocal` module is installed, the "Request Time" in the verbose output will be converted into local time. Otherwise, it will be in UTC.
 - It can use the `sqlite3` module, storing activation data in a database so it can be recalled again.
-- Installation example on Ubuntu / Mint:
+- Installation example on Ubuntu / Mint (`requirements.txt` is from the sources):
     - `sudo apt-get update`
-    - `sudo apt-get install python3-tk python3-pip`
-    - `sudo pip3 install tzlocal pysqlite3`
+    - `sudo apt-get install python3-pip`
+    - `pip3 install -r requirements.txt` (on Ubuntu Server 22, you'll need `pysqlite3-binary` - see [this issue](https://github.com/Py-KMS-Organization/py-kms/issues/76))
 
 ### Startup
 A Linux user with `ip addr` command can get his KMS IP (Windows users can try `ipconfig /all`).
@@ -210,6 +192,9 @@ user@host ~/path/to/folder/py-kms $ python3 pykms_Server.py 192.168.1.102 1688
 
 To stop `pykms_Server.py`, in the same bash window where code running, simply press `CTRL+C`.
 Alternatively, in a new bash window, use `kill <pid>` command (you can type `ps aux` first and have the process <pid>) or `killall <name_of_server>`.
+
+### Web-Interface
+As you may have noticed, the Docker container contains a web-interface, replacing the old GUI. If you want to launch it manually, checkout this [issue discussion](https://github.com/Py-KMS-Organization/py-kms/issues/100#issuecomment-1710827824) to learn more.
 
 ### Quick Guide
 The following are just some brief notes about parameters handling. For a more detailed description see [here](Usage.md).

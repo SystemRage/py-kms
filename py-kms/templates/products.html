@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}clients{% endblock %}
+
+{% block content %}
+<nav class="level">
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="heading">Products</p>
+            <p class="title">{{ count_products + filtered }}</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="heading">Windows</p>
+            <p class="title">{{ count_products_windows }}</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="heading">Office</p>
+            <p class="title">{{ count_products_office }}</p>
+        </div>
+    </div>
+    <div class="level-item has-text-centered">
+        <div>
+            <p class="heading"><abbr title="Empty GLVK or not recognized">Other</abbr></p>
+            <p class="title">{{ filtered }}</p>
+        </div>
+    </div>
+</nav>
+
+<hr>
+
+<table class="table is-bordered is-striped is-hoverable is-fullwidth">
+    <thead>
+        <tr>
+          <th>Name</th>
+          <th><abbr title="Group Volume License Key">GVLK</abbr></th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for name, gvlk in products | dictsort %}
+      {% if gvlk %}
+      <tr>
+        <td>{{ name }}</td>
+        <td><pre>{{ gvlk }}</pre></td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
