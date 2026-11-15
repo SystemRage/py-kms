@@ -59,7 +59,7 @@ def epidGenerator(kmsId, version, lcid):
         minTime = datetime.date(d.year, d.month, d.day)       
 
         # Generate Year and Day Number
-        randomDate = datetime.date.fromtimestamp(random.randint(time.mktime(minTime.timetuple()), time.mktime(datetime.datetime.now().timetuple())))
+        randomDate = datetime.date.fromtimestamp(random.randint(int(time.mktime(minTime.timetuple())), int(time.mktime(datetime.datetime.now().timetuple()))))
         firstOfYear = datetime.date(randomDate.year, 1, 1)
         randomDayNumber = int((time.mktime(randomDate.timetuple()) - time.mktime(firstOfYear.timetuple())) / 86400 + 0.5)
 

@@ -9,7 +9,10 @@ import time
 import signal
 import logging
 import argparse
-from collections import Sequence
+try:
+    from collections.abc import Sequence
+except ImportError:  # Python < 3.3
+    from collections import Sequence
 
 __version__             = "0.1"
 __license__             = "MIT License"
